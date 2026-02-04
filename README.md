@@ -20,6 +20,7 @@ npm run frontend
 ```
 
 Run backend AND frontend
+
 ```
 npm run dev
 ```
