@@ -5,7 +5,7 @@
   "main": "backend.ts",
   "type": "module",
   "scripts": {
-    "start": "ts-node backend.ts",
+   "start": "node --loader ts-node/esm backend.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
