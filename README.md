@@ -12,4 +12,17 @@ This project is planned to encompass a roommate housing and agreement app with t
 
 # Installation
 
+## How to Run
+
+```
+npm run backend
+npm run frontend
+```
+
+Run backend AND frontend
+
+```
+npm run dev
+```
+
 # Future Plans
