@@ -29,6 +29,6 @@ upon every commit we run prettier and lint (this is a testedit)
 
 # Future Plans
 
-# sajdnasdkn
+# Features
 
-# anskd
+# Requirements as user
