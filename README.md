@@ -25,4 +25,10 @@ Run backend AND frontend
 npm run dev
 ```
 
+upon every commit we run prettier and lint (this is a testedit)
+
 # Future Plans
+
+# sajdnasdkn
+
+# anskd
