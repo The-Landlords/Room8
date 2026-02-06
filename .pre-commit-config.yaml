@@ -1,0 +1,14 @@
+repos:
+    - repo: local
+      hooks:
+          - id: lint
+            name: npm lint
+            entry: bash -c "npm run lint && git add -A"
+            language: system
+            pass_filenames: false
+
+          - id: format
+            name: npm format
+            entry: bash -c "npm run format && git add -A"
+            language: system
+            pass_filenames: false

@@ -8,7 +8,7 @@
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
 		"dev": "npm -w packages/react-frontend run dev & npm -w packages/express_backend run start",
-		"lint": "eslint .",
+		"lint": "eslint . --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},
