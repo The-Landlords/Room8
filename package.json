@@ -7,7 +7,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
-		"dev": "concurrently 'npm -w packages/react-frontend run dev' 'npm -w packages/express_backend run start' ",
+		"dev": "concurrently --kill-others -c red,blue \"npm -w packages/react-frontend run dev\" \"npm -w packages/express_backend run start\"",
 		"lint": "eslint . --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
