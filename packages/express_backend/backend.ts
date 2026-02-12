@@ -6,7 +6,6 @@ const app = express();
 const port = 8000;
 
 //default port to listen
-
 app.use(cors());
 app.use(express.json());
 
