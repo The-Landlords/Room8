@@ -18,6 +18,7 @@ Clone the repo, ensure node is installed, and run the following:
 npm install prettier
 npm install lint
 pre-commit install
+npm i -g concurrently
 ```
 
 ## How to Run
