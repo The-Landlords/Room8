@@ -2,6 +2,7 @@
 //import reactLogo from "./assets/react.svg";
 //import viteLogo from "/vite.svg";
 import "./App.css";
+import UserSetting from "./userSetting";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
 					<Route path="/chores" element={<h1>Chores</h1>} />
 					<Route path="/rules" element={<h1>Rules</h1>} />
-					<Route path="/settings" element={<h1>User Settings</h1>} />
+					<Route path="/settings" element={<UserSetting />} />
 					<Route path="/grocery" element={<h1>Groceries</h1>} />
 				</Routes>
 			</BrowserRouter>
