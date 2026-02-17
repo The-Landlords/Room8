@@ -29,7 +29,7 @@
 		"@eslint/js": "^9.39.2",
 		"@types/node": "^25.2.0",
 		"eslint": "^9.39.2",
-		"eslint-config-prettier": "^10.1.8",
+		"eslint-config-prettier": "^6.15.0",
 		"eslint-plugin-react": "^7.37.5",
 		"globals": "^17.2.0",
 		"prettier": "^3.8.1",
@@ -39,6 +39,9 @@
 	},
 	"dependencies": {
 		"lint": "^1.1.2",
+		"typescript-eslint": "^8.56.0"
+	},
+	"dependencies": {
 		"react-router-dom": "^7.13.0"
 	}
 }
