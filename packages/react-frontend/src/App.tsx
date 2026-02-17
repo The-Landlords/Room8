@@ -1,22 +1,25 @@
-import { useState } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import CalendarTab from "./pages/CalendarTab";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+//import { useState } from "react";
+//import reactLogo from "./assets/react.svg";
+//import viteLogo from "/vite.svg";
 import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
 	return (
-		<BrowserRouter>
-			<nav style={{ padding: "1rem", borderBottom: "1px solid #ccc" }}>
-				<Link to="/">Home</Link> | <Link to="/cal">Calendar</Link>
-			</nav>
-
-			<Routes>
-				<Route path="/" element={<h1>Home</h1>} />
-				<Route path="/cal" element={<CalendarTab />} />
-			</Routes>
-		</BrowserRouter>
+		<>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<h1>Sign-In</h1>} />
+					<Route path="/homeList" element={<h1>Homes</h1>} />
+					<Route path="/home" element={<h1>Contact</h1>} />
+					<Route path="/calendar" element={<h1>Calendar</h1>} />
+					<Route path="/chores" element={<h1>Chores</h1>} />
+					<Route path="/rules" element={<h1>Rules</h1>} />
+					<Route path="/settings" element={<h1>User Settings</h1>} />
+					<Route path="/grocery" element={<h1>Groceries</h1>} />
+				</Routes>
+			</BrowserRouter>
+		</>
 	);
 }
 
