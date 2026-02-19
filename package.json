@@ -39,9 +39,7 @@
 	},
 	"dependencies": {
 		"lint": "^1.1.2",
-		"typescript-eslint": "^8.56.0"
-	},
-	"dependencies": {
+		"typescript-eslint": "^8.56.0",
 		"react-router-dom": "^7.13.0"
 	}
 }

@@ -26,7 +26,8 @@ const EventSchema = new mongoose.Schema(
 		},
 
 		apartmentId: {
-			type: mongoose.Schema.Types.ObjectId,
+			// type:
+			type: mongoose.Schema.Types.Mixed, //  mongoose.Schema.Types.ObjectId OR STRING
 			ref: "Apartment",
 			required: true,
 			index: true,
@@ -36,6 +37,7 @@ const EventSchema = new mongoose.Schema(
 			enum: ["PENDING", "CONFIRMED", "CANCELLED"],
 			default: "PENDING",
 			index: true,
+			required: false,
 		},
 	},
 	{ timestamps: true }
@@ -48,4 +50,4 @@ EventSchema.pre("validate", async function () {
 		throw new Error("End must be after start time");
 	}
 });
-export const Event = mongoose.model("Event", EventSchema);
+export const Event = mongoose.model("Event", EventSchema); // this gets put in mongo db compass

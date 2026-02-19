@@ -1,27 +1,30 @@
-// crud operations
+// event-services.ts
 import mongoose from "mongoose";
-
-let dbConnection: mongoose.Connection | undefined;
-
-function setConnection(newConn: mongoose.Connection): mongoose.Connection {
-	dbConnection = newConn;
-	return dbConnection;
+import { Event } from "./Event";
+/**
+ * @param apartmentId the apartment id to be searched
+ * @returns
+ */
+function getEventsByApartment(apartmentId: string) {
+	return Event.find({ apartmentId });
 }
 
-function getDbConnection(): mongoose.Connection {
-	if (!dbConnection) {
-		const mongoUri = process.env.MONGODB_URI;
-		if (!mongoUri) {
-			throw new Error("MONGODB_URI environment variable is not set");
-		}
-		dbConnection = mongoose.createConnection(mongoUri, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		});
-	}
-	return dbConnection;
+function getEventById(eventId: string) {
+	return Event.findById(eventId);
 }
 
-async function getEvents() {
-	const eventModel = getDbConnection().model("");
+function createEvent(data: any) {
+	return Event.create(data);
 }
+
+function removeEventById(eventId: string) {
+	return Event.deleteOne({ _id: eventId });
+}
+//fixme update ??
+
+export default {
+	getEventsByApartment,
+	getEventById,
+	createEvent,
+	removeEventById,
+};
