@@ -18,13 +18,17 @@ function createEvent(data: any) {
 }
 
 function removeEventById(eventId: string) {
-	return Event.deleteOne({ _id: eventId });
+	return Event.findByIdAndDelete({ _id: eventId });
 }
-//fixme update ??
+
+function updateApartment(eventId: string, data: any) {
+	return Event.findByIdAndUpdate(eventId, data);
+}
 
 export default {
 	getEventsByApartment,
 	getEventById,
 	createEvent,
 	removeEventById,
+	updateApartment,
 };

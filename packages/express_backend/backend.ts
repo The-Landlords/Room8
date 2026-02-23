@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import type { Request, Response } from "express";
 // import { start } from "./server";
 import EventServices from "./models/Event-Services";
+import ApartmentServices from "./models/Apartment-Services";
 import e from "express";
 export const app = express();
 export const port = 8000;
@@ -80,6 +81,55 @@ app.delete("/:apt/events/:id", async (req: Request, res: Response) => {
 		res.status(400).json({ error: "Invalid ID" });
 	}
 });
-app.listen(port, () => {
-	console.log(`Server running on port ${port}`);
+
+// ==================== APARTMENTS ROUTES===========
+
+app.post("/apartments", async (req, res) => {
+	try {
+		const apt = await ApartmentServices.createApartment(req.body);
+		res.status(201).json(apt);
+	} catch {
+		res.status(400).json({ error: "Failed to create apartment" });
+	}
+});
+
+app.put("/apartments/:id", async (req, res) => {
+	try {
+		const updated = await ApartmentServices.updateApartment(
+			req.params.id,
+			req.body
+		);
+
+		if (!updated) {
+			return res.status(404).json({ error: "Apartment not found" });
+		}
+
+		res.json(updated);
+	} catch {
+		res.status(400).json({ error: "Invalid ID" });
+	}
+});
+
+app.get("/apartments/:id", async (req: Request, res: Response) => {
+	try {
+		const event = await ApartmentServices.getApartmentById(req.params.id);
+		if (!event) {
+			return res.status(404).json({ error: "Apartment not found" });
+		}
+		res.json(event);
+	} catch (error) {
+		res.status(400).json({ error: "Invalid ID" });
+	}
+});
+
+app.delete("/apartments/:id", async (req: Request, res: Response) => {
+	try {
+		const event = await ApartmentServices.deleteApartment(req.params.id);
+		if (!event) {
+			return res.status(404).json({ error: "Apartment not found" });
+		}
+		res.json(event);
+	} catch (error) {
+		res.status(400).json({ error: "Invalid ID" });
+	}
 });
