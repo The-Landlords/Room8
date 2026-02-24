@@ -19,14 +19,11 @@ export default function UserSetting() {
 					<div className="flex items-center gap-3">
 						<button
 							type="button"
-							onClick={() => navigate("/")} // change to "/home" if that's your route
+							onClick={() => navigate("/")}
 							className="bg-white/90 h-10 w-10 flex items-center justify-center font-bold hover:bg-purple-600"
 						>
 							←
 						</button>
-						<div className="bg-white/90 h-10 px-6 flex items-center justify-center font-semibold">
-							Profile
-						</div>
 					</div>
 
 					{/* center welcome */}
@@ -34,7 +31,7 @@ export default function UserSetting() {
 						Welcome Barry
 					</div>
 
-					{/* right spacer (figma has empty space) */}
+					{/* right spacer */}
 					<div className="w-[140px]" />
 				</div>
 			</div>
@@ -43,7 +40,7 @@ export default function UserSetting() {
 			<main className="flex-1 flex justify-center px-6 py-10">
 				<div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10">
 					{/* LEFT COLUMN */}
-					<div className="bg-white/90 p-4">
+					<div className="bg-white/90 p-4 md:order-1">
 						<div className="bg-black/10 text-center font-bold py-2 mb-4">
 							Personal Info
 						</div>
@@ -65,8 +62,8 @@ export default function UserSetting() {
 						</div>
 					</div>
 
-					{/* MIDDLE COLUMN */}
-					<div className="flex flex-col gap-6">
+					{/* RIGHT COLUMN */}
+					<div className="flex flex-col gap-6 md:order-3">
 						<div className="bg-white/90 p-4">
 							<div className="bg-black/10 text-center font-bold py-2 mb-4">
 								Display Settings
@@ -103,8 +100,8 @@ export default function UserSetting() {
 						</div>
 					</div>
 
-					{/* RIGHT COLUMN */}
-					<div className="flex flex-col gap-10">
+					{/* MIDDLE COLUMN */}
+					<div className="flex flex-col gap-10 md:order-2">
 						<div className="bg-white/90 p-4">
 							<div className="bg-black/10 text-center font-bold py-2 mb-4">
 								Emergency Info
