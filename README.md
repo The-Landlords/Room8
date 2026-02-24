@@ -15,6 +15,7 @@ This project is planned to encompass a roommate housing and agreement app with t
 Clone the repo, ensure node is installed, and run the following:
 
 ```bash
+npm ci
 npm install prettier
 npm install lint
 pre-commit install
