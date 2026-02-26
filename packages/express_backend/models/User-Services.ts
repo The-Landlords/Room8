@@ -1,12 +1,9 @@
-/*
-import { User } from "./User"
+import { User } from "./User";
 
-function createUser(data: any){
-    return User.create(data);
+function createUser(data: any) {
+	return User.create(data);
 }
 
 function getApartmentById(aptId: string) {
-    return User.findById(aptId)
+	return User.findById(aptId);
 }
-
-*/
