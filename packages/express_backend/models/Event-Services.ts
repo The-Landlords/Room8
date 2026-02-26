@@ -2,11 +2,11 @@
 import mongoose from "mongoose";
 import { Event } from "./Event";
 /**
- * @param apartmentId the apartment id to be searched
+ * @param homeId the home id to be searched
  * @returns
  */
-function getEventsByApartment(apartmentId: string) {
-	return Event.find({ apartmentId });
+function getEventsByHome(homeId: string) {
+	return Event.find({ homeId });
 }
 
 function getEventById(eventId: string) {
@@ -21,14 +21,14 @@ function removeEventById(eventId: string) {
 	return Event.findByIdAndDelete({ _id: eventId });
 }
 
-function updateApartment(eventId: string, data: any) {
+function updatehome(eventId: string, data: any) {
 	return Event.findByIdAndUpdate(eventId, data);
 }
 
 export default {
-	getEventsByApartment,
+	getEventsByHome,
 	getEventById,
 	createEvent,
 	removeEventById,
-	updateApartment,
+	updatehome,
 };

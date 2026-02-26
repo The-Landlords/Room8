@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import type { Request, Response } from "express";
 // import { start } from "./server";
 import EventServices from "./models/Event-Services";
-import ApartmentServices from "./models/Apartment-Services";
+import HomeServices from "./models/Home-Services";
 import e from "express";
 export const app = express();
 export const port = 8000;
@@ -35,11 +35,11 @@ app.get("/", (req: Request, res: Response) => {
 	res.send("Hello World aksdhasbd!");
 });
 
-app.get("/:apt/events", async (req: Request, res: Response) => {
+app.get("/:home/events", async (req: Request, res: Response) => {
 	// /:id
 	try {
-		const apt_id = req.params.apt;
-		const event = await EventServices.getEventsByApartment(apt_id);
+		const home_id = req.params.home;
+		const event = await EventServices.getEventsByHome(home_id);
 		if (!event) {
 			return res.status(404).json({ error: "Event not found" });
 		}
@@ -48,7 +48,7 @@ app.get("/:apt/events", async (req: Request, res: Response) => {
 		res.status(400).json({ error: "Invalid ID" });
 	}
 });
-app.get("/:apt/events/:id", async (req: Request, res: Response) => {
+app.get("/:home/events/:id", async (req: Request, res: Response) => {
 	try {
 		const event = await EventServices.getEventById(req.params.id);
 		if (!event) {
@@ -60,7 +60,7 @@ app.get("/:apt/events/:id", async (req: Request, res: Response) => {
 	}
 });
 
-app.post("/:apt/events", async (req: Request, res: Response) => {
+app.post("/:home/events", async (req: Request, res: Response) => {
 	try {
 		const event = await EventServices.createEvent(req.body);
 		res.status(201).json(event);
@@ -70,7 +70,7 @@ app.post("/:apt/events", async (req: Request, res: Response) => {
 	}
 });
 
-app.delete("/:apt/events/:id", async (req: Request, res: Response) => {
+app.delete("/:home/events/:id", async (req: Request, res: Response) => {
 	try {
 		const event = await EventServices.removeEventById(req.params.id);
 		if (!event) {
@@ -82,26 +82,24 @@ app.delete("/:apt/events/:id", async (req: Request, res: Response) => {
 	}
 });
 
-// ==================== APARTMENTS ROUTES===========
+// ==================== HomeS ROUTES===========
 
-app.post("/apartments", async (req, res) => {
+app.post("/homes", async (req, res) => {
 	try {
-		const apt = await ApartmentServices.createApartment(req.body);
-		res.status(201).json(apt);
-	} catch {
-		res.status(400).json({ error: "Failed to create apartment" });
+		const home = await HomeServices.createHome(req.body);
+		res.status(201).json(home);
+	} catch (error) {
+		console.error(error);
+		res.status(400).json({ error: "Failed to create Home" });
 	}
 });
 
-app.put("/apartments/:id", async (req, res) => {
+app.put("/homes/:id", async (req, res) => {
 	try {
-		const updated = await ApartmentServices.updateApartment(
-			req.params.id,
-			req.body
-		);
+		const updated = await HomeServices.updateHome(req.params.id, req.body);
 
 		if (!updated) {
-			return res.status(404).json({ error: "Apartment not found" });
+			return res.status(404).json({ error: "Home not found" });
 		}
 
 		res.json(updated);
@@ -110,11 +108,11 @@ app.put("/apartments/:id", async (req, res) => {
 	}
 });
 
-app.get("/apartments/:id", async (req: Request, res: Response) => {
+app.get("/homes/:id", async (req: Request, res: Response) => {
 	try {
-		const event = await ApartmentServices.getApartmentById(req.params.id);
+		const event = await HomeServices.getHomeById(req.params.id);
 		if (!event) {
-			return res.status(404).json({ error: "Apartment not found" });
+			return res.status(404).json({ error: "Home not found" });
 		}
 		res.json(event);
 	} catch (error) {
@@ -122,11 +120,11 @@ app.get("/apartments/:id", async (req: Request, res: Response) => {
 	}
 });
 
-app.delete("/apartments/:id", async (req: Request, res: Response) => {
+app.delete("/homes/:id", async (req: Request, res: Response) => {
 	try {
-		const event = await ApartmentServices.deleteApartment(req.params.id);
+		const event = await HomeServices.deleteHome(req.params.id);
 		if (!event) {
-			return res.status(404).json({ error: "Apartment not found" });
+			return res.status(404).json({ error: "Home not found" });
 		}
 		res.json(event);
 	} catch (error) {
