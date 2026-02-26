@@ -19,6 +19,14 @@ const HomeSchema = new mongoose.Schema(
 			trim: true, // eliminates whitespaces
 		},
 		// ADD? rent, bedrooms, square footage
+
+		// Many users can belong to one apartment
+		memberIds: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+			},
+		],
 	},
 	{ timestamps: true }
 );

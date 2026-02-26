@@ -1,8 +1,8 @@
 //import { useState } from "react";
 //import reactLogo from "./assets/react.svg";
 //import viteLogo from "/vite.svg";
-import "./App.css";
-import HomeList from "./homeList";
+//import "./App.css";
+//import HomeList from "./homeList";
 import UserSetting from "./userSetting";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -12,7 +12,7 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path="/" element={<h1>Sign-In</h1>} />
-					<Route path="/homelist" element={<HomeList />} />
+					<Route path="/homelist" element={<h1>HomeList</h1>} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
 					<Route path="/chores" element={<h1>Chores</h1>} />
