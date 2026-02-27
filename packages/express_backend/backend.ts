@@ -9,9 +9,12 @@ import e from "express";
 export const app = express();
 export const port = 8000;
 
+import { choreRouter } from "./routes/chores-route";
+
 //default port to listen
 app.use(cors());
 app.use(express.json());
+app.use("/", choreRouter);
 
 const start = async () => {
 	try {
@@ -38,8 +41,8 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/:home/events", async (req: Request, res: Response) => {
 	// /:id
 	try {
-		const home_id = req.params.home;
-		const event = await EventServices.getEventsByHome(home_id);
+		const homeId = req.params.home;
+		const event = await EventServices.getEventsByHome(homeId);
 		if (!event) {
 			return res.status(404).json({ error: "Event not found" });
 		}
