@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { Chore } from "./Chore";
 
 export function getChoresByHome(homeId: string) {
@@ -18,5 +17,8 @@ export function removeChoreById(choreId: string) {
 }
 
 export function updateChore(choreId: string, data: any) {
-	return Chore.findByIdAndUpdate(choreId, data);
+	return Chore.findByIdAndUpdate(choreId, data, {
+		returnDocument: "after",
+		runValidators: true,
+	});
 }
