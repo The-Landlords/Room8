@@ -1,0 +1,594 @@
+{
+	"info": {
+		"_postman_id": "f7332e20-77fd-45d0-8678-58677414e596",
+		"name": "CRUD Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Homes",
+			"item": [
+				{
+					"name": "Create Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('Has _id', function(){",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"if (json && json._id) pm.collectionVariables.set('homeId', json._id);"
+								],
+								"id": "405049c6-5cc6-4c05-9f32-234b2864492c"
+							}
+						}
+					],
+					"id": "cffa3f53-9694-4148-86e9-bd969623fa25",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"homeCode\": \"ABC123\",\n  \"homeName\": \"Test Home\",\n  \"address\": \"123 Main St\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/homes",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Home by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON with matching _id', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(json._id).to.eql(pm.collectionVariables.get('homeId'));",
+									"});"
+								],
+								"id": "fa52f806-8a35-45e4-9c71-75623f72dde9"
+							}
+						}
+					],
+					"id": "078fa363-7ae3-4564-8b66-ed238dc7cba1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/homes/{{homeId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "{{homeId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2d8f8514-5558-4dcf-959c-b31770bbddd7",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Updated fields present (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object') {",
+									"    if (json.homeName) pm.expect(json.homeName).to.eql('Test Home (Updated)');",
+									"    if (json.address) pm.expect(json.address).to.eql('456 Oak Ave');",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "16698c1b-1844-4d04-8026-8f325627ba73",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "cff7468a-a343-419b-bcac-b4e115ee95ce",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"homeName\": \"Test Home (Updated)\",\n  \"address\": \"456 Oak Ave\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/homes/{{homeId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "{{homeId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								],
+								"id": "e9ae3fdb-a258-4b9a-9691-6e4c8854df11"
+							}
+						}
+					],
+					"id": "11e15182-0458-4794-b765-c72fddf286ce",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/homes/{{homeId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "{{homeId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "d79f505f-23e7-4448-acee-46fab523e138"
+		},
+		{
+			"name": "Chores",
+			"item": [
+				{
+					"name": "Create Chore (non-recurring)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Response has _id', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"const json = pm.response.json();",
+									"if (json && json._id) pm.collectionVariables.set('choreId', json._id);",
+									"pm.test('homeId matches', function(){",
+									"  pm.expect(String(json.homeId)).to.eql(String(pm.collectionVariables.get('homeId')));",
+									"});",
+									"pm.test('isRecurring is false', function(){",
+									"  pm.expect(json.isRecurring).to.eql(false);",
+									"});"
+								],
+								"id": "00221acc-4c3c-4b9f-8ab6-ef873a4f3a12"
+							}
+						}
+					],
+					"id": "e42ac412-8b88-4021-954e-f9ceb3f230fd",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Take out trash\",\n  \"description\": \"Kitchen + bathroom\",\n  \"homeId\": \"{{homeId}}\",\n  \"isCompleted\": false,\n  \"isRecurring\": false\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/chores",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "chores"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Chore (recurring => nextOccurrence auto-default +7d)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('isRecurring true', function(){",
+									"  pm.expect(json.isRecurring).to.eql(true);",
+									"});",
+									"pm.test('nextOccurrence exists (if your model sets it)', function(){",
+									"  pm.expect(json).to.have.property('nextOccurrence');",
+									"});"
+								],
+								"id": "1348f86d-e019-465b-af16-4e41e982df2f"
+							}
+						}
+					],
+					"id": "11d2239f-6b06-44c7-a3cf-6c78f8c3b558",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Vacuum\",\n  \"description\": \"Living room\",\n  \"homeId\": \"{{homeId}}\",\n  \"isRecurring\": true\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/chores",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "chores"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Chores by Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is an array', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.be.an('array');",
+									"});"
+								],
+								"id": "10c9a135-f789-4d30-a81f-2996c51773e4"
+							}
+						}
+					],
+					"id": "fb330745-f4c9-4e59-8847-e9db8d89fd69",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/chores",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "chores"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chore by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returned chore matches choreId', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(String(json._id)).to.eql(String(pm.collectionVariables.get('choreId')));",
+									"});"
+								],
+								"id": "04102294-eb2d-4808-96c4-74f35b968c6d"
+							}
+						}
+					],
+					"id": "c5e52333-b567-40ef-8886-b9b474c67855",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/chores/{{choreId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "chores", "{{choreId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Chore (mark completed)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8cbfd84e-cf92-4d90-8544-ace83b26f575",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('isCompleted true (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object' && 'isCompleted' in json) {",
+									"    pm.expect(json.isCompleted).to.eql(true);",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2bfc96a0-cbee-4800-a6e7-53f4d746da23",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "65078ed0-fa0a-4af5-b1d5-71e78096185f",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isCompleted\": true,\n  \"completedAt\": \"2026-02-27T12:00:00.000Z\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/chores/{{choreId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "chores", "{{choreId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Chore",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								],
+								"id": "f3db025b-c34b-4225-aa7c-c8473748c825"
+							}
+						}
+					],
+					"id": "2edeff37-08df-4ac4-82c7-9290680eb338",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/chores/{{choreId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "chores", "{{choreId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "d99d9320-e4be-4e5c-bc1c-79b9c4c1ec19"
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Create Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('Has _id', function(){",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"if (json && json._id) pm.collectionVariables.set('eventId', json._id);",
+									"pm.test('homeId matches', function(){",
+									"  pm.expect(String(json.homeId)).to.eql(String(pm.collectionVariables.get('homeId')));",
+									"});"
+								],
+								"id": "dc8d8968-61da-4550-9d92-706aba618324"
+							}
+						}
+					],
+					"id": "6ce5e71f-32d8-4d1f-973b-b75b7abda8b8",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"House meeting\",\n  \"description\": \"Monthly check-in\",\n  \"start\": \"2026-03-01T18:00:00.000Z\",\n  \"end\": \"2026-03-01T19:00:00.000Z\",\n  \"eventType\": \"HOME\",\n  \"homeId\": \"{{homeId}}\",\n  \"status\": \"PENDING\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/events",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "events"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Events by Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is an array', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.be.an('array');",
+									"});"
+								],
+								"id": "3c3c4700-f18b-4434-a432-581d1e23bef3"
+							}
+						}
+					],
+					"id": "790c3b2a-77eb-4536-8180-11d4147bf80d",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/events",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "events"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returned event matches eventId', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(String(json._id)).to.eql(String(pm.collectionVariables.get('eventId')));",
+									"});"
+								],
+								"id": "0ff97bbb-b57e-4762-bdce-d9e2be75f259"
+							}
+						}
+					],
+					"id": "cc556a85-d1c2-46a9-b845-9578b0b01949",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/events/{{eventId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "events", "{{eventId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								],
+								"id": "83ed37c2-ed22-4120-8ce4-705f4cbb9395"
+							}
+						}
+					],
+					"id": "9e063ef2-04d2-4e0c-9836-03bdac688743",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/events/{{eventId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "events", "{{eventId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "7f5a7d4e-99d0-460c-a110-07c1336a63f3"
+		}
+	],
+	"variable": [
+		{
+			"id": "617f5cd1-3240-4b40-8bdd-a458e13fc773",
+			"key": "baseUrl",
+			"value": "http://localhost:3000"
+		},
+		{
+			"id": "8994b40e-847f-4dfe-9336-ee48392495d7",
+			"key": "homeId",
+			"value": ""
+		},
+		{
+			"id": "b69bcd44-3c42-45d1-8028-abb337cbfffb",
+			"key": "choreId",
+			"value": ""
+		},
+		{
+			"id": "3f76709b-b9ed-4d27-bb21-2cbdbb4717a2",
+			"key": "eventId",
+			"value": ""
+		}
+	]
+}
