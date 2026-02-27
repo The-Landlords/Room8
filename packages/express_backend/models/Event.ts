@@ -6,6 +6,13 @@ const EventSchema = new mongoose.Schema(
 		title: {
 			type: String,
 			required: true,
+			maxLength: 100,
+			trim: true, // eliminates whitespaces
+		},
+		description: {
+			type: String,
+			required: false,
+			maxLength: 400,
 			trim: true,
 		},
 		start: {
