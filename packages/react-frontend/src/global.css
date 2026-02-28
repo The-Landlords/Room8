@@ -1,1 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Sriracha&display=swap");
 @import "tailwindcss";
+
+body {
+	background-color: #f6f1ea;
+}
+@theme {
+	--color-text: #584945;
+	--color-primary: #b5a398;
+	--color-secondary: #f6f1ea;
+	--font-primary: "Sriracha", cursive;
+	--font-secondary: "Gowun Dodum", sans-serif;
+}
+
+@layer components {
+	.header {
+		@apply bg-primary/70 font-primary text-text text-4xl font-bold text-center p-4 rounded-lg shadow-md max-w-80;
+	}
+	.header-secondary {
+		@apply font-primary text-text text-2xl font-semibold p-2  max-w-48;
+	}
+	.panel {
+		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
+	}
+	.list-item {
+		@apply bg-primary/70 text-text font-secondary text-lg p-3 rounded-md shadow-sm mb-2;
+	}
+	.animate-floatUp {
+		animation: floatUp 1s ease-out forwards;
+	}
+	.background-house {
+		@apply bg-secondary/70  bg-[url('/assets/housebgtemp.jpeg')] bg-cover  min-h-screen flex flex-col;
+	}
+}
+
+@keyframes floatUp {
+	0% {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
