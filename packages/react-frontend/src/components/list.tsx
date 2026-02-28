@@ -4,10 +4,11 @@ import React from "react";
 
 interface ListProps {
 	item: string[];
-	handleClick: () => void;
+	handleAddClick: () => void;
+	handleRemoveClick: () => void;
 }
 
-const List = ({ item, handleClick }: ListProps) => {
+const List = ({ item, handleAddClick, handleRemoveClick }: ListProps) => {
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">Current Homes</h1>
@@ -18,12 +19,20 @@ const List = ({ item, handleClick }: ListProps) => {
 					</li>
 				))}
 			</ul>
-			<button
-				onClick={handleClick}
-				className="bg-primary/70 text-text font-secondary font-bold text-lg p-3 w-15 rounded-md shadow-sm mt-4 self-center"
-			>
-				+
-			</button>
+			<div className="flex flex-row flex-center self-center gap-4">
+				<button
+					onClick={handleAddClick}
+					className="bg-primary/70 text-text font-secondary font-bold text-lg p-3 w-15 rounded-md shadow-sm mt-4 self-center"
+				>
+					+
+				</button>
+				<button
+					onClick={handleRemoveClick}
+					className="bg-primary/70 text-text font-secondary font-bold text-lg p-3 w-15 rounded-md shadow-sm mt-4 self-center"
+				>
+					-
+				</button>
+			</div>
 		</div>
 	);
 };
