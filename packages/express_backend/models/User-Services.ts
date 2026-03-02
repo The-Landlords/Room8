@@ -1,13 +1,13 @@
 import { User } from "./User";
 
-export async function getUserByUsername(username: string) {
-  return User.findOne({ username });
+function createUser(data: any) {
+	return User.create(data);
 }
 
-export async function createUser(data: any) {
-  return User.create(data);
+function getApartmentById(aptId: string) {
+	return User.findById(aptId);
 }
 
-export async function getUserById(userId: string) {
+function getUserById(userId: string) {
   return User.findById(userId);
 }
