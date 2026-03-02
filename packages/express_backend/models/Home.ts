@@ -1,9 +1,14 @@
 // https://mongoosejs.com/docs/
 import mongoose from "mongoose";
 
-const ApartmentSchema = new mongoose.Schema(
+const HomeSchema = new mongoose.Schema(
 	{
-		apartment_name: {
+		homeCode: {
+			type: String,
+			required: true,
+			trim: true,
+		},
+		homeName: {
 			type: String,
 			required: true,
 			trim: true, // eliminates whitespaces
@@ -26,4 +31,4 @@ const ApartmentSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-export const Apartment = mongoose.model("apartment", ApartmentSchema); // this gets put in mongo db compass
+export const Home = mongoose.model("home", HomeSchema); // this gets put in mongo db compass
