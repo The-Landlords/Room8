@@ -6,6 +6,7 @@ import type { Request, Response } from "express";
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
+import { loginRouter } from "./routes/login-routes";
 
 export const app = express();
 export const port = 8000;
@@ -18,18 +19,25 @@ app.use(express.json());
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
+app.use("/", loginRouter);  
 
 const start = async () => {
-	try {
-		await mongoose.connect("mongodb://localhost:27017/room8");
-		console.log("Mongo connected");
+  try {
+    await mongoose.connect("mongodb://localhost:27017/room8");
+    
+    // TEMP LOG: Check DB connection
+    mongoose.connection.once("open", () => {
+      console.log("Connected to DB:", mongoose.connection.name);
+    });
 
-		app.listen(port, () => {
-			console.log(`Server running on port ${port}`);
-		});
-	} catch (err) {
-		console.error("Failed to connect to MongoDB", err);
-	}
+    console.log("Mongo connected");
+
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  } catch (err) {
+    console.error("Failed to connect to MongoDB", err);
+  }
 };
 
 start().catch((e) => {
