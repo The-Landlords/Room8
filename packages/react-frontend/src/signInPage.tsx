@@ -1,13 +1,50 @@
-// src/signInPage.jsx
+// src/signInPage.tsx
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SignInPage() {
-  const handleSignIn = () => {
-    console.log("Sign in button clicked!"); //temporary console log 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); 
+
+
+  const navigate = useNavigate();
+
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    setError("");
+
+
+    if (!username || !password) {
+      setError("Please fill in username and password");
+      return;
+    }
+
+    fetch("http://localhost:8000/login", {  
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          console.log("Logged in!", data);
+          localStorage.setItem("token", data.token);
+          navigate("/homelist");
+        }
+      })
+      .catch((err) => {
+        setError("Invalid Username or Password");;
+      });
   };
 
   return (
-    <div className="min-h-screen bg-stone-300 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-blue-900 flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-white rounded-lg p-8">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
           Room8
@@ -22,6 +59,8 @@ export default function SignInPage() {
             <label className="block text-gray-600 mb-2">username</label>
             <input
               type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="barrybbenson"
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
             />
@@ -31,10 +70,15 @@ export default function SignInPage() {
             <label className="block text-gray-600 mb-2">password</label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
             />
           </div>
+
+          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+
 
           <button
             type="submit"

@@ -4,7 +4,7 @@ import {
 	getEventById,
 	createEvent,
 	removeEventById,
-	updatehome,
+	//updatehome,
 } from "../models/Event-Services";
 import type { Request, Response } from "express";
 
