@@ -6,7 +6,14 @@ const EventSchema = new mongoose.Schema(
 		title: {
 			type: String,
 			required: true,
+			maxLength: 100,
 			trim: true, // eliminates whitespaces
+		},
+		description: {
+			type: String,
+			required: false,
+			maxLength: 400,
+			trim: true,
 		},
 		start: {
 			type: Date,
@@ -20,15 +27,15 @@ const EventSchema = new mongoose.Schema(
 		},
 		eventType: {
 			type: String,
-			enum: ["APARTMENT", "TOGETHER", "PERSONAL"],
+			enum: ["HOME", "TOGETHER", "PERSONAL"],
 			required: true,
 			index: true,
 		},
 
-		apartmentId: {
+		homeId: {
 			// type:
 			type: mongoose.Schema.Types.Mixed, //  mongoose.Schema.Types.ObjectId OR STRING
-			ref: "Apartment",
+			ref: "Home",
 			required: true,
 			index: true,
 		},
