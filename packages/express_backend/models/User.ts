@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema(
 		},
 		phone: {
 			type: String,
+			trim: true,
 		},
 		allergens: [
 			{
@@ -51,7 +52,6 @@ const UserSchema = new mongoose.Schema(
 			phone: {
 				type: String,
 				trim: true,
-				required: true,
 			},
 
 			relationship: {
