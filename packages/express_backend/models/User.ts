@@ -9,9 +9,9 @@ const UserSchema = new mongoose.Schema(
 			trim: true,
 		},
 		password: {
-            type: String,
-            required: true,
-       },
+			type: String,
+			required: true,
+		},
 		fullName: {
 			type: String,
 			required: true,
@@ -64,9 +64,7 @@ const UserSchema = new mongoose.Schema(
 			},
 		},
 
-		apartmentIds: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: "Apartment" },
-		],
+		homeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "home" }],
 	},
 	{ timestamps: true }
 );
