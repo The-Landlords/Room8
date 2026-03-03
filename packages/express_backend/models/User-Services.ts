@@ -16,9 +16,9 @@ export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
 
-export function getUsersByApartment(apartmentId: string) {
-	// users who have this apartmentId inside apartmentIds array
-	return User.find({ apartmentIds: apartmentId });
+// this should be rewritten to get all home residents given a homeId
+function getUsersByHomeId(homeId: string) {
+	return User.find({ "homeIds._id": homeId });
 }
 
 // UPDATE
