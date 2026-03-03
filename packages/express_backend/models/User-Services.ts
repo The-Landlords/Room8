@@ -9,5 +9,5 @@ function getApartmentById(aptId: string) {
 }
 
 function getUserById(userId: string) {
-  return User.findById(userId);
+	return User.findById(userId);
 }

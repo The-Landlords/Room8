@@ -19,7 +19,7 @@ app.use(express.json());
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
-app.use("/", loginRouter);  
+app.use("/", loginRouter);
 
 const start = async () => {
 	try {
