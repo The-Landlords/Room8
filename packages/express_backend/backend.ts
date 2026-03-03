@@ -6,6 +6,7 @@ import type { Request, Response } from "express";
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
+import { userRouter } from "./routes/user-routes";
 import { loginRouter } from "./routes/login-routes";
 
 export const app = express();
@@ -19,7 +20,8 @@ app.use(express.json());
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
-app.use("/", loginRouter);  
+app.use("/", userRouter);
+app.use("/", loginRouter);
 
 const start = async () => {
 	try {
