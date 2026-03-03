@@ -5,11 +5,9 @@ import {
 	createUser,
 	getUserById,
 	getUserByUsername,
-	getUsersByApartment,
+	getUsersByHomeId,
 	updateUser,
 	removeUserById,
-	addApartmentToUser,
-	removeApartmentFromUser,
 } from "../models/User-Services";
 
 export const userRouter = express.Router();
@@ -76,19 +74,16 @@ userRouter.get(
 	}
 );
 
-// GET USERS BY APARTMENT
-userRouter.get(
-	"/users/apartment/:apartmentId",
-	async (req: Request, res: Response) => {
-		try {
-			const users = await getUsersByApartment(req.params.apartmentId);
-			res.status(200).json(users);
-		} catch (error) {
-			console.error(error);
-			res.status(400).json({ error: "Invalid apartment ID" });
-		}
+// GET USERS BY HOME
+userRouter.get("/users/home/:homeId", async (req: Request, res: Response) => {
+	try {
+		const users = await getUsersByHomeId(req.params.homeId);
+		res.status(200).json(users);
+	} catch (error) {
+		console.error(error);
+		res.status(400).json({ error: "Invalid apartment ID" });
 	}
-);
+});
 
 // DELETE
 userRouter.delete("/users/:id", async (req: Request, res: Response) => {
@@ -106,56 +101,3 @@ userRouter.delete("/users/:id", async (req: Request, res: Response) => {
 		res.status(400).json({ error: "Invalid ID" });
 	}
 });
-
-// ADD APARTMENT TO USER
-// body: { apartmentId: "..." }
-userRouter.post(
-	"/users/:id/apartments",
-	async (req: Request, res: Response) => {
-		try {
-			const { apartmentId } = req.body;
-
-			if (!apartmentId) {
-				return res
-					.status(400)
-					.json({ error: "apartmentId is required" });
-			}
-
-			const updated = await addApartmentToUser(
-				req.params.id,
-				apartmentId
-			);
-
-			if (!updated) {
-				return res.status(404).json({ error: "User not found" });
-			}
-
-			res.status(200).json(updated);
-		} catch (error) {
-			console.error(error);
-			res.status(400).json({ error: "Failed to add apartment" });
-		}
-	}
-);
-
-// REMOVE APARTMENT FROM USER
-userRouter.delete(
-	"/users/:id/apartments/:apartmentId",
-	async (req: Request, res: Response) => {
-		try {
-			const updated = await removeApartmentFromUser(
-				req.params.id,
-				req.params.apartmentId
-			);
-
-			if (!updated) {
-				return res.status(404).json({ error: "User not found" });
-			}
-
-			res.status(200).json(updated);
-		} catch (error) {
-			console.error(error);
-			res.status(400).json({ error: "Failed to remove apartment" });
-		}
-	}
-);

@@ -84,9 +84,7 @@ const UserSchema = new mongoose.Schema(
 			},
 		},
 
-		apartmentIds: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: "Apartment" },
-		],
+		homeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Home" }],
 	},
 	{ timestamps: true }
 );
