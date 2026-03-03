@@ -51,7 +51,3 @@ export function removeApartmentFromUser(userId: string, apartmentId: string) {
 		{ new: true }
 	);
 }
-
-function getUserById(userId: string) {
-	return User.findById(userId);
-}
