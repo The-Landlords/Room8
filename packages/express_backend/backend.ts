@@ -21,13 +21,10 @@ app.use(express.json());
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
-<<<<<<< HEAD
 app.use("/", loginRouter);
 app.use("/", ruleRouter);
-=======
 app.use("/", userRouter);
-app.use("/", loginRouter);
->>>>>>> 3e0a35e2bdd8cec4a15d09f0c043388f0ed7578e
+
 
 const start = async () => {
 	try {
