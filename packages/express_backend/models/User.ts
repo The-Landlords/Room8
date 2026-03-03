@@ -17,6 +17,26 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			trim: true,
 		},
+		pronouns: {
+			type: String,
+			trim: true,
+		},
+		DOB: {
+			type: String,
+			trim: true,
+		},
+		likes: [
+			{
+				type: String,
+				trim: true,
+			},
+		],
+		dislikes: [
+			{
+				type: String,
+				trim: true,
+			},
+		],
 		allergens: [
 			{
 				type: String,
