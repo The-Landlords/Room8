@@ -3,26 +3,26 @@ import { User } from "./User";
 import mongoose from "mongoose";
 
 // CREATE
-function createUser(data: any) {
+export function createUser(data: any) {
 	return User.create(data);
 }
 
 // READ
-function getUserById(userId: string) {
+export function getUserById(userId: string) {
 	return User.findById(userId);
 }
 
-function getUserByUsername(username: string) {
+export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
 
-function getUsersByApartment(apartmentId: string) {
+export function getUsersByApartment(apartmentId: string) {
 	// users who have this apartmentId inside apartmentIds array
 	return User.find({ apartmentIds: apartmentId });
 }
 
 // UPDATE
-function updateUser(userId: string, data: any) {
+export function updateUser(userId: string, data: any) {
 	// { new: true } returns the updated doc
 	return User.findByIdAndUpdate(userId, data, {
 		new: true,
@@ -31,12 +31,12 @@ function updateUser(userId: string, data: any) {
 }
 
 // DELETE
-function removeUserById(userId: string) {
+export function removeUserById(userId: string) {
 	return User.findByIdAndDelete(userId);
 }
 
 // helpers for nested fields / arrays
-function addApartmentToUser(userId: string, apartmentId: string) {
+export function addApartmentToUser(userId: string, apartmentId: string) {
 	return User.findByIdAndUpdate(
 		userId,
 		{ $addToSet: { apartmentIds: apartmentId } }, // prevents duplicates
@@ -44,21 +44,10 @@ function addApartmentToUser(userId: string, apartmentId: string) {
 	);
 }
 
-function removeApartmentFromUser(userId: string, apartmentId: string) {
+export function removeApartmentFromUser(userId: string, apartmentId: string) {
 	return User.findByIdAndUpdate(
 		userId,
 		{ $pull: { apartmentIds: apartmentId } },
 		{ new: true }
 	);
 }
-
-export default {
-	createUser,
-	getUserById,
-	getUserByUsername,
-	getUsersByApartment,
-	updateUser,
-	removeUserById,
-	addApartmentToUser,
-	removeApartmentFromUser,
-};
