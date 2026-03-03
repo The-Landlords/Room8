@@ -567,27 +567,237 @@
 				}
 			],
 			"id": "7f5a7d4e-99d0-460c-a110-07c1336a63f3"
+		},
+		{
+			"name": "Rules",
+			"item": [
+				{
+					"name": "Post Rules",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "00595a59-6d1e-4a53-8753-83ad9d1e2284",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f36461c8-9ff7-4e22-9383-017c82ea97d2",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('Has _id', function(){",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"if (json && json._id) pm.collectionVariables.set('ruleId', json._id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "0361ef1f-dc8e-4773-808b-ff4aa953933e",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"This is a new rule that enforces washing your hands before using the kitchen\",\n    \"status\": \"CONFIRMED\",\n    \"homeId\": \"69a1599717369e793e2382c6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rules by ID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fa52f806-8a35-45e4-9c71-75623f72dde9",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON with matching _id', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(json._id).to.eql(pm.collectionVariables.get('ruleId'));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "77254ec4-2064-4fe7-9e7e-10b4837d1e65",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "fdf79d98-994a-4739-a3e5-5a817a2308fb",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules/{{ruleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules", "{{ruleId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2d8f8514-5558-4dcf-959c-b31770bbddd7",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Updated fields present (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object') {",
+									"    if (json.descirption) pm.expect(json.description).to.eql('This is a new rule that enforces washing your hands before using the kitchen AND bathroom');",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "16698c1b-1844-4d04-8026-8f325627ba73",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "743c1059-8cf1-4ae6-bab2-257e160db4f0",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"This is a new rule that enforces washing your hands before using the kitchen AND bathroom\",\n    \"status\": \"CONFIRMED\",\n    \"homeId\": \"69a1599717369e793e2382c6\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules/{{ruleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules", "{{ruleId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9ae3fdb-a258-4b9a-9691-6e4c8854df11",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c528eda6-12c5-41f7-9fd1-5c8f9f284cef",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "aed7f314-f275-4e29-abfe-9ecf7b7e4b4f",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules/{{ruleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules", "{{ruleId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "8085aa97-2b32-49a9-8c2a-e8cfe80e96ef"
 		}
 	],
 	"variable": [
 		{
-			"id": "617f5cd1-3240-4b40-8bdd-a458e13fc773",
+			"id": "e7b724a5-5583-4ba8-85be-ae5aa88a986b",
 			"key": "baseUrl",
 			"value": "http://localhost:3000"
 		},
 		{
-			"id": "8994b40e-847f-4dfe-9336-ee48392495d7",
+			"id": "cb0327bd-9e23-43bc-9ab4-3fed2f3fb0f8",
 			"key": "homeId",
 			"value": ""
 		},
 		{
-			"id": "b69bcd44-3c42-45d1-8028-abb337cbfffb",
+			"id": "097b9404-23ef-4849-a103-8df58190d9c6",
 			"key": "choreId",
 			"value": ""
 		},
 		{
-			"id": "3f76709b-b9ed-4d27-bb21-2cbdbb4717a2",
+			"id": "520850c7-2a7a-4ab9-a336-736184641146",
 			"key": "eventId",
+			"value": ""
+		},
+		{
+			"id": "fd255ab4-4ed2-4be8-8ced-5bf45d6d3854",
+			"key": "ruleId",
 			"value": ""
 		}
 	]
