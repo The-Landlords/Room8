@@ -1,0 +1,29 @@
+import { Rule } from "./Rule";
+
+//create rule
+export function createRule(data: any) {
+	return Rule.create(data);
+}
+
+// get rule by id
+export function getRuleById(ruleId: string) {
+	return Rule.findById(ruleId);
+}
+
+// get all rules from a household
+export function getRulesByHome(homeId: string) {
+	return Rule.find({ homeId: homeId });
+}
+
+// update rule
+export function updateRule(ruleId: string, data: any) {
+	return Rule.findByIdAndUpdate(ruleId, data, {
+		returnDocument: "after",
+		runValidators: true,
+	});
+}
+
+// delete rule
+export function removeRuleById(ruleId: string) {
+	return Rule.findByIdAndDelete({ _id: ruleId });
+}
