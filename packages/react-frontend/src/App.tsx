@@ -5,6 +5,7 @@
 //import HomeList from "./homeList";
 import HomeList from "./homelist";
 import UserSetting from "./userSetting";
+import SignInPage from "./signInPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
 		<>
 			<BrowserRouter>
 				<Routes>
-					<Route path="/" element={<h1>Sign-In</h1>} />
+					<Route path="/" element={<SignInPage />} />
 					<Route path="/homelist" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
