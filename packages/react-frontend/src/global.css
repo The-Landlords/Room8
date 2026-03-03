@@ -22,6 +22,9 @@ body {
 	.panel {
 		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
 	}
+	.iconWrapper {
+		@apply opacity-70 rounded-3xl self-end-safe overflow-hidden;
+	}
 	.list-item {
 		@apply bg-primary/70 text-text font-secondary text-lg p-3 rounded-md shadow-sm mb-2;
 	}
