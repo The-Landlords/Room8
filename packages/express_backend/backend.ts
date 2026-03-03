@@ -6,6 +6,7 @@ import type { Request, Response } from "express";
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
+import { userRouter } from "./routes/user-routes";
 
 export const app = express();
 export const port = 8000;
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
+app.use("/", userRouter);
 
 const start = async () => {
 	try {
