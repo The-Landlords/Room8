@@ -7,3 +7,7 @@ function createUser(data: any) {
 function getApartmentById(aptId: string) {
 	return User.findById(aptId);
 }
+
+function getUserById(userId: string) {
+  return User.findById(userId);
+}
