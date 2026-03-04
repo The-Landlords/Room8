@@ -25,7 +25,6 @@ app.use("/", loginRouter);
 app.use("/", ruleRouter);
 app.use("/", userRouter);
 
-
 const start = async () => {
 	try {
 		await mongoose.connect("mongodb://localhost:27017/room8");
