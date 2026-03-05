@@ -634,7 +634,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "fa52f806-8a35-45e4-9c71-75623f72dde9",
+								"id": "cd25ae71-c9ce-4be2-b345-4c1c64b13a0f",
 								"exec": [
 									"pm.test('Status is 200', function () {",
 									"  pm.response.to.have.status(200);",
@@ -653,7 +653,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "77254ec4-2064-4fe7-9e7e-10b4837d1e65",
+								"id": "527b5804-7074-4aee-8c63-2497bdae12e0",
 								"exec": [""],
 								"type": "text/javascript",
 								"packages": {},
@@ -772,32 +772,289 @@
 				}
 			],
 			"id": "8085aa97-2b32-49a9-8c2a-e8cfe80e96ef"
+		},
+		{
+			"name": "Groceries",
+			"item": [
+				{
+					"name": "Create Grocery Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04cba39c-3bd9-4bd2-ba2c-8e3cd794644b",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('Has _id', function(){",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"if (json && json._id) pm.collectionVariables.set('groceryId', json._id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "918a0f6c-1ad8-42ae-b8b4-278e80827594",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "110e3cb1-c79e-493c-9ae4-f41667008b47",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Bananas\",\n    \"homeId\": \"{{homeId}}\",\n    \"price\": 0.99,\n    \"quantity\": \"5\",\n    \"status\": \"PENDING\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Grocery Items by Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test('Response is an array', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.be.an('array');",
+									"});",
+									"pm.test('Array includes created grocery (if present)', function(){",
+									"  const json = pm.response.json();",
+									"  const id = pm.collectionVariables.get('groceryId');",
+									"  if (!id || !Array.isArray(json)) return pm.expect(true).to.be.true;",
+									"  const found = json.some(x => String(x._id) === String(id));",
+									"  pm.expect(found).to.eql(true);",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "c848e675-bdff-4e72-a394-c0c579a6fc19",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Grocery Item by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test('Returned grocery matches groceryId', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(String(json._id)).to.eql(String(pm.collectionVariables.get('groceryId')));",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "3e3f5a08-d7d7-4855-9b6a-141894a0e700",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery", "{{groceryId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Grocery Item (PUT body)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Updated fields present (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object') {",
+									"    if ('name' in json) pm.expect(json.name).to.eql('Milk (Updated)');",
+									"    if ('quantity' in json) pm.expect(json.quantity).to.eql(2);",
+									"    if ('isPurchased' in json) pm.expect(json.isPurchased).to.eql(true);",
+									"  }",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "572b01f1-7f7a-464d-a8b1-e65f3a9ea2ae",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Milk (Updated)\",\n  \"quantity\": 2,\n  \"isPurchased\": true\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery", "{{groceryId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Grocery Quantity (PUT /:id/:newQuantity)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Quantity updated (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object' && 'quantity' in json) {",
+									"    pm.expect(Number(json.quantity)).to.eql(5);",
+									"  }",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "cf77082c-5683-4a09-8366-5aa02731ebe5",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}/5",
+							"host": ["{{baseUrl}}"],
+							"path": [
+								"{{homeId}}",
+								"grocery",
+								"{{groceryId}}",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Grocery Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "8c265861-42f9-4b2d-9772-8e4b8fc9544f",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery", "{{groceryId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "bc5ac2b0-af1c-4a7e-a420-4c1fb377214f"
 		}
 	],
 	"variable": [
 		{
-			"id": "e7b724a5-5583-4ba8-85be-ae5aa88a986b",
+			"id": "0edb8690-45df-4473-a4a2-50c4e391ee6d",
 			"key": "baseUrl",
 			"value": "http://localhost:3000"
 		},
 		{
-			"id": "cb0327bd-9e23-43bc-9ab4-3fed2f3fb0f8",
+			"id": "88ec8340-0ba3-4c80-835d-348c474e42ef",
 			"key": "homeId",
 			"value": ""
 		},
 		{
-			"id": "097b9404-23ef-4849-a103-8df58190d9c6",
+			"id": "32a796eb-5598-49ef-aa61-9ab5eb1479d5",
 			"key": "choreId",
 			"value": ""
 		},
 		{
-			"id": "520850c7-2a7a-4ab9-a336-736184641146",
+			"id": "bbfe59d5-3fb0-417a-bdb1-5b27254394b6",
 			"key": "eventId",
 			"value": ""
 		},
 		{
-			"id": "fd255ab4-4ed2-4be8-8ced-5bf45d6d3854",
+			"id": "dddfcc6f-6c71-4856-b31d-7e0d24721aeb",
 			"key": "ruleId",
+			"value": ""
+		},
+		{
+			"id": "835d96fe-ee6c-49a6-bc6a-eca66a8771a2",
+			"key": "groceryId",
 			"value": ""
 		}
 	]
