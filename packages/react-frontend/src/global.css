@@ -22,14 +22,29 @@ body {
 	.panel {
 		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
 	}
+	.panel-secondary {
+		@apply bg-primary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
+	}
+	.iconWrapper {
+		@apply opacity-70 rounded-3xl self-end-safe overflow-hidden hover:opacity-90 transition duration-200;
+	}
 	.list-item {
 		@apply bg-primary/70 text-text font-secondary text-lg p-3 rounded-md shadow-sm mb-2;
 	}
 	.animate-floatUp {
-		animation: floatUp 1s ease-out forwards;
+		animation: floatUp 0.5s ease-out forwards;
 	}
 	.background-house {
 		@apply bg-secondary/70  bg-[url('/assets/housebgtemp.jpeg')] bg-cover  min-h-screen flex flex-col;
+	}
+	.overlay-backdrop {
+		@apply fixed z-50 inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center;
+	}
+	.overlay-content {
+		@apply bg-secondary/70 rounded-lg shadow-lg p-6 max-w-md w-full;
+	}
+	.button {
+		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-md shadow-sm hover:bg-primary/90 transition-colors duration-150;
 	}
 }
 
