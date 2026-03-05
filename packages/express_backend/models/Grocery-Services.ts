@@ -1,17 +1,29 @@
 import mongoose from "mongoose";
 import { Grocery } from "./Grocery";
 
-// create a grocery item
+/**
+ * create a grocery item with POST
+ * @param groceryData the body of the grocery item to be created
+ * @returns the created grocery item as a jsonified body
+ */
 export const createGroceryItem = async (groceryData: any) => {
 	return await Grocery.create(groceryData);
 };
 
-// get all grocery items for a home
+/**
+ * get all grocery items for a given home
+ * @param homeId the id of the home to be searched for grocery items
+ * @returns an array of all grocery items for the given home
+ */
 export const getGroceryItemsByHome = async (homeId: string) => {
 	return await Grocery.find({ homeId: homeId });
 };
 
-// get a grocery item by id
+/**
+ * retrieve a grocery item by its id
+ * @param id the id of the item to be retrieved
+ * @returns the grocery item as a jsonified body
+ */
 export const getGroceryItemById = async (id: string) => {
 	return await Grocery.findById(id);
 };
@@ -58,6 +70,7 @@ export const updateGroceryItemQuantity = async (
 	);
 };
 
+// THESE ARE NOT ROUTES, BUT HELPER FUNCTIONS
 /**
  * calculate total cost of all grocery items for a home
  * @param homeId the home id to be searched
@@ -65,15 +78,21 @@ export const updateGroceryItemQuantity = async (
  */
 export const calculateTotalCostForHome = async (homeId: string) => {
 	const items = await Grocery.find({ homeId: homeId });
-	return items.reduce((total, item) => total + item.price * item.quantity, 0);
+	if (!items || items.length === 0) return 0;
+
+	return items.reduce((total, item) => {
+		if (!item || item.price == null || item.quantity == null) return total;
+		return total + item.price * item.quantity;
+	}, 0);
 };
 
 /**
  * calculate total cost of a grocery item (price * quantity)
  * @param id the item to be searched
  * @returns total cost of that item including quantity
- */ export const calculateTotalCostForItem = async (id: string) => {
+ */
+export const calculateTotalCostForItem = async (id: string) => {
 	const item = await Grocery.findById(id);
-	if (!item) return 0;
+	if (!item || item.price == null || item.quantity == null) return 0;
 	return item.price * item.quantity;
 };
