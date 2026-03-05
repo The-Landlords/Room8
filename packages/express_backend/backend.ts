@@ -6,7 +6,10 @@ import type { Request, Response } from "express";
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
+import { userRouter } from "./routes/user-routes";
 import { loginRouter } from "./routes/login-routes";
+import { ruleRouter } from "./routes/rule-routes";
+import { groceryRouter } from "./routes/grocery-routes";
 
 export const app = express();
 export const port = 8000;
@@ -20,6 +23,9 @@ app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
 app.use("/", loginRouter);
+app.use("/", ruleRouter);
+app.use("/", userRouter);
+app.use("/", groceryRouter);
 
 const start = async () => {
 	try {

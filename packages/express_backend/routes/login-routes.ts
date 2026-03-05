@@ -7,6 +7,7 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 	try {
 		const { username, password } = req.body;
 
+		//test if have both user and password
 		if (!username || !password) {
 			return res
 				.status(400)
@@ -21,6 +22,7 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 			_id: "dummyid123",
 		};
 
+		//test if user and pass match
 		if (
 			username !== TEST_USER.username ||
 			password !== TEST_USER.password
