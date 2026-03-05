@@ -1,13 +1,13 @@
 import { useState } from "react";
 import List from "./components/list";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Overlay from "./components/overlay";
 import AddHomeOverlay from "./components/addHomeOverlay";
 
 const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
 
 export default function HomeList() {
-	const navigate = useNavigate();
+	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 
 	const handleAddClick = () => {
@@ -26,9 +26,8 @@ export default function HomeList() {
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
 			<div className="iconWrapper">
-				<Link to="/settings">
+				<Link to={`/settings/${username}`}>
 					<img
-						//onClick={handleSettingsClick}
 						src="/assets/settings.png"
 						alt="Settings Icon"
 						width={60}

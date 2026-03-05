@@ -14,12 +14,15 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path="/" element={<SignInPage />} />
-					<Route path="/homelist" element={<HomeList />} />
+					<Route path="/homelist/:username" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
 					<Route path="/chores" element={<h1>Chores</h1>} />
 					<Route path="/rules" element={<h1>Rules</h1>} />
-					<Route path="/settings" element={<UserSetting />} />
+					<Route
+						path="/settings/:username"
+						element={<UserSetting />}
+					/>
 					<Route path="/grocery" element={<h1>Groceries</h1>} />
 				</Routes>
 			</BrowserRouter>
