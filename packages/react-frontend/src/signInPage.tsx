@@ -10,7 +10,7 @@ export default function SignInPage() {
 
 	const navigate = useNavigate();
 
-	const handleSignIn = (e) => {
+	const handleSignIn = (e: any) => {
 		e.preventDefault();
 		setError("");
 
@@ -36,7 +36,7 @@ export default function SignInPage() {
 				} else {
 					console.log("Logged in!", data);
 					localStorage.setItem("token", data.token);
-					navigate("/homelist");
+					navigate(`/homelist/${data.username}`, { replace: true });
 				}
 			})
 			.catch((err) => {
