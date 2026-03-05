@@ -15,7 +15,7 @@ const GrocerySchema = new mongoose.Schema(
 		},
 		price: {
 			type: Number,
-			required: false,
+			required: true,
 			min: 0,
 		},
 		homeId: {
