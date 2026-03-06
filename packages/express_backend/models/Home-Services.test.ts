@@ -26,8 +26,13 @@ afterAll(async () => {
 	await mongoose.connection.close();
 });
 
-test("Creating a home", async () => {
+beforeEach(async () => {
 	const home = await createHome(basicHomeData);
+	homeId = home._id;
+});
+
+test("Creating a home", async () => {
+	const home = await getHomeById(homeId);
 	expect(home).toBeDefined();
 	expect(home.homeName).toBe(basicHomeData.homeName);
 	expect(home.homeCode).toBe(basicHomeData.homeCode);
