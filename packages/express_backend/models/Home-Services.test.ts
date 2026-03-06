@@ -34,6 +34,8 @@ beforeEach(async () => {
 test("Creating a home", async () => {
 	const home = await getHomeById(homeId);
 	expect(home).toBeDefined();
+	if (!home) return;
+
 	expect(home.homeName).toBe(basicHomeData.homeName);
 	expect(home.homeCode).toBe(basicHomeData.homeCode);
 	expect(home.address).toBe(basicHomeData.address);
