@@ -567,27 +567,494 @@
 				}
 			],
 			"id": "7f5a7d4e-99d0-460c-a110-07c1336a63f3"
+		},
+		{
+			"name": "Rules",
+			"item": [
+				{
+					"name": "Post Rules",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "00595a59-6d1e-4a53-8753-83ad9d1e2284",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f36461c8-9ff7-4e22-9383-017c82ea97d2",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('Has _id', function(){",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"if (json && json._id) pm.collectionVariables.set('ruleId', json._id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "0361ef1f-dc8e-4773-808b-ff4aa953933e",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"This is a new rule that enforces washing your hands before using the kitchen\",\n    \"status\": \"CONFIRMED\",\n    \"homeId\": \"69a1599717369e793e2382c6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rules by ID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cd25ae71-c9ce-4be2-b345-4c1c64b13a0f",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON with matching _id', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(json._id).to.eql(pm.collectionVariables.get('ruleId'));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "527b5804-7074-4aee-8c63-2497bdae12e0",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "fdf79d98-994a-4739-a3e5-5a817a2308fb",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules/{{ruleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules", "{{ruleId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2d8f8514-5558-4dcf-959c-b31770bbddd7",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Updated fields present (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object') {",
+									"    if (json.descirption) pm.expect(json.description).to.eql('This is a new rule that enforces washing your hands before using the kitchen AND bathroom');",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "16698c1b-1844-4d04-8026-8f325627ba73",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "743c1059-8cf1-4ae6-bab2-257e160db4f0",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"This is a new rule that enforces washing your hands before using the kitchen AND bathroom\",\n    \"status\": \"CONFIRMED\",\n    \"homeId\": \"69a1599717369e793e2382c6\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules/{{ruleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules", "{{ruleId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9ae3fdb-a258-4b9a-9691-6e4c8854df11",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c528eda6-12c5-41f7-9fd1-5c8f9f284cef",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "aed7f314-f275-4e29-abfe-9ecf7b7e4b4f",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/homes/rules/{{ruleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["homes", "rules", "{{ruleId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "8085aa97-2b32-49a9-8c2a-e8cfe80e96ef"
+		},
+		{
+			"name": "Groceries",
+			"item": [
+				{
+					"name": "Create Grocery Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04cba39c-3bd9-4bd2-ba2c-8e3cd794644b",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"const json = pm.response.json();",
+									"pm.test('Has _id', function(){",
+									"  pm.expect(json).to.have.property('_id');",
+									"});",
+									"if (json && json._id) pm.collectionVariables.set('groceryId', json._id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "918a0f6c-1ad8-42ae-b8b4-278e80827594",
+								"exec": [""],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "110e3cb1-c79e-493c-9ae4-f41667008b47",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Bananas\",\n    \"homeId\": \"{{homeId}}\",\n    \"price\": 0.99,\n    \"quantity\": \"5\",\n    \"status\": \"PENDING\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Grocery Items by Home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test('Response is an array', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.be.an('array');",
+									"});",
+									"pm.test('Array includes created grocery (if present)', function(){",
+									"  const json = pm.response.json();",
+									"  const id = pm.collectionVariables.get('groceryId');",
+									"  if (!id || !Array.isArray(json)) return pm.expect(true).to.be.true;",
+									"  const found = json.some(x => String(x._id) === String(id));",
+									"  pm.expect(found).to.eql(true);",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "c848e675-bdff-4e72-a394-c0c579a6fc19",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Grocery Item by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response is JSON', function(){",
+									"  pm.response.to.be.json;",
+									"});",
+									"pm.test('Returned grocery matches groceryId', function(){",
+									"  const json = pm.response.json();",
+									"  pm.expect(json).to.have.property('_id');",
+									"  pm.expect(String(json._id)).to.eql(String(pm.collectionVariables.get('groceryId')));",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "3e3f5a08-d7d7-4855-9b6a-141894a0e700",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery", "{{groceryId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Grocery Item (PUT body)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Updated fields present (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object') {",
+									"    if ('name' in json) pm.expect(json.name).to.eql('Milk (Updated)');",
+									"    if ('quantity' in json) pm.expect(json.quantity).to.eql(2);",
+									"    if ('isPurchased' in json) pm.expect(json.isPurchased).to.eql(true);",
+									"  }",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "572b01f1-7f7a-464d-a8b1-e65f3a9ea2ae",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Milk (Updated)\",\n  \"quantity\": 2,\n  \"isPurchased\": true\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery", "{{groceryId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Grocery Quantity (PUT /:id/:newQuantity)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Quantity updated (if returned)', function(){",
+									"  const txt = pm.response.text();",
+									"  if (!txt) return pm.expect(true).to.be.true;",
+									"  const json = pm.response.json();",
+									"  if (json && typeof json === 'object' && 'quantity' in json) {",
+									"    pm.expect(Number(json.quantity)).to.eql(5);",
+									"  }",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "cf77082c-5683-4a09-8366-5aa02731ebe5",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}/5",
+							"host": ["{{baseUrl}}"],
+							"path": [
+								"{{homeId}}",
+								"grocery",
+								"{{groceryId}}",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Grocery Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200 or 204', function () {",
+									"  pm.expect([200,204]).to.include(pm.response.code);",
+									"});"
+								]
+							}
+						}
+					],
+					"id": "8c265861-42f9-4b2d-9772-8e4b8fc9544f",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{homeId}}/grocery/{{groceryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["{{homeId}}", "grocery", "{{groceryId}}"]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "bc5ac2b0-af1c-4a7e-a420-4c1fb377214f"
 		}
 	],
 	"variable": [
 		{
-			"id": "617f5cd1-3240-4b40-8bdd-a458e13fc773",
+			"id": "0edb8690-45df-4473-a4a2-50c4e391ee6d",
 			"key": "baseUrl",
 			"value": "http://localhost:3000"
 		},
 		{
-			"id": "8994b40e-847f-4dfe-9336-ee48392495d7",
+			"id": "88ec8340-0ba3-4c80-835d-348c474e42ef",
 			"key": "homeId",
 			"value": ""
 		},
 		{
-			"id": "b69bcd44-3c42-45d1-8028-abb337cbfffb",
+			"id": "32a796eb-5598-49ef-aa61-9ab5eb1479d5",
 			"key": "choreId",
 			"value": ""
 		},
 		{
-			"id": "3f76709b-b9ed-4d27-bb21-2cbdbb4717a2",
+			"id": "bbfe59d5-3fb0-417a-bdb1-5b27254394b6",
 			"key": "eventId",
+			"value": ""
+		},
+		{
+			"id": "dddfcc6f-6c71-4856-b31d-7e0d24721aeb",
+			"key": "ruleId",
+			"value": ""
+		},
+		{
+			"id": "835d96fe-ee6c-49a6-bc6a-eca66a8771a2",
+			"key": "groceryId",
 			"value": ""
 		}
 	]

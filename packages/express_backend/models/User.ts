@@ -9,9 +9,9 @@ const UserSchema = new mongoose.Schema(
 			trim: true,
 		},
 		password: {
-            type: String,
-            required: true,
-       },
+			type: String,
+			required: true,
+		},
 		fullName: {
 			type: String,
 			required: true,
@@ -19,7 +19,28 @@ const UserSchema = new mongoose.Schema(
 		},
 		phone: {
 			type: String,
+			trim: true,
 		},
+		pronouns: {
+			type: String,
+			trim: true,
+		},
+		DOB: {
+			type: String,
+			trim: true,
+		},
+		likes: [
+			{
+				type: String,
+				trim: true,
+			},
+		],
+		dislikes: [
+			{
+				type: String,
+				trim: true,
+			},
+		],
 		allergens: [
 			{
 				type: String,
@@ -55,7 +76,6 @@ const UserSchema = new mongoose.Schema(
 			phone: {
 				type: String,
 				trim: true,
-				required: true,
 			},
 
 			relationship: {
@@ -64,9 +84,7 @@ const UserSchema = new mongoose.Schema(
 			},
 		},
 
-		apartmentIds: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: "Apartment" },
-		],
+		homeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Home" }],
 	},
 	{ timestamps: true }
 );
