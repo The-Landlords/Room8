@@ -16,7 +16,6 @@ export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
 
-// this should be rewritten to get all home residents given a homeId
 export function getUsersByHomeId(homeId: string) {
 	return User.find({ "homeIds._id": homeId });
 }
