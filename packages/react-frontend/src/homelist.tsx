@@ -1,19 +1,44 @@
 import { useState } from "react";
 import List from "./components/list";
+import { Link, useParams } from "react-router-dom";
+import Overlay from "./components/overlay";
+import AddHomeOverlay from "./components/addHomeOverlay";
 
 const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
 
-const handleAddClick = () => {
-	console.log("Add!");
-};
-const handleRemoveClick = () => {
-	console.log("Remove!");
-};
-
 export default function HomeList() {
+	const { username } = useParams();
+	const [overlayOpen, setOverlayOpen] = useState(false);
+
+	const handleAddClick = () => {
+		console.log("Add!" + overlayOpen);
+		setOverlayOpen(true);
+	};
+	const handleRemoveClick = () => {
+		console.log("Remove!");
+	};
+	const handleClose = () => {
+		console.log("Closed!");
+		setOverlayOpen(false);
+	};
+
 	return (
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
+			<div className="iconWrapper">
+				<Link to={`/settings/${username}`}>
+					<img
+						src="/assets/settings.png"
+						alt="Settings Icon"
+						width={60}
+						height={60}
+						className="w-20 h-20"
+					/>
+				</Link>
+			</div>
+			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
+				<AddHomeOverlay />
+			</Overlay>
 			<List
 				item={homes}
 				handleAddClick={handleAddClick}

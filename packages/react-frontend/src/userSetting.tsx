@@ -1,8 +1,27 @@
-//import React,{ useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function UserSetting() {
 	const navigate = useNavigate();
+	const { username } = useParams();
+
+	const [user, setUser] = useState<any>(null);
+
+	useEffect(() => {
+		if (!username) return;
+
+		fetch(`http://localhost:8000/users/username/${username}`)
+			.then((res) => {
+				if (!res.ok) throw new Error("User not found");
+				return res.json();
+			})
+			.then((data) => setUser(data))
+			.catch((err) => {
+				console.error(err);
+				setUser(null);
+			});
+	}, [username]);
+
 	return (
 		<div className="min-h-screen w-full bg-blue-900 flex flex-col">
 			{/* HEADER */}
@@ -28,7 +47,7 @@ export default function UserSetting() {
 
 					{/* center welcome */}
 					<div className="flex-1 bg-white/90 h-10 flex items-center justify-center font-semibold">
-						Welcome Barry
+						Welcome {user?.username ?? username ?? "User"}
 					</div>
 
 					{/* right spacer */}
@@ -48,16 +67,20 @@ export default function UserSetting() {
 						{/*detail on personal*/}
 						<div className="space-y-3">
 							<div className="bg-white p-3">
-								Name: Barry Benson
+								Name: {user?.fullName ?? "Loading..."}
 							</div>
-							<div className="bg-white p-3">Pronouns: He/Him</div>
-							<div className="bg-white p-3">DOB: 01/01/2001</div>
 							<div className="bg-white p-3">
-								Allergies: Peanuts
+								Pronouns: {user?.pronouns}
 							</div>
-							<div className="bg-white p-3">Likes: Burgers</div>
+							<div className="bg-white p-3">DOB: {user?.DOB}</div>
 							<div className="bg-white p-3">
-								Dislikes: Loud music
+								Allergies: {user?.allergens}
+							</div>
+							<div className="bg-white p-3">
+								Likes: {user?.likes}
+							</div>
+							<div className="bg-white p-3">
+								Dislikes: {user?.dislikes}
 							</div>
 						</div>
 					</div>
@@ -71,7 +94,7 @@ export default function UserSetting() {
 
 							<div className="bg-white p-4 mb-4">
 								<div className="font-semibold mb-2">
-									Text Size:
+									Text Size: {user?.settings?.textSize}
 								</div>
 								<div className="space-y-2">
 									<div className="flex items-center justify-between"></div>
@@ -81,7 +104,9 @@ export default function UserSetting() {
 							</div>
 
 							<div className="bg-white p-4 mb-4">
-								<div className="font-semibold mb-2">Theme:</div>
+								<div className="font-semibold mb-2">
+									Theme: {user?.settings?.theme}
+								</div>
 								<div className="space-y-2">
 									<div className="flex items-center justify-between"></div>
 									<div className="flex items-center justify-between"></div>
@@ -90,7 +115,8 @@ export default function UserSetting() {
 
 							<div className="bg-white p-4">
 								<div className="font-semibold mb-2">
-									Color-blind Mode:
+									Color-blind Mode:{" "}
+									{user?.settings?.colorBlindMode}
 								</div>
 								<div className="space-y-2">
 									<div className="flex items-center justify-between"></div>
@@ -109,10 +135,11 @@ export default function UserSetting() {
 
 							<div className="space-y-4">
 								<div className="bg-white p-3">
-									Phone: (111) 111-1111
+									Phone: {user?.phone}
 								</div>
 								<div className="bg-white p-3">
-									Emergency: Mom (222) 222-2222
+									Emergency: {user?.emergencyContact?.name}{" "}
+									{user?.emergencyContact?.phone}
 								</div>
 							</div>
 						</div>
@@ -122,6 +149,7 @@ export default function UserSetting() {
 								Who can see <br /> my schedule?
 							</div>
 
+							{/* NEXT THING TO DO IS TO ADD FEAT: who can view my schedule*/}
 							<div className="space-y-3">
 								<div className="bg-white p-3 flex items-center justify-between"></div>
 
