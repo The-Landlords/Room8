@@ -46,6 +46,10 @@ body {
 	.button {
 		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-md shadow-sm hover:bg-primary/90 transition-colors duration-150;
 	}
+	.settings-background {
+		@apply min-h-screen flex flex-col;
+		background-color: #efe7df;
+	}
 }
 
 @keyframes floatUp {
