@@ -6,8 +6,8 @@ import {
 	getHomeById,
 	updateHome,
 	deleteHome,
-	addMember,
-	removeMember,
+	//addMember,
+	//removeMember,
 } from "../models/Home-Services";
 export const homeRouter = express.Router();
 
