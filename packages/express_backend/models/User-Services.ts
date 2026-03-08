@@ -8,29 +8,30 @@ export function createUser(data: any) {
 }
 
 // READ
-export function getUserById(userId: string) {
+export function getUserById(userId: mongoose.Types.ObjectId | string) {
 	return User.findById(userId);
 }
 
 export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
-
 // this should be rewritten to get all home residents given a homeId
-export function getUsersByHomeId(homeId: string) {
-	return User.find({ "homeIds._id": homeId });
+export function getUsersByHomeId(homeId: mongoose.Types.ObjectId | string) {
+	return User.find({ homeIds: homeId });
 }
-
 // UPDATE
-export function updateUser(userId: string, data: any) {
+export function updateUserById(
+	userId: mongoose.Types.ObjectId | string,
+	data: any
+) {
 	// { new: true } returns the updated doc
 	return User.findByIdAndUpdate(userId, data, {
-		new: true,
+		returnDocument: "after",
 		runValidators: true,
 	});
 }
 
 // DELETE
-export function removeUserById(userId: string) {
+export function removeUserById(userId: mongoose.Types.ObjectId | string) {
 	return User.findByIdAndDelete(userId);
 }

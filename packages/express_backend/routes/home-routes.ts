@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import express from "express";
 import type { Request, Response } from "express";
 import {
@@ -6,8 +5,8 @@ import {
 	getHomeById,
 	updateHome,
 	deleteHome,
-	addMember,
-	removeMember,
+	// addMember,
+	// removeMember,
 } from "../models/Home-Services";
 export const homeRouter = express.Router();
 
