@@ -21,7 +21,7 @@ export default function SignInPage() {
 		}
 
 		//send login request
-		fetch("http://localhost:8000/login", {
+		fetch(`http://localhost:8000/login`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
