@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
@@ -29,7 +31,9 @@ app.use("/", groceryRouter);
 
 const start = async () => {
 	try {
-		await mongoose.connect("mongodb://localhost:27017/room8");
+		const uri = process.env.MONGO_URI;
+		if (!uri) throw new Error("MONGO_URI not defined");
+		await mongoose.connect(uri);
 		console.log("Mongo connected");
 
 		app.listen(port, () => {
