@@ -2,9 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
-
-import dotenv from "dotenv";
-
+import { config } from "dotenv";
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
@@ -29,7 +27,7 @@ app.use("/", ruleRouter);
 app.use("/", userRouter);
 app.use("/", groceryRouter);
 
-dotenv.config();
+config({ path: "../../.env" });
 
 const url = process.env.MONGO_URI;
 let connection: any = null;
@@ -50,14 +48,6 @@ const connectDB = async () => {
 
 const start = async () => {
 	try {
-		/*
-		await mongoose.connect("mongodb://localhost:27017/room8");
-		console.log("Mongo connected");
-
-		app.listen(port, () => {
-			console.log(`Server running on port ${port}`);
-		});
-		*/
 		await connectDB();
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);
