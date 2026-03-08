@@ -32,7 +32,7 @@ app.use("/", groceryRouter);
 
 const start = async () => {
 	try {
-      await mongoose.connect("mongodb://127.0.0.1:27017/room8");
+      await mongoose.connect("mongodb://localhost:27017/room8");
   		console.log("Mongo connected");
 
 		app.listen(port, () => {
