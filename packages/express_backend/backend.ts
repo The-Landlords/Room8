@@ -32,8 +32,8 @@ app.use("/", groceryRouter);
 
 const start = async () => {
 	try {
-    await mongoose.connect(process.env.MONGO_URI as string);
- 		console.log("Mongo connected");
+      await mongoose.connect("mongodb://127.0.0.1:27017/room8");
+  		console.log("Mongo connected");
 
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);
