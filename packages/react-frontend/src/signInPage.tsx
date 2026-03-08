@@ -46,7 +46,7 @@ export default function SignInPage() {
 
 	return (
 		<div className="background-house flex items-center justify-center">
-			<div className="panel flex flex-col items-center animate-floatUp">
+            <div className="panel flex flex-col items-center animate-floatUp min-w-[380px]">
 
 				<h1 className="header mb-4">Sign In</h1>
 
