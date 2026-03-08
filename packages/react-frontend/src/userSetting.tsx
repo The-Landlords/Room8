@@ -39,8 +39,7 @@ export default function UserSetting() {
 					<div className="flex justify-start">
 						<button
 							type="button"
-							//FIX ME Change button nag. to correct page
-							onClick={() => navigate("/")}
+							onClick={() => navigate(`/homelist/${username}`)}
 							className="button h-14 w-14 flex items-center justify-center rounded-xl"
 						>
 							←
@@ -74,8 +73,7 @@ export default function UserSetting() {
 			<main className="flex-1 flex justify-center px-6 py-10">
 				<div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10">
 					{/* LEFT COLUMN */}
-					{/* LEFT COLUMN */}
-					<div className="md:order-1 w-full min-w-0">
+					<div className="md:order-1 w-full min-w-0 animate-floatUp">
 						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
 							{/*COLUMN HEADER*/}
 							<h2 className="font-primary text-text text-3xl text-center mb-6">
@@ -112,7 +110,7 @@ export default function UserSetting() {
 					</div>
 
 					{/* RIGHT COLUMN */}
-					<div className="md:order-3 w-full min-w-0">
+					<div className="md:order-3 w-full min-w-0 animate-floatUp">
 						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
 							{/*HEADER*/}
 							<h2 className="font-primary text-text text-3xl text-center mb-6">
@@ -139,9 +137,7 @@ export default function UserSetting() {
 					</div>
 
 					{/* MIDDLE COLUMN */}
-
-					{/* MIDDLE COLUMN */}
-					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10">
+					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
 						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
 							{/*HEADER*/}
 							<h2 className="font-primary text-text text-3xl text-center mb-6">
