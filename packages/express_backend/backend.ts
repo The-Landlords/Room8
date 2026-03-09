@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -29,8 +32,8 @@ app.use("/", groceryRouter);
 
 const start = async () => {
 	try {
-		await mongoose.connect("mongodb://localhost:27017/room8");
-		console.log("Mongo connected");
+      await mongoose.connect("mongodb://localhost:27017/room8");
+  		console.log("Mongo connected");
 
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);
