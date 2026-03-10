@@ -18,19 +18,19 @@ export function getUserByUsername(username: string) {
 
 //ASK is this the correct way to find a user by their relationship to a home?
 export function getUsersByHomeId(homeId: mongoose.Types.ObjectId) {
-	return User.findOne({ "relationship.homeId": homeId });
+	return User.find({ homeIds: { $elemMatch: { homeId: homeId } } });
 }
 
 //ASK is this the correct way to list users by their relationship to a home?
-export function getUsersByHomeAndRelationship(
-	homeId: string,
+export function getUsersByHomeAndRelation(
+	homeId: mongoose.Types.ObjectId,
 	relationship: string
 ) {
 	return User.find({
-		"homeIds.homeId": homeId,
-		"homeIds.relationship": relationship,
+		homeIds: { $elemMatch: { homeId: homeId, relationship: relationship } },
 	});
 }
+
 // UPDATE
 export function updateUserById(userId: mongoose.Types.ObjectId, data: any) {
 	// { new: true } returns the updated doc
