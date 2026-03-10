@@ -21,10 +21,10 @@ const HomeSchema = new mongoose.Schema(
 		// ADD? rent, bedrooms, square footage
 
 		// Many users can belong to one apartment
-		memberIds: [
+		userIds: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
-				ref: "User",
+				ref: "Relationship",
 			},
 		],
 	},

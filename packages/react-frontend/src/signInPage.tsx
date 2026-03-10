@@ -46,15 +46,13 @@ export default function SignInPage() {
 
 	return (
 		<div className="background-house flex items-center justify-center">
-            <div className="panel flex flex-col items-center animate-floatUp min-w-[380px]">
-
+			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px]">
 				<h1 className="header mb-4">Sign In</h1>
 
 				<form
 					onSubmit={handleSignIn}
 					className="flex flex-col gap-3 w-full max-w-xs"
 				>
-
 					{/* username */}
 					<input
 						type="text"
@@ -83,10 +81,8 @@ export default function SignInPage() {
 							{error}
 						</p>
 					)}
-
 				</form>
 			</div>
 		</div>
 	);
 }
-

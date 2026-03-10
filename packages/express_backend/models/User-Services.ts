@@ -16,8 +16,8 @@ export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
 
-export function getUsersByHomeId(homeId: string) {
-	return User.find({ "homeIds._id": homeId });
+export function getUsersByHomeCode(homeCode: string) {
+	return User.find({ homeIds: homeCode }).populate("homeId");
 }
 
 // UPDATE
