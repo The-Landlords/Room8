@@ -4,8 +4,8 @@
 	"description": "Roomate organization app",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest",
-		"coverage": "jest --coverage",
+		"test": "jest --runInBand",
+		"coverage": "jest --runInBand --coverage",
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
 		"dev": "concurrently --kill-others -c red,blue \"npm -w packages/react-frontend run dev\" \"npm -w packages/express_backend run start\"",
@@ -42,6 +42,7 @@
 		"typescript-eslint": "^8.54.0"
 	},
 	"dependencies": {
+		"dotenv": "^17.3.1",
 		"lint": "^1.1.2",
 		"react-router-dom": "^7.13.0",
 		"typescript-eslint": "^8.56.0"
