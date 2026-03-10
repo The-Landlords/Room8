@@ -11,12 +11,12 @@ const GrocerySchema = new mongoose.Schema(
 		quantity: {
 			type: Number,
 			required: true,
-			min: 1,
+			min: [1, "Quantity cannot be negative"],
 		},
 		price: {
 			type: Number,
 			required: true,
-			min: 0,
+			min: [0, "Price cannot be negative"],
 		},
 		homeId: {
 			type: mongoose.Schema.Types.ObjectId,
