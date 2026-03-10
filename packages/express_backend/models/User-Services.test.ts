@@ -7,6 +7,7 @@ import {
 	getUsersByHomeId,
 	updateUserById,
 	removeUserById,
+	getUsersByHomeAndRelation,
 } from "./User-Services";
 
 import { User } from "./User";
@@ -19,7 +20,12 @@ const dummyUser = {
 	fullName: "Barry B. Benson",
 	phone: "123456789",
 	pronouns: "he/him",
-	homeIds: [new mongoose.Types.ObjectId()],
+	homeIds: [
+		{
+			homeId: new mongoose.Types.ObjectId(),
+			relationship: "RESIDENT",
+		},
+	],
 };
 
 beforeAll(async () => {
@@ -56,7 +62,11 @@ test("Creating an user", async () => {
 	expect(u.fullName).toBe(dummyUser.fullName);
 	expect(u.phone).toBe(dummyUser.phone);
 	expect(u.pronouns).toBe(dummyUser.pronouns);
-	expect(u.homeIds[0]).toBe(dummyUser.homeIds[0]);
+	expect(u.homeIds).toHaveLength(1);
+	expect(u.homeIds[0].relationship).toBe(dummyUser.homeIds[0].relationship);
+	expect(u.homeIds[0].homeId.toString()).toBe(
+		dummyUser.homeIds[0].homeId.toString()
+	);
 });
 
 test("Getting a user by id", async () => {
@@ -72,6 +82,27 @@ test("Getting a user by username", async () => {
 	expect(fetched).toBeDefined();
 	expect(fetched._id.toString()).toBe(u._id.toString());
 	expect(fetched.username).toBe(u.username);
+});
+
+test("Getting user by homeId and relation", async () => {
+	const fetched = await getUsersByHomeAndRelation(
+		u.homeIds[0].homeId,
+		u.homeIds[0].relationship
+	);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched.length).toBeGreaterThan(0);
+	expect(fetched[0]._id.toString()).toBe(u._id.toString());
+	expect(fetched[0].username).toBe(u.username);
+});
+
+test("Getting users by homeId", async () => {
+	const fetched = await getUsersByHomeId(u.homeIds[0].homeId);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched.length).toBeGreaterThan(0);
+	expect(fetched[0]._id.toString()).toBe(u._id.toString());
+	expect(fetched[0].username).toBe(u.username);
 });
 
 // test("Getting all users from a given home", async () => {
@@ -107,7 +138,9 @@ test("Updating a user", async () => {
 		fullName: "Barry B. Benson",
 		phone: "12345678900",
 		pronouns: "she/her",
-		homeIds: [new mongoose.Types.ObjectId()],
+		homeIds: [
+			{ homeId: new mongoose.Types.ObjectId(), relationship: "GUEST" },
+		],
 	};
 	const updatedUser = await updateUserById(u._id, updatedData);
 	if (!updatedUser) return;

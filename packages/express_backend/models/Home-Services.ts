@@ -14,7 +14,18 @@ export function getHomeByCode(homeCode: string) {
 	return Home.findOne({ homeCode: homeCode });
 }
 
-//ASK ABOUT USERS FIRST need to figure out how to implement this nested table on the home side as well
+export function getHomesByUser(userId: mongoose.Types.ObjectId) {
+	return Home.find({ userIds: { $elemMatch: { userId: userId } } });
+}
+
+export function getHomesByUserAndRelation(
+	userId: mongoose.Types.ObjectId,
+	relationship: string
+) {
+	return Home.find({
+		userIds: { $elemMatch: { userId: userId, relationship: relationship } },
+	});
+}
 
 export function updateHome(homeId: mongoose.Types.ObjectId, data: any) {
 	return Home.findByIdAndUpdate(homeId, data, {
