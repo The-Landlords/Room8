@@ -85,7 +85,15 @@ const UserSchema = new mongoose.Schema(
 		},
 
 		homeIds: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: "Relationship" },
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Home",
+				relationship: {
+					type: String,
+					enum: ["RESIDENT", "GUEST"],
+					required: true,
+				},
+			},
 		],
 	},
 	{ timestamps: true }

@@ -24,7 +24,12 @@ const HomeSchema = new mongoose.Schema(
 		userIds: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
-				ref: "Relationship",
+				ref: "User",
+				relationship: {
+					type: String,
+					enum: ["RESIDENT", "GUEST"],
+					required: true,
+				},
 			},
 		],
 	},
