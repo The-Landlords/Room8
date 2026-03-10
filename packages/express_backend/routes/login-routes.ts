@@ -9,17 +9,23 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 		const { username, password } = req.body;
 
 		if (!username || !password) {
-			return res.status(400).json({ error: "Username and password required" });
+			return res
+				.status(400)
+				.json({ error: "Username and password required" });
 		}
 
 		const user = await User.findOne({ username });
 
 		if (!user) {
-			return res.status(401).json({ error: "Invalid Username or Password" });
+			return res
+				.status(401)
+				.json({ error: "Invalid Username or Password" });
 		}
 
 		if (user.password !== password) {
-			return res.status(401).json({ error: "Invalid Username or Password" });
+			return res
+				.status(401)
+				.json({ error: "Invalid Username or Password" });
 		}
 
 		res.status(200).json({
