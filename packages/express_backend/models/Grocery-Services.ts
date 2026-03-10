@@ -15,7 +15,9 @@ export const createGroceryItem = async (groceryData: any) => {
  * @param homeId the id of the home to be searched for grocery items
  * @returns an array of all grocery items for the given home
  */
-export const getGroceryItemsByHome = async (homeId: string) => {
+export const getGroceryItemsByHome = async (
+	homeId: string | mongoose.Types.ObjectId
+) => {
 	return await Grocery.find({ homeId: homeId });
 };
 
@@ -24,7 +26,9 @@ export const getGroceryItemsByHome = async (homeId: string) => {
  * @param id the id of the item to be retrieved
  * @returns the grocery item as a jsonified body
  */
-export const getGroceryItemById = async (id: string) => {
+export const getGroceryItemById = async (
+	id: string | mongoose.Types.ObjectId
+) => {
 	return await Grocery.findById(id);
 };
 
@@ -34,7 +38,10 @@ export const getGroceryItemById = async (id: string) => {
  * @param updated the body of the new grocery item
  * @returns the updated grocery item as a jsonified body
  */
-export const updateGroceryItem = async (id: string, updated: any) => {
+export const updateGroceryItem = async (
+	id: string | mongoose.Types.ObjectId,
+	updated: any
+) => {
 	return await Grocery.findByIdAndUpdate(id, updated, {
 		returnDocument: "after",
 		runValidators: true,
@@ -46,7 +53,9 @@ export const updateGroceryItem = async (id: string, updated: any) => {
  * @param id the id of the grocery item to be deleted
  * @returns successful deletion of the grocery item
  */
-export const deleteGroceryItem = async (id: string) => {
+export const deleteGroceryItem = async (
+	id: string | mongoose.Types.ObjectId
+) => {
 	return await Grocery.findByIdAndDelete(id);
 };
 
@@ -76,12 +85,13 @@ export const updateGroceryItemQuantity = async (
  * @param homeId the home id to be searched
  * @returns total cost of all grocery items for the home
  */
-export const calculateTotalCostForHome = async (homeId: string) => {
+export const calculateTotalCostForHome = async (
+	homeId: string | mongoose.Types.ObjectId
+) => {
 	const items = await Grocery.find({ homeId: homeId });
 	if (!items || items.length === 0) return 0;
 
 	return items.reduce((total, item) => {
-		if (!item || item.price == null || item.quantity == null) return total;
 		return total + item.price * item.quantity;
 	}, 0);
 };
@@ -91,8 +101,10 @@ export const calculateTotalCostForHome = async (homeId: string) => {
  * @param id the item to be searched
  * @returns total cost of that item including quantity
  */
-export const calculateTotalCostForItem = async (id: string) => {
+export const calculateTotalCostForItem = async (
+	id: mongoose.Types.ObjectId | string
+) => {
 	const item = await Grocery.findById(id);
-	if (!item || item.price == null || item.quantity == null) return 0;
+	if (!item) throw new Error("Item not found");
 	return item.price * item.quantity;
 };

@@ -1,5 +1,5 @@
 import { Rule } from "./Rule";
-
+import mongoose from "mongoose";
 //create rule
 export function createRule(data: any) {
 	return Rule.create(data);
@@ -11,12 +11,12 @@ export function getRuleById(ruleId: string) {
 }
 
 // get all rules from a household
-export function getRulesByHome(homeId: string) {
+export function getRulesByHome(homeId: mongoose.Types.ObjectId) {
 	return Rule.find({ homeId: homeId });
 }
 
 // update rule
-export function updateRule(ruleId: string, data: any) {
+export function updateRule(ruleId: mongoose.Types.ObjectId, data: any) {
 	return Rule.findByIdAndUpdate(ruleId, data, {
 		returnDocument: "after",
 		runValidators: true,

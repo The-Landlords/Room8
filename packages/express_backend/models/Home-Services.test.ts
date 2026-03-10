@@ -7,19 +7,25 @@ import {
 	deleteHome,
 } from "./Home-Services";
 
+import { Home } from "./Home";
+import { config } from "dotenv";
+config();
 const basicHomeData = {
 	homeName: "Test Home Service",
 	homeCode: "abc123joinme!",
 	address: "123 Your Moms House, San Luis Obispo, CA 93401",
 	memberIds: [],
 };
-let homeId: mongoose.Types.ObjectId | string;
+let h: any; // FIXME type this later
 beforeAll(async () => {
 	// FOR WHEN WE SWITCH TO CLOUD MONGO DB
 	// const uri = process.env.MONGODB_URI;
 	// if (!uri) throw new Error("Set MONGODB_URI for tests");
 	// await mongoose.connect(uri);
-	await mongoose.connect("mongodb://localhost:27017/room8");
+	const uri = process.env.MONGO_URI_TEST;
+	if (!uri) throw new Error("MONGO_URI_TEST not defined");
+
+	await mongoose.connect(uri);
 });
 
 afterAll(async () => {
@@ -27,25 +33,33 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-	const home = await createHome(basicHomeData);
-	homeId = home._id;
+	h = await createHome(basicHomeData);
+	expect(h).toBeDefined();
+	if (!h) return;
+});
+
+afterEach(async () => {
+	await Home.deleteMany();
 });
 
 test("Creating a home", async () => {
-	const home = await getHomeById(homeId);
+	const homeId = h._id;
+
+	const home = await getHomeById(h._id);
 	expect(home).toBeDefined();
 	if (!home) return;
 
 	expect(home.homeName).toBe(basicHomeData.homeName);
 	expect(home.homeCode).toBe(basicHomeData.homeCode);
 	expect(home.address).toBe(basicHomeData.address);
-	homeId = home._id;
 	expect(homeId).toBeDefined();
 });
 
 test("Fetching (getting) a home", async () => {
-	const home = await getHomeById(homeId);
-	expect(home).toBeDefined();
+	const fetched = await getHomeById(h._id);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched._id.toString()).toBe(h._id.toString());
 });
 
 test("Updating a home", async () => {
@@ -55,16 +69,16 @@ test("Updating a home", async () => {
 		address: "456 Another House, San Luis Obispo, CA 93401",
 		memberIds: [],
 	};
-	const updatedHome = await updateHome(homeId, updatedHomeData);
+	const updatedHome = await updateHome(h._id, updatedHomeData);
 	expect(updatedHome).toBeDefined();
 	expect(updatedHome?.homeName).toBe(updatedHomeData.homeName); // question mark is for optional chaining, in case updatedHome is null or undefined
 	expect(updatedHome?.address).toBe(updatedHomeData.address);
 });
 
 test("Deleting a home", async () => {
-	const deletedHome = await deleteHome(homeId);
+	const deletedHome = await deleteHome(h._id);
 	expect(deletedHome).toBeDefined();
-	expect(deletedHome?._id.toString()).toBe(homeId.toString());
-	const shouldBeNull = await getHomeById(homeId);
+	expect(deletedHome?._id.toString()).toBe(h._id.toString());
+	const shouldBeNull = await getHomeById(h._id);
 	expect(shouldBeNull).toBeNull();
 });

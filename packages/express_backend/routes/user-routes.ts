@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import express from "express";
 import type { Request, Response } from "express";
 import {
@@ -6,7 +5,7 @@ import {
 	getUserById,
 	getUserByUsername,
 	getUsersByHomeId,
-	updateUser,
+	updateUserById,
 	removeUserById,
 } from "../models/User-Services";
 
@@ -26,7 +25,7 @@ userRouter.post("/users", async (req: Request, res: Response) => {
 // UPDATE
 userRouter.put("/users/:id", async (req: Request, res: Response) => {
 	try {
-		const updated = await updateUser(req.params.id, req.body);
+		const updated = await updateUserById(req.params.id, req.body);
 
 		if (!updated) {
 			return res.status(404).json({ error: "User not found" });

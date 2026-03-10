@@ -48,7 +48,11 @@ const connectDB = async () => {
 
 const start = async () => {
 	try {
-		await connectDB();
+		const uri = process.env.MONGO_URI;
+		if (!uri) throw new Error("MONGO_URI not defined");
+		await mongoose.connect(uri);
+		console.log("Mongo connected");
+
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);
 		});

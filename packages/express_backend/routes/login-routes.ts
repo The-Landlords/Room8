@@ -1,5 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
+import { User } from "../models/User";
 
 export const loginRouter = express.Router();
 
@@ -7,26 +8,21 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 	try {
 		const { username, password } = req.body;
 
-		//test if have both user and password
 		if (!username || !password) {
 			return res
 				.status(400)
 				.json({ error: "Username and password required" });
 		}
 
-		//hardcoded for testing for now
-		const TEST_USER = {
-			username: "barrybbenson",
-			password: "test123",
-			fullName: "Barry Benson",
-			_id: "dummyid123",
-		};
+		const user = await User.findOne({ username });
 
-		//test if user and pass match
-		if (
-			username !== TEST_USER.username ||
-			password !== TEST_USER.password
-		) {
+		if (!user) {
+			return res
+				.status(401)
+				.json({ error: "Invalid Username or Password" });
+		}
+
+		if (user.password !== password) {
 			return res
 				.status(401)
 				.json({ error: "Invalid Username or Password" });
@@ -34,9 +30,8 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 
 		res.status(200).json({
 			message: "Login successful",
-			userId: TEST_USER._id,
-			username: TEST_USER.username,
-			token: "fake-token-12345",
+			userId: user._id,
+			username: user.username,
 		});
 	} catch (err) {
 		console.error(err);
