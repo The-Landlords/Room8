@@ -23,8 +23,11 @@ const HomeSchema = new mongoose.Schema(
 		// Many users can belong to one apartment
 		userIds: [
 			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "User",
+				userId: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "User",
+					required: true,
+				},
 				relationship: {
 					type: String,
 					enum: ["RESIDENT", "GUEST"],

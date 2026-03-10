@@ -9,7 +9,6 @@ import {
 	//addMember,
 	//removeMember,
 } from "../models/Home-Services";
-import { createRelationship } from "../models/Relationship-Services";
 
 export const homeRouter = express.Router();
 
