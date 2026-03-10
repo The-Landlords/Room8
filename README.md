@@ -16,6 +16,16 @@ pre-commit install
 npm i -g concurrently
 ```
 
+additionally, a `.env` file in the root should look like:
+
+```ts
+MONGO_URI = YOUR SECRET HERE
+MONGO_URI_LOCAL=mongodb://localhost:27017/room8
+MONGO_URI_TEST=mongodb://localhost:27017/room8_test
+```
+
+where `MONGO_URI` is a secret for a shared mongodb account.
+
 ## How to Run
 
 `npm` has the ability to run the frontend and backend indvidually via the following commands
@@ -25,7 +35,7 @@ npm run backend
 npm run frontend
 ```
 
-However, we can run backend AND frontend via
+However, run both in union by
 
 ```
 npm run dev
@@ -56,6 +66,14 @@ in `express_backend/models`, each schema or "item" in the backend needs two file
 - a services file, ie `Chore-Services.ts` with exportable functions
 
 additionally, each schema item has a respective route in `express_backend/routes` (ie: `chores-route.ts`) for all CRUD interactions. This is in effort to keep everything organized, and not making `backend.ts` an extremely long file...
+
+The backend routes are defined by the following:
+| Method | Route | Description |
+| ------ | ----------- | ------------ |
+| POST | /user | Create user |
+| GET | /user | Fetch chores |
+
+_This table is unfinished as of 10 Mar_
 
 ## Unit Testing For Schemas
 
