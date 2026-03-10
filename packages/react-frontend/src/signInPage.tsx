@@ -10,11 +10,11 @@ export default function SignInPage() {
 
 	const navigate = useNavigate();
 
-	const handleSignIn = (e: any) => {
+	const handleSignIn = (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
 
-		//check if any user/password
+		// check if fields are empty
 		if (!username || !password) {
 			setError("Please fill in username and password");
 			return;
@@ -28,83 +28,60 @@ export default function SignInPage() {
 			},
 			body: JSON.stringify({ username, password }),
 		})
-			//response and error handling
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.error) {
 					setError(data.error);
 				} else {
 					console.log("Logged in!", data);
-					localStorage.setItem("token", data.token);
+
+					// navigate to homelist
 					navigate(`/homelist/${data.username}`, { replace: true });
 				}
 			})
-			.catch((err) => {
+			.catch(() => {
 				setError("Invalid Username or Password");
 			});
 	};
 
 	return (
-		<div className="min-h-screen bg-blue-900 flex items-center justify-center p-4">
-			<div className="w-full max-w-sm bg-white rounded-lg p-8">
-				{/* Title */}
-				<h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
-					Room8
-				</h1>
+		<div className="background-house flex items-center justify-center">
+			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px]">
+				<h1 className="header mb-4">Sign In</h1>
 
-				{/* Header */}
-				<h2 className="text-2xl font-semibold text-center text-gray-700 mb-8">
-					Sign In
-				</h2>
+				<form
+					onSubmit={handleSignIn}
+					className="flex flex-col gap-3 w-full max-w-xs"
+				>
+					{/* username */}
+					<input
+						type="text"
+						placeholder="Username"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+						className="list-item w-full"
+					/>
 
-				{/* Username */}
-				<form onSubmit={handleSignIn} className="space-y-6">
-					<div>
-						<label className="block text-gray-600 mb-2">
-							username
-						</label>
-						<input
-							type="text"
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-							placeholder="barrybbenson"
-							className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-						/>
-					</div>
+					{/* password */}
+					<input
+						type="password"
+						placeholder="Password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						className="list-item w-full"
+					/>
 
-					{/* Password */}
-					<div>
-						<label className="block text-gray-600 mb-2">
-							password
-						</label>
-						<input
-							type="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							placeholder="••••••••"
-							className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-						/>
-					</div>
+					{/* sign in */}
+					<button type="submit" className="button mt-2">
+						Sign In
+					</button>
 
 					{error && (
-						<p className="text-red-600 text-sm mt-1">{error}</p>
+						<p className="text-red-500 text-sm text-center mt-2">
+							{error}
+						</p>
 					)}
-
-					{/* Sign in Button */}
-					<button
-						type="submit"
-						className="w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700"
-					>
-						Sign in
-					</button>
 				</form>
-
-				<p className="text-center text-gray-500 mt-6 text-sm">
-					Already have an account?{" "}
-					<a href="#" className="text-blue-600 hover:underline">
-						Log in
-					</a>
-				</p>
 			</div>
 		</div>
 	);
