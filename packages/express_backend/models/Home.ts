@@ -1,7 +1,7 @@
 // https://mongoosejs.com/docs/
 import mongoose from "mongoose";
 
-const HomeSchema = new mongoose.Schema(
+export const HomeSchema = new mongoose.Schema(
 	{
 		homeCode: {
 			type: String,
