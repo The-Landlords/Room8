@@ -16,7 +16,7 @@ export const createGroceryItem = async (groceryData: any) => {
  * @returns an array of all grocery items for the given home
  */
 export const getGroceryItemsByHome = async (
-	homeId: string | mongoose.Types.ObjectId
+	homeId: mongoose.Types.ObjectId
 ) => {
 	return await Grocery.find({ homeId: homeId });
 };
@@ -26,9 +26,7 @@ export const getGroceryItemsByHome = async (
  * @param id the id of the item to be retrieved
  * @returns the grocery item as a jsonified body
  */
-export const getGroceryItemById = async (
-	id: string | mongoose.Types.ObjectId
-) => {
+export const getGroceryItemById = async (id: mongoose.Types.ObjectId) => {
 	return await Grocery.findById(id);
 };
 
@@ -39,7 +37,7 @@ export const getGroceryItemById = async (
  * @returns the updated grocery item as a jsonified body
  */
 export const updateGroceryItem = async (
-	id: string | mongoose.Types.ObjectId,
+	id: mongoose.Types.ObjectId,
 	updated: any
 ) => {
 	return await Grocery.findByIdAndUpdate(id, updated, {
@@ -53,9 +51,7 @@ export const updateGroceryItem = async (
  * @param id the id of the grocery item to be deleted
  * @returns successful deletion of the grocery item
  */
-export const deleteGroceryItem = async (
-	id: string | mongoose.Types.ObjectId
-) => {
+export const deleteGroceryItem = async (id: mongoose.Types.ObjectId) => {
 	return await Grocery.findByIdAndDelete(id);
 };
 
@@ -86,7 +82,7 @@ export const updateGroceryItemQuantity = async (
  * @returns total cost of all grocery items for the home
  */
 export const calculateTotalCostForHome = async (
-	homeId: string | mongoose.Types.ObjectId
+	homeId: mongoose.Types.ObjectId
 ) => {
 	const items = await Grocery.find({ homeId: homeId });
 	if (!items || items.length === 0) return 0;
@@ -102,7 +98,7 @@ export const calculateTotalCostForHome = async (
  * @returns total cost of that item including quantity
  */
 export const calculateTotalCostForItem = async (
-	id: mongoose.Types.ObjectId | string
+	id: mongoose.Types.ObjectId
 ) => {
 	const item = await Grocery.findById(id);
 	if (!item) throw new Error("Item not found");

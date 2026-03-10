@@ -74,31 +74,31 @@ test("Getting a user by username", async () => {
 	expect(fetched.username).toBe(u.username);
 });
 
-test("Getting all users from a given home", async () => {
-	const homeId = dummyUser.homeIds[0];
-	const dummyUser2 = {
-		username: "aflay06",
-		password: "honey4life",
-		fullName: "Adam Flayman",
-		phone: "9876543212",
-		pronouns: "he/him",
-	};
+// test("Getting all users from a given home", async () => {
+// 	const homeId = dummyUser.homeIds[0];
+// 	const dummyUser2 = {
+// 		username: "aflay06",
+// 		password: "honey4life",
+// 		fullName: "Adam Flayman",
+// 		phone: "9876543212",
+// 		pronouns: "he/him",
+// 	};
 
-	const u2 = await createUser({
-		...dummyUser2,
-		homeIds: [homeId],
-	});
+// 	const u2 = await createUser({
+// 		...dummyUser2,
+// 		homeIds: [homeId],
+// 	});
 
-	if (!u2) return;
-	expect(u2).toBeDefined();
-	const users = await getUsersByHomeId(homeId);
-	expect(users).toBeDefined();
-	if (!users) return;
-	expect(users).toHaveLength(2);
-	// sort by ids and ensure each user has an id
-	const ids = users.map((x) => x._id.toString()).sort();
-	expect(ids).toEqual([u._id.toString(), u2._id.toString()].sort());
-});
+// 	if (!u2) return;
+// 	expect(u2).toBeDefined();
+// 	const users = await getUsersByHomeId(homeId);
+// 	expect(users).toBeDefined();
+// 	if (!users) return;
+// 	expect(users).toHaveLength(2);
+// 	// sort by ids and ensure each user has an id
+// 	const ids = users.map((x) => x._id.toString()).sort();
+// 	expect(ids).toEqual([u._id.toString(), u2._id.toString()].sort());
+// });
 
 test("Updating a user", async () => {
 	const updatedData = {

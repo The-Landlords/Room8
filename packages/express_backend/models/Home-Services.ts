@@ -6,7 +6,7 @@ export function createHome(data: any) {
 	//relate the userId
 	return Home.create(data);
 }
-export function getHomeById(homeId: mongoose.Types.ObjectId | string) {
+export function getHomeById(homeId: mongoose.Types.ObjectId) {
 	return Home.findById(homeId);
 }
 
@@ -16,16 +16,13 @@ export function getHomeByCode(homeCode: string) {
 
 //ASK ABOUT USERS FIRST need to figure out how to implement this nested table on the home side as well
 
-export function updateHome(
-	homeId: mongoose.Types.ObjectId | string,
-	data: any
-) {
+export function updateHome(homeId: mongoose.Types.ObjectId, data: any) {
 	return Home.findByIdAndUpdate(homeId, data, {
 		returnDocument: "after",
 		runValidators: true,
 	});
 }
-export function deleteHome(homeId: mongoose.Types.ObjectId | string) {
+export function deleteHome(homeId: mongoose.Types.ObjectId) {
 	return Home.findByIdAndDelete({ _id: homeId });
 }
 
