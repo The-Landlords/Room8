@@ -47,7 +47,7 @@ afterEach(async () => {
 	await Rule.deleteMany();
 });
 
-test("Creating a grocery item", async () => {
+test("Creating a rule item", async () => {
 	expect(r._id).toBeDefined();
 	expect(r.description).toBe(ruleData.description);
 	expect(r.homeId).toBe(ruleData.homeId);
@@ -71,7 +71,7 @@ test("Getting a rule by id", async () => {
 	expect(fetched._id.toString()).toBe(r._id.toString());
 });
 
-test("Getting grocery items by home", async () => {
+test("Getting rule items by home", async () => {
 	const homeId = ruleData.homeId;
 
 	const anotherRuleData = {
