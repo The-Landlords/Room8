@@ -13,6 +13,7 @@ import { userRouter } from "./routes/user-routes";
 import { loginRouter } from "./routes/login-routes";
 import { ruleRouter } from "./routes/rule-routes";
 import { groceryRouter } from "./routes/grocery-routes";
+import { relationRouter } from "./routes/relation-routes";
 
 export const app = express();
 export const port = 8000;
@@ -29,6 +30,7 @@ app.use("/", loginRouter);
 app.use("/", ruleRouter);
 app.use("/", userRouter);
 app.use("/", groceryRouter);
+app.use("/", relationRouter);
 
 const start = async () => {
 	try {

@@ -2,6 +2,8 @@ import { Home } from "./Home";
 import mongoose from "mongoose";
 
 export function createHome(data: any) {
+	// create home
+	//relate the userId
 	return Home.create(data);
 }
 export function getHomeById(homeId: mongoose.Types.ObjectId | string) {

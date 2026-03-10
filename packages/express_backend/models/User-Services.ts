@@ -8,7 +8,7 @@ export function createUser(data: any) {
 }
 
 // READ
-export function getUserById(userId: string) {
+export function getUserById(userId: mongoose.Schema.Types.ObjectId | string) {
 	return User.findById(userId);
 }
 
@@ -17,7 +17,9 @@ export function getUserByUsername(username: string) {
 }
 
 //ASK is this the correct way to find a user by their relationship to a home?
-export function getUsersByHomeId(homeId: string) {
+export function getUsersByHomeId(
+	homeId: mongoose.Schema.Types.ObjectId | string
+) {
 	return User.findOne({ "relationship.homeId": homeId });
 }
 
@@ -27,26 +29,16 @@ export function getUsersByHomeAndRelationship(
 	relationship: string
 ) {
 	return User.find({
-		"relationship.homeId": homeId,
-		"relationship.relationship": relationship,
+		"homeIds.homeId": homeId,
+		"homeIds.relationship": relationship,
 	});
 }
 
-//ASK : how to add a relationship to the user schema?
-export function updateUserRelationship(userId: string, relationship: string) {
-	return User.findByIdAndUpdate(
-		userId,
-		{ relationship: relationship },
-		{
-			returnDocument: "after",
-			runValidators: true,
-		}
-	);
-}
-
 // UPDATE
-export function updateUser(userId: string, data: any) {
-	// { new: true } returns the updated doc
+export function updateUser(
+	userId: mongoose.Types.ObjectId | string,
+	data: any
+) {
 	return User.findByIdAndUpdate(userId, data, {
 		new: true,
 		runValidators: true,
@@ -54,6 +46,6 @@ export function updateUser(userId: string, data: any) {
 }
 
 // DELETE
-export function removeUserById(userId: string) {
+export function removeUserById(userId: mongoose.Types.ObjectId | string) {
 	return User.findByIdAndDelete(userId);
 }

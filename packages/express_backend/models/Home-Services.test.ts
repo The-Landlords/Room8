@@ -5,6 +5,7 @@ import {
 	getHomeById,
 	updateHome,
 	deleteHome,
+	getHomeByCode,
 } from "./Home-Services";
 
 const basicHomeData = {
@@ -14,6 +15,7 @@ const basicHomeData = {
 	memberIds: [],
 };
 let homeId: mongoose.Types.ObjectId | string;
+let homeCode: string;
 beforeAll(async () => {
 	// FOR WHEN WE SWITCH TO CLOUD MONGO DB
 	// const uri = process.env.MONGODB_URI;
@@ -29,6 +31,7 @@ afterAll(async () => {
 beforeEach(async () => {
 	const home = await createHome(basicHomeData);
 	homeId = home._id;
+	homeCode = home.homeCode;
 });
 
 test("Creating a home", async () => {
@@ -45,6 +48,11 @@ test("Creating a home", async () => {
 
 test("Fetching (getting) a home", async () => {
 	const home = await getHomeById(homeId);
+	expect(home).toBeDefined();
+});
+
+test("Fetching (getting) a home by Code", async () => {
+	const home = await getHomeByCode(homeCode);
 	expect(home).toBeDefined();
 });
 
