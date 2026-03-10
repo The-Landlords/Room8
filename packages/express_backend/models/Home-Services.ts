@@ -1,11 +1,19 @@
 import { Home } from "./Home";
 import mongoose from "mongoose";
+
 export function createHome(data: any) {
 	return Home.create(data);
 }
 export function getHomeById(homeId: mongoose.Types.ObjectId | string) {
 	return Home.findById(homeId);
 }
+
+export function getHomeByCode(homeCode: string) {
+	return Home.findOne({ homeCode: homeCode });
+}
+
+//ASK ABOUT USERS FIRST need to figure out how to implement this nested table on the home side as well
+
 export function updateHome(
 	homeId: mongoose.Types.ObjectId | string,
 	data: any

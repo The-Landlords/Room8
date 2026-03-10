@@ -16,8 +16,32 @@ export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
 
-export function getUsersByHomeCode(homeCode: string) {
-	return User.find({ homeIds: homeCode }).populate("homeId");
+//ASK is this the correct way to find a user by their relationship to a home?
+export function getUsersByHomeId(homeId: string) {
+	return User.findOne({ "relationship.homeId": homeId });
+}
+
+//ASK is this the correct way to list users by their relationship to a home?
+export function getUsersByHomeAndRelationship(
+	homeId: string,
+	relationship: string
+) {
+	return User.find({
+		"relationship.homeId": homeId,
+		"relationship.relationship": relationship,
+	});
+}
+
+//ASK : how to add a relationship to the user schema?
+export function updateUserRelationship(userId: string, relationship: string) {
+	return User.findByIdAndUpdate(
+		userId,
+		{ relationship: relationship },
+		{
+			returnDocument: "after",
+			runValidators: true,
+		}
+	);
 }
 
 // UPDATE

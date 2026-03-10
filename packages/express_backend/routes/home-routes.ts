@@ -9,6 +9,8 @@ import {
 	//addMember,
 	//removeMember,
 } from "../models/Home-Services";
+import { createRelationship } from "../models/Relationship-Services";
+
 export const homeRouter = express.Router();
 
 homeRouter.post("/homes", async (req: Request, res: Response) => {
@@ -62,6 +64,36 @@ homeRouter.delete("/homes/:id", async (req: Request, res: Response) => {
 		console.error(error);
 
 		res.status(400).json({ error: "Invalid ID" });
+	}
+});
+
+//Add resident to home, creates a relationship of type resident between the user and home
+homeRouter.post("/homes/:id/members", async (req: Request, res: Response) => {
+	try {
+		const relationship = await createRelationship({
+			home: req.params.id,
+			user: req.body.userId,
+			type: "resident",
+		});
+		res.status(201).json(relationship);
+	} catch (error) {
+		console.error(error);
+		res.status(400).json({ error: "Failed to add resident" });
+	}
+});
+
+//Add guest to home, creates a relationship of type resident between the user and home
+homeRouter.post("/homes/:id/resident", async (req: Request, res: Response) => {
+	try {
+		const relationship = await createRelationship({
+			home: req.params.id,
+			user: req.body.userId,
+			type: "guest",
+		});
+		res.status(201).json(relationship);
+	} catch (error) {
+		console.error(error);
+		res.status(400).json({ error: "Failed to add guest" });
 	}
 });
 
