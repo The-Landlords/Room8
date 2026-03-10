@@ -84,7 +84,9 @@ const UserSchema = new mongoose.Schema(
 			},
 		},
 
-		homeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Home" }],
+		homeIds: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "Relationship" },
+		],
 	},
 	{ timestamps: true }
 );
