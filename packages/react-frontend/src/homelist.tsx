@@ -4,9 +4,10 @@ import { Link, useParams } from "react-router-dom";
 import Overlay from "./components/overlay";
 import AddHomeOverlay from "./components/addHomeOverlay";
 
-const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
+//const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
 
 export default function HomeList() {
+	const [homes, setHomes] = useState([]);
 	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 
