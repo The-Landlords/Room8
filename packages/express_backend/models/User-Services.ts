@@ -20,12 +20,21 @@ export function getUsersByHomeId(homeId: mongoose.Types.ObjectId | string) {
 	return User.find({ homeIds: homeId });
 }
 // UPDATE
-export function updateUserById(
-	userId: mongoose.Types.ObjectId | string,
-	data: any
-) {
+// commented out because redundant as we want all methods to use username
+// export function updateUserById(
+// 	userId: mongoose.Types.ObjectId | string,
+// 	data: any
+// ) {
+// 	// { new: true } returns the updated doc
+// 	return User.findByIdAndUpdate(userId, data, {
+// 		returnDocument: "after",
+// 		runValidators: true,
+// 	});
+// }
+
+export function updateUserByUsername(username: string, data: any) {
 	// { new: true } returns the updated doc
-	return User.findByIdAndUpdate(userId, data, {
+	return User.findOneAndUpdate({ username }, data, {
 		returnDocument: "after",
 		runValidators: true,
 	});

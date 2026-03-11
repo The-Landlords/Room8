@@ -7,8 +7,18 @@ export default function UserSetting() {
 
 	const [scheduleVisibility, setScheduleVisibility] =
 		useState("only-roommates");
+	// holds what the user is currently typing
+	const [draft, setDraft] = useState({
+		pronouns: "",
+		fullName: "",
+		DOB: "",
+		allergens: "",
+		likes: "",
+		dislikes: "",
+	});
 
 	const [user, setUser] = useState<any>(null);
+	const [error, setError] = useState("");
 
 	useEffect(() => {
 		if (!username) return;
@@ -18,13 +28,55 @@ export default function UserSetting() {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
 			})
-			.then((data) => setUser(data))
+			.then((data) => {
+				setUser(data);
+				setDraft({
+					pronouns: data?.pronouns ?? "",
+					fullName: data?.fullName ?? "",
+					DOB: (data?.DOB ?? "").slice(0, 10),
+					allergens: (data?.allergens ?? []).join(", "),
+					likes: (data?.likes ?? []).join(", "),
+					dislikes: (data?.dislikes ?? []).join(", "),
+				});
+			})
 			.catch((err) => {
 				console.error(err);
 				setUser(null);
 			});
 	}, [username]);
 
+	/**
+	 *
+	 * @param s a given string with values with commas inside
+	 * @returns a spliced array seperated at ,
+	 */
+	function toList(s: string) {
+		return s
+			.split(",")
+			.map((x) => x.trim())
+			.filter(Boolean);
+	}
+	async function saveProfile() {
+		if (!username) return;
+		console.log("sending:", draft);
+		const payload = {
+			...draft,
+			allergens: toList(draft.allergens),
+			likes: toList(draft.likes),
+			dislikes: toList(draft.dislikes),
+		};
+
+		console.log("sending:", payload);
+
+		const res = await fetch(
+			`http://localhost:8000/users/${user.username}`,
+			{
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			}
+		);
+	}
 	return (
 		<div className="settings-background">
 			{/* HEADER */}
@@ -34,7 +86,7 @@ export default function UserSetting() {
 
 			{/* TOP BAR */}
 			<div className="w-full flex justify-center px-6 mt-8">
-				<div className="w-full max-w-6xl grid grid-cols-3 items-center gap-6">
+				<div className="w-full max-w-6xl grid grid-cols-4 items-center gap-6">
 					{/* left controls */}
 					<div className="flex justify-start">
 						<button
@@ -55,6 +107,16 @@ export default function UserSetting() {
 						</div>
 					</div>
 
+					{/* right save */}
+					<div className="flex justify-end">
+						<button
+							type="button"
+							onClick={saveProfile}
+							className="button h-14 px-6 rounded-xl"
+						>
+							Save Profile
+						</button>
+					</div>
 					{/* right sign out */}
 					<div className="flex justify-end">
 						<button
@@ -83,27 +145,111 @@ export default function UserSetting() {
 							{/*COLUMN MEMBERS*/}
 							<div className="space-y-6">
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									Name: {user?.fullName ?? "Loading..."}
+									<label className="block">
+										<span className="mr-3">Name:</span>
+										<input
+											value={draft.fullName}
+											onChange={(e) =>
+												setDraft((d) => ({
+													...d,
+													fullName: e.target.value,
+												}))
+											}
+											className="bg-transparent border-b border-text outline-none"
+											placeholder="Barry B. Benson"
+										/>
+									</label>
 								</div>
 
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									Pronouns: {user?.pronouns}
+									<label className="block">
+										<span className="mr-3">Pronouns:</span>
+										<input
+											value={draft.pronouns}
+											onChange={(e) =>
+												setDraft((d) => ({
+													...d,
+													pronouns: e.target.value,
+												}))
+											}
+											className="bg-transparent border-b border-text outline-none"
+											placeholder="e.g., she/they"
+										/>
+									</label>
 								</div>
 
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									DOB: {user?.DOB}
+									<label className="block">
+										<span className="mr-3">
+											Birthday ! :
+										</span>
+										<input
+											type="date"
+											value={draft.DOB}
+											onChange={(e) => {
+												console.log(e.target.value);
+												setDraft((d) => ({
+													...d,
+													DOB: e.target.value,
+												}));
+											}}
+											className="bg-transparent border-b border-text outline-none"
+										/>
+									</label>
 								</div>
 
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									Allergies: {user?.allergens}
+									<label className="block">
+										<span className="mr-3">Allergens:</span>
+										<input
+											type="text" // need to split input by comma before post
+											value={draft.allergens}
+											onChange={(e) =>
+												setDraft((d) => ({
+													...d,
+													allergens: e.target.value,
+												}))
+											}
+											className="bg-transparent border-b border-text outline-none"
+											placeholder="e.g., pollen, dairy"
+										/>
+									</label>
 								</div>
 
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									Likes: {user?.likes}
+									<label className="block">
+										<span className="mr-3">Likes:</span>
+										<input
+											type="text" // need to split input by comma before post
+											value={draft.likes}
+											onChange={(e) =>
+												setDraft((d) => ({
+													...d,
+													likes: e.target.value,
+												}))
+											}
+											className="bg-transparent border-b border-text outline-none"
+											placeholder="e.g., concerts, movies"
+										/>
+									</label>
 								</div>
 
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									Dislikes: {user?.dislikes}
+									<label className="block">
+										<span className="mr-3">Dislikes:</span>
+										<input
+											type="text" // need to split input by comma before post
+											value={draft.dislikes}
+											onChange={(e) =>
+												setDraft((d) => ({
+													...d,
+													dislikes: e.target.value,
+												}))
+											}
+											className="bg-transparent border-b border-text outline-none"
+											placeholder="e.g., workouts, seafood"
+										/>
+									</label>
 								</div>
 							</div>
 						</div>
