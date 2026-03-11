@@ -168,8 +168,6 @@ To be a user, you may need the following:
 
 - A registered account (username and password)
 
-- Membership in at least one shared “home”
-
 - Internet access
 
 - A supported browser (latest Chrome or Firefox)
