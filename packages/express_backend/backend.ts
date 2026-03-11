@@ -3,8 +3,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
 import dotenv from "dotenv";
-dotenv.config();
-
+import path from "path";
+dotenv.config({
+	path: path.resolve(process.cwd(), "../../.env"),
+});
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
@@ -12,6 +14,7 @@ import { userRouter } from "./routes/user-routes";
 import { loginRouter } from "./routes/login-routes";
 import { ruleRouter } from "./routes/rule-routes";
 import { groceryRouter } from "./routes/grocery-routes";
+import { relationRouter } from "./routes/relation-routes";
 
 export const app = express();
 export const port = 8000;
@@ -28,10 +31,12 @@ app.use("/", loginRouter);
 app.use("/", ruleRouter);
 app.use("/", userRouter);
 app.use("/", groceryRouter);
+app.use("/", relationRouter);
 
 const start = async () => {
 	try {
 		const uri = process.env.MONGO_URI;
+		console.log(process.env.MONGO_URI);
 		if (!uri) throw new Error("MONGO_URI not defined");
 		await mongoose.connect(uri);
 		console.log("Mongo connected");
