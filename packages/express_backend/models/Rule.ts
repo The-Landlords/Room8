@@ -21,7 +21,7 @@ const RuleSchema = new mongoose.Schema({
 	},
 	homeId: {
 		// type:
-		type: mongoose.Schema.Types.Mixed, //  mongoose.Schema.Types.ObjectId OR STRING
+		type: mongoose.Schema.Types.ObjectId,
 		ref: "Home",
 		required: true,
 		index: true,
