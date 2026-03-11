@@ -3,6 +3,7 @@
 //import viteLogo from "/vite.svg";
 //import "./App.css";
 //import HomeList from "./homeList";
+import RulesPage from "./rulesPage";
 import HomeList from "./homelist";
 import UserSetting from "./userSetting";
 import SignInPage from "./signInPage";
@@ -18,7 +19,7 @@ function App() {
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
 					<Route path="/chores" element={<h1>Chores</h1>} />
-					<Route path="/rules" element={<h1>Rules</h1>} />
+                    <Route path="/rules/:homeId" element={<RulesPage />} />					
 					<Route
 						path="/settings/:username"
 						element={<UserSetting />}
