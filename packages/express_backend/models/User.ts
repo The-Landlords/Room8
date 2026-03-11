@@ -84,7 +84,20 @@ export const UserSchema = new mongoose.Schema(
 			},
 		},
 
-		homeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Home" }],
+		homeIds: [
+			{
+				homeId: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "Home",
+					required: true,
+				},
+				relationship: {
+					type: String,
+					enum: ["RESIDENT", "GUEST"],
+					required: true,
+				},
+			},
+		],
 	},
 	{ timestamps: true }
 );

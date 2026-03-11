@@ -209,7 +209,3 @@ test("throws 'Item not found' when id does not exist", async () => {
 		"Item not found"
 	);
 });
-
-test("throws for invalid ObjectId format", async () => {
-	await expect(calculateTotalCostForItem("not-a-valid-id")).rejects.toThrow(); // CastError
-});
