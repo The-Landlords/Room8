@@ -1,6 +1,5 @@
 # Summary of implementation
-
-Briefly describe what this PR does and why it exists.
+_Briefly describe what this PR does and why it exists._
 
 # Problem and Solution
 
