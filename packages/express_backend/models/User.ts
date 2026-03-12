@@ -72,11 +72,14 @@ export const UserSchema = new mongoose.Schema(
 				default: "light",
 			},
 			colorBlindMode: {
-				type: Boolean,
-				default: false,
+				type: String,
+				enum: ["off", "protanopia", "deuteranopia", "tritanopia"],
+				default: "off",
 			},
+
 			scheduleVisibility: {
 				type: String,
+				enum: ["everyone", "roommates", "private"],
 				default: "roommates",
 			},
 		},
@@ -112,7 +115,20 @@ export const UserSchema = new mongoose.Schema(
 			},
 		},
 
-		homeIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Home" }],
+		homeIds: [
+			{
+				homeId: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "Home",
+					required: true,
+				},
+				relationship: {
+					type: String,
+					enum: ["RESIDENT", "GUEST"],
+					required: true,
+				},
+			},
+		],
 	},
 	{ timestamps: true }
 );
