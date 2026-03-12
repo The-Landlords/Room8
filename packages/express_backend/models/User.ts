@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { match } from "node:assert";
 
 export const UserSchema = new mongoose.Schema(
 	{
@@ -21,13 +22,25 @@ export const UserSchema = new mongoose.Schema(
 			type: String,
 			trim: true,
 			match: /^\+?[1-9]\d{1,14}$/,
+			/*
+			^ → start of the string
+			\+? → optional + at the beginning
+			[1-9] → first digit must be 1–9 (no leading 0)
+			\d{1,14} → followed by 1 to 14 digits
+			$ → end of the string
+			EX:
+			+0123456789   ❌ starts with 0
+			+1            ❌ too short
+			+1234567890123456 ❌ too long (>15 digits)
+			123-456-7890 ❌ contains dashes
+			*/
 		},
 		pronouns: {
 			type: String,
 			trim: true,
 		},
 		DOB: {
-			type: Date, // This should be changed to a date
+			type: Date,
 			trim: true,
 		},
 		likes: [
@@ -80,6 +93,20 @@ export const UserSchema = new mongoose.Schema(
 			phone: {
 				type: String,
 				trim: true,
+				match: /^\+?[1-9]\d{1,14}$/,
+
+				/*
+				^ → start of the string
+				\+? → optional + at the beginning
+				[1-9] → first digit must be 1–9 (no leading 0)
+				\d{1,14} → followed by 1 to 14 digits
+				$ → end of the string
+				EX:
+				+0123456789   ❌ starts with 0
+				+1            ❌ too short
+				+1234567890123456 ❌ too long (>15 digits)
+				123-456-7890 ❌ contains dashes
+				*/
 			},
 
 			relationship: {

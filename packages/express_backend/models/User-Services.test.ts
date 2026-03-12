@@ -56,7 +56,7 @@ afterEach(async () => {
 	await User.deleteMany();
 });
 
-test("Creating an user", async () => {
+test("createUser: success", async () => {
 	expect(u._id).toBeDefined();
 	expect(u.username).toBe(dummyUser.username);
 	expect(u.password).toBe(dummyUser.password);
@@ -69,7 +69,98 @@ test("Creating an user", async () => {
 		dummyUser.homeIds[0].homeId.toString()
 	);
 });
+test("createUser rejects: phone starts with invalid character", async () => {
+	await expect(
+		createUser({
+			username: "barrybbenson1",
+			password: "yumyumhoney",
+			fullName: "Barry B. Benson",
+			phone: "-123456789",
+			pronouns: "he/him",
+			homeIds: [new mongoose.Types.ObjectId()],
+		})
+	).rejects.toThrow();
+});
 
+test("createUser rejects: phone too long", async () => {
+	await expect(
+		createUser({
+			username: "barrybbenson2",
+			password: "yumyumhoney",
+			fullName: "Barry B. Benson",
+			phone: "-12345678987654321",
+			pronouns: "he/him",
+			homeIds: [new mongoose.Types.ObjectId()],
+		})
+	).rejects.toThrow();
+});
+
+test("createUser rejects: phone contains dashes", async () => {
+	await expect(
+		createUser({
+			username: "barrybbenson3",
+			password: "yumyumhoney",
+			fullName: "Barry B. Benson",
+			phone: "+1875-999-4343",
+			pronouns: "he/him",
+			homeIds: [new mongoose.Types.ObjectId()],
+		})
+	).rejects.toThrow();
+});
+
+test("createUser rejects: emergencyContact phone starts with invalid character", async () => {
+	await expect(
+		createUser({
+			username: "barrybbenson4",
+			password: "yumyumhoney",
+			fullName: "Barry B. Benson",
+			phone: "1234567891",
+			pronouns: "he/him",
+			homeIds: [new mongoose.Types.ObjectId()],
+			emergencyContact: {
+				name: "Test Contact",
+				phone: "-5559998888",
+				relationship: "Parent",
+			},
+		})
+	).rejects.toThrow();
+});
+
+test("createUser rejects: emergencyContact phone too long", async () => {
+	await expect(
+		createUser({
+			username: "barrybbenson5",
+			password: "yumyumhoney",
+			fullName: "Barry B. Benson",
+			phone: "1234567891",
+			pronouns: "he/him",
+			homeIds: [new mongoose.Types.ObjectId()],
+			emergencyContact: {
+				name: "Test Contact",
+				phone: "555999888855599988885559998888",
+				relationship: "Parent",
+			},
+		})
+	).rejects.toThrow();
+});
+
+test("createUser rejects: emergencyContact phone contains parentheses", async () => {
+	await expect(
+		createUser({
+			username: "barrybbenson6",
+			password: "yumyumhoney",
+			fullName: "Barry B. Benson",
+			phone: "1234567891",
+			pronouns: "he/him",
+			homeIds: [new mongoose.Types.ObjectId()],
+			emergencyContact: {
+				name: "Test Contact",
+				phone: "+1(874)8439942",
+				relationship: "Parent",
+			},
+		})
+	).rejects.toThrow();
+});
 test("Getting a user by id", async () => {
 	const fetched = await getUserById(u._id);
 	if (!fetched) return;
@@ -77,7 +168,7 @@ test("Getting a user by id", async () => {
 	expect(fetched._id.toString()).toBe(u._id.toString());
 });
 
-test("Getting a user by username", async () => {
+test("getUserByUsername: success", async () => {
 	const fetched = await getUserByUsername(u.username);
 	if (!fetched) return;
 	expect(fetched).toBeDefined();
