@@ -35,7 +35,6 @@ relationRouter.post(
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
 			}
-
 			h.userIds.push({ userId: u._id, relationship: relationship });
 			await h.save();
 			u.homeIds.push({ homeId: h._id, relationship: relationship });
@@ -51,7 +50,7 @@ relationRouter.post(
 );
 
 //gets homes based off passed in user
-relationRouter.get("relate/:username", async (req: Request, res: Response) => {
+relationRouter.get("/relate/:username", async (req: Request, res: Response) => {
 	try {
 		const u = await getUserByUsername(req.params.username);
 

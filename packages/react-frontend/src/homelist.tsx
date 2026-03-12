@@ -7,7 +7,7 @@ import AddHomeOverlay from "./components/addHomeOverlay";
 //const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
 
 export default function HomeList() {
-	const [homes, setHomes] = useState([]);
+	const [homes, setHomes] = useState<any[]>([]);
 	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 
@@ -26,7 +26,7 @@ export default function HomeList() {
 	useEffect(() => {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/relation/${username}`)
+		fetch(`http://localhost:8000/relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();
@@ -38,6 +38,7 @@ export default function HomeList() {
 			});
 	}, [username]);
 
+	const homeNames = homes?.map((h) => h.homeName);
 	return (
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
@@ -56,7 +57,7 @@ export default function HomeList() {
 				<AddHomeOverlay />
 			</Overlay>
 			<List
-				item={homes}
+				item={homeNames}
 				handleAddClick={handleAddClick}
 				handleRemoveClick={handleRemoveClick}
 			/>
