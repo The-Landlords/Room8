@@ -40,9 +40,7 @@ relationRouter.post(
 			await h.save();
 			u.homeIds.push({ homeId: h._id, relationship: relationship });
 			await u.save();
-			res.status(200).json({
-				message: "Relationship created successfully",
-			});
+			res.status(200).json(h);
 		} catch (err) {
 			console.error(err);
 			res.status(500).json({ error: "Failed to create relationship" });

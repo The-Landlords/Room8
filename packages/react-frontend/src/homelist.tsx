@@ -6,8 +6,6 @@ import HomeAddOverlay from "./components/homeAddOverlay";
 import AddHomeOverlay from "./components/addHomeOverlay";
 import CreateHomeOverlay from "./components/createHomeOverlay";
 
-//const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
-
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
 	const { username } = useParams();
@@ -26,10 +24,14 @@ export default function HomeList() {
 		setOverlayOpen(false);
 	};
 
-	useEffect(() => {
+	async function handleAdd(data: any) {
+		setHomes((prev) => [...prev, data]);
+		handleClose();
+	}
+	async function fetchHomes() {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/relate/${username}`)
+		const res = fetch(`http://localhost:8000/relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();
@@ -39,6 +41,9 @@ export default function HomeList() {
 				console.error(err);
 				setHomes([]);
 			});
+	}
+	useEffect(() => {
+		fetchHomes().catch(console.error);
 	}, [username]);
 
 	const homeNames = homes?.map((h) => h.homeName);
@@ -70,6 +75,9 @@ export default function HomeList() {
 						onBack={(data) => {
 							setAddState(data);
 						}}
+						onAdd={(data: any) => {
+							handleAdd(data);
+						}}
 					/>
 				)}
 				{addState == "Create" && (
@@ -80,11 +88,20 @@ export default function HomeList() {
 					/>
 				)}
 			</Overlay>
-			<List
-				item={homeNames}
-				handleAddClick={handleAddClick}
-				handleRemoveClick={handleRemoveClick}
-			/>
+			{homeNames.length > 0 && (
+				<List
+					item={homeNames}
+					handleAddClick={handleAddClick}
+					handleRemoveClick={handleRemoveClick}
+				/>
+			)}
+			{homeNames.length == 0 && (
+				<List
+					item={["No Homes: Add below"]}
+					handleAddClick={handleAddClick}
+					handleRemoveClick={handleRemoveClick}
+				/>
+			)}
 		</div>
 	);
 }
