@@ -2,13 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
-import path from "path";
-import dotenv from "dotenv";
-
-dotenv.config({
-	path: path.resolve(process.cwd(), "../../.env"),
-});
-
+import { config } from "dotenv";
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";
@@ -35,6 +29,25 @@ app.use("/", userRouter);
 app.use("/", groceryRouter);
 app.use("/", relationRouter);
 
+config({ path: "../../.env" });
+
+const url = process.env.MONGO_URI;
+let connection: any = null;
+
+//singleton of connection
+const connectDB = async () => {
+	if (!connection) {
+		console.log(
+			"MongoDB Connected to cloud" +
+				(url ? ` at ${url}` : " at default localhost")
+		);
+		connection = await mongoose.connect(
+			url || "mongodb://localhost:27017/room8"
+		);
+		return connection;
+	}
+};
+
 const start = async () => {
 	try {
 		const uri = process.env.MONGO_URI;
@@ -59,3 +72,5 @@ start().catch((e) => {
 app.get("/", (req: Request, res: Response) => {
 	res.send("Hello World aksdhasbd!");
 });
+
+export default connectDB;
