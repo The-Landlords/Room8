@@ -5,7 +5,7 @@ export function getChoresByHome(homeId: mongoose.Types.ObjectId) {
 	return Chore.find({ homeId: homeId });
 }
 
-export function getChoreById(choreId: string) {
+export function getChoreById(choreId: mongoose.Types.ObjectId) {
 	return Chore.findById(choreId);
 }
 
@@ -13,7 +13,7 @@ export function createChore(data: any) {
 	return Chore.create(data);
 }
 
-export function removeChoreById(choreId: string) {
+export function removeChoreById(choreId: mongoose.Types.ObjectId) {
 	return Chore.findByIdAndDelete({ _id: choreId });
 }
 
