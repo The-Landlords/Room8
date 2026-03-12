@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import List from "./components/list";
 import { Link, useParams } from "react-router-dom";
 import Overlay from "./components/overlay";
+import HomeAddOverlay from "./components/homeAddOverlay";
 import AddHomeOverlay from "./components/addHomeOverlay";
+import CreateHomeOverlay from "./components/createHomeOverlay";
 
 //const homes = ["Home 1", "Home 2", "Home 3", "Home 4"];
 
@@ -10,7 +12,7 @@ export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
 	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
-
+	const [addState, setAddState] = useState("Base");
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
@@ -20,6 +22,7 @@ export default function HomeList() {
 	};
 	const handleClose = () => {
 		console.log("Closed!");
+		setAddState("Base");
 		setOverlayOpen(false);
 	};
 
@@ -54,7 +57,28 @@ export default function HomeList() {
 				</Link>
 			</div>
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
-				<AddHomeOverlay />
+				{addState == "Base" && (
+					<HomeAddOverlay
+						onPick={(data) => {
+							setAddState(data);
+						}}
+					/>
+				)}
+				{addState == "Add" && (
+					<AddHomeOverlay
+						username={username}
+						onBack={(data) => {
+							setAddState(data);
+						}}
+					/>
+				)}
+				{addState == "Create" && (
+					<CreateHomeOverlay
+						onBack={(data) => {
+							setAddState(data);
+						}}
+					/>
+				)}
 			</Overlay>
 			<List
 				item={homeNames}
