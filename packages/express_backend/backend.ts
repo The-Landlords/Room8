@@ -2,11 +2,13 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
-import dotenv from "dotenv";
 import path from "path";
+import dotenv from "dotenv";
+
 dotenv.config({
 	path: path.resolve(process.cwd(), "../../.env"),
 });
+
 import { choreRouter } from "./routes/chore-routes";
 import { homeRouter } from "./routes/home-routes";
 import { eventRouter } from "./routes/event-routes";

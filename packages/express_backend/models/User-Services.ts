@@ -20,6 +20,18 @@ export function getUserByUsername(username: string) {
 export function getUsersByHomeId(homeId: mongoose.Types.ObjectId) {
 	return User.find({ homeIds: { $elemMatch: { homeId: homeId } } });
 }
+// UPDATE
+// commented out because redundant as we want all methods to use username
+export function updateUserById(
+	userId: mongoose.Types.ObjectId | string,
+	data: any
+) {
+	// { new: true } returns the updated doc
+	return User.findByIdAndUpdate(userId, data, {
+		returnDocument: "after",
+		runValidators: true,
+	});
+}
 
 //ASK is this the correct way to list users by their relationship to a home?
 export function getUsersByHomeAndRelation(
@@ -32,9 +44,9 @@ export function getUsersByHomeAndRelation(
 }
 
 // UPDATE
-export function updateUserById(userId: mongoose.Types.ObjectId, data: any) {
+export function updateUserByUsername(username: string, data: any) {
 	// { new: true } returns the updated doc
-	return User.findByIdAndUpdate(userId, data, {
+	return User.findOneAndUpdate({ username }, data, {
 		returnDocument: "after",
 		runValidators: true,
 	});
