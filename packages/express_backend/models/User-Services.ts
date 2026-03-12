@@ -8,18 +8,20 @@ export function createUser(data: any) {
 }
 
 // READ
-export function getUserById(userId: mongoose.Types.ObjectId | string) {
+export function getUserById(userId: mongoose.Types.ObjectId) {
 	return User.findById(userId);
 }
 
 export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
-// this should be rewritten to get all home residents given a homeId
-export function getUsersByHomeId(homeId: mongoose.Types.ObjectId | string) {
-	return User.find({ homeIds: homeId });
+
+//ASK is this the correct way to find a user by their relationship to a home?
+export function getUsersByHomeId(homeId: mongoose.Types.ObjectId) {
+	return User.find({ homeIds: { $elemMatch: { homeId: homeId } } });
 }
 // UPDATE
+// commented out because redundant as we want all methods to use username
 export function updateUserById(
 	userId: mongoose.Types.ObjectId | string,
 	data: any
@@ -31,7 +33,26 @@ export function updateUserById(
 	});
 }
 
+//ASK is this the correct way to list users by their relationship to a home?
+export function getUsersByHomeAndRelation(
+	homeId: mongoose.Types.ObjectId,
+	relationship: string
+) {
+	return User.find({
+		homeIds: { $elemMatch: { homeId: homeId, relationship: relationship } },
+	});
+}
+
+// UPDATE
+export function updateUserByUsername(username: string, data: any) {
+	// { new: true } returns the updated doc
+	return User.findOneAndUpdate({ username }, data, {
+		returnDocument: "after",
+		runValidators: true,
+	});
+}
+
 // DELETE
-export function removeUserById(userId: mongoose.Types.ObjectId | string) {
+export function removeUserById(userId: mongoose.Types.ObjectId) {
 	return User.findByIdAndDelete(userId);
 }

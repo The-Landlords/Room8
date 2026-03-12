@@ -5,6 +5,9 @@ import {
 	getHomeById,
 	updateHome,
 	deleteHome,
+	getHomeByCode,
+	getHomesByUserAndRelation,
+	getHomesByUser,
 } from "./Home-Services";
 
 import { Home } from "./Home";
@@ -14,8 +17,15 @@ const basicHomeData = {
 	homeName: "Test Home Service",
 	homeCode: "abc123joinme!",
 	address: "123 Your Moms House, San Luis Obispo, CA 93401",
-	memberIds: [],
+	userIds: [
+		{
+			userId: new mongoose.Types.ObjectId(),
+			relationship: "RESIDENT",
+		},
+	],
 };
+let homeId: mongoose.Types.ObjectId;
+let homeCode: string;
 let h: any; // FIXME type this later
 beforeAll(async () => {
 	// FOR WHEN WE SWITCH TO CLOUD MONGO DB
@@ -29,6 +39,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+	await mongoose.connection.dropDatabase();
 	await mongoose.connection.close();
 });
 
@@ -53,6 +64,14 @@ test("Creating a home", async () => {
 	expect(home.homeCode).toBe(basicHomeData.homeCode);
 	expect(home.address).toBe(basicHomeData.address);
 	expect(homeId).toBeDefined();
+	expect(home.userIds).toBeDefined();
+	expect(home.userIds).toHaveLength(1);
+	expect(home.userIds[0].relationship).toBe(
+		basicHomeData.userIds[0].relationship
+	);
+	expect(home.userIds[0].userId.toString()).toBe(
+		basicHomeData.userIds[0].userId.toString()
+	);
 });
 
 test("Fetching (getting) a home", async () => {
@@ -60,6 +79,12 @@ test("Fetching (getting) a home", async () => {
 	if (!fetched) return;
 	expect(fetched).toBeDefined();
 	expect(fetched._id.toString()).toBe(h._id.toString());
+});
+
+test("Fetching (getting) a home by Code", async () => {
+	homeCode = h.homeCode;
+	const home = await getHomeByCode(homeCode);
+	expect(home).toBeDefined();
 });
 
 test("Updating a home", async () => {
@@ -81,4 +106,25 @@ test("Deleting a home", async () => {
 	expect(deletedHome?._id.toString()).toBe(h._id.toString());
 	const shouldBeNull = await getHomeById(h._id);
 	expect(shouldBeNull).toBeNull();
+});
+
+test("Getting homes by user and relation", async () => {
+	const fetched = await getHomesByUserAndRelation(
+		h.userIds[0].userId,
+		h.userIds[0].relationship
+	);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched.length).toBeGreaterThan(0);
+	expect(fetched[0]._id.toString()).toBe(h._id.toString());
+	expect(fetched[0].homeName).toBe(h.homeName);
+});
+
+test("Getting homes by user", async () => {
+	const fetched = await getHomesByUser(h.userIds[0].userId);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched.length).toBeGreaterThan(0);
+	expect(fetched[0]._id.toString()).toBe(h._id.toString());
+	expect(fetched[0].homeName).toBe(h.homeName);
 });

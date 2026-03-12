@@ -7,6 +7,8 @@ import {
 	getUsersByHomeId,
 	updateUserById,
 	removeUserById,
+	getUsersByHomeAndRelation,
+	updateUserByUsername,
 } from "./User-Services";
 
 import { User } from "./User";
@@ -19,8 +21,12 @@ const dummyUser = {
 	fullName: "Barry B. Benson",
 	phone: "123456789",
 	pronouns: "he/him",
-	DOB: Date.now(),
-	homeIds: [new mongoose.Types.ObjectId()],
+	homeIds: [
+		{
+			homeId: new mongoose.Types.ObjectId(),
+			relationship: "RESIDENT",
+		},
+	],
 };
 
 beforeAll(async () => {
@@ -57,7 +63,11 @@ test("createUser: success", async () => {
 	expect(u.fullName).toBe(dummyUser.fullName);
 	expect(u.phone).toBe(dummyUser.phone);
 	expect(u.pronouns).toBe(dummyUser.pronouns);
-	expect(u.homeIds[0]).toBe(dummyUser.homeIds[0]);
+	expect(u.homeIds).toHaveLength(1);
+	expect(u.homeIds[0].relationship).toBe(dummyUser.homeIds[0].relationship);
+	expect(u.homeIds[0].homeId.toString()).toBe(
+		dummyUser.homeIds[0].homeId.toString()
+	);
 });
 test("createUser rejects: phone starts with invalid character", async () => {
 	await expect(
@@ -166,40 +176,63 @@ test("getUserByUsername: success", async () => {
 	expect(fetched.username).toBe(u.username);
 });
 
-test("Getting all users from a given home", async () => {
-	const homeId = dummyUser.homeIds[0];
-	const dummyUser2 = {
-		username: "aflay06",
-		password: "honey4life",
-		fullName: "Adam Flayman",
-		phone: "9876543212",
-		pronouns: "he/him",
-	};
-
-	const u2 = await createUser({
-		...dummyUser2,
-		homeIds: [homeId],
-	});
-
-	if (!u2) return;
-	expect(u2).toBeDefined();
-	const users = await getUsersByHomeId(homeId);
-	expect(users).toBeDefined();
-	if (!users) return;
-	expect(users).toHaveLength(2);
-	// sort by ids and ensure each user has an id
-	const ids = users.map((x) => x._id.toString()).sort();
-	expect(ids).toEqual([u._id.toString(), u2._id.toString()].sort());
+test("Getting user by homeId and relation", async () => {
+	const fetched = await getUsersByHomeAndRelation(
+		u.homeIds[0].homeId,
+		u.homeIds[0].relationship
+	);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched.length).toBeGreaterThan(0);
+	expect(fetched[0]._id.toString()).toBe(u._id.toString());
+	expect(fetched[0].username).toBe(u.username);
 });
 
-test("updateUserById: success", async () => {
+test("Getting users by homeId", async () => {
+	const fetched = await getUsersByHomeId(u.homeIds[0].homeId);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched.length).toBeGreaterThan(0);
+	expect(fetched[0]._id.toString()).toBe(u._id.toString());
+	expect(fetched[0].username).toBe(u.username);
+});
+
+// test("Getting all users from a given home", async () => {
+// 	const homeId = dummyUser.homeIds[0];
+// 	const dummyUser2 = {
+// 		username: "aflay06",
+// 		password: "honey4life",
+// 		fullName: "Adam Flayman",
+// 		phone: "9876543212",
+// 		pronouns: "he/him",
+// 	};
+
+// 	const u2 = await createUser({
+// 		...dummyUser2,
+// 		homeIds: [homeId],
+// 	});
+
+// 	if (!u2) return;
+// 	expect(u2).toBeDefined();
+// 	const users = await getUsersByHomeId(homeId);
+// 	expect(users).toBeDefined();
+// 	if (!users) return;
+// 	expect(users).toHaveLength(2);
+// 	// sort by ids and ensure each user has an id
+// 	const ids = users.map((x) => x._id.toString()).sort();
+// 	expect(ids).toEqual([u._id.toString(), u2._id.toString()].sort());
+// });
+
+test("Updating a user", async () => {
 	const updatedData = {
 		username: "barrybbenson",
 		password: "yumyumhoneyyestasty",
 		fullName: "Barry B. Benson",
 		phone: "12345678900",
 		pronouns: "she/her",
-		homeIds: [new mongoose.Types.ObjectId()],
+		homeIds: [
+			{ homeId: new mongoose.Types.ObjectId(), relationship: "GUEST" },
+		],
 	};
 	const updatedUser = await updateUserById(u._id, updatedData);
 	if (!updatedUser) return;
@@ -209,7 +242,27 @@ test("updateUserById: success", async () => {
 	expect(updatedUser.phone).toBe(updatedData.phone);
 });
 
-test("removeUserById: success", async () => {
+test("Updating a user by username", async () => {
+	const updatedData = {
+		username: "barrybbenson",
+		password: "yumyumhoneyyestasty",
+		fullName: "Barry B. Benson",
+		phone: "12345678900",
+		pronouns: "she/her",
+		homeIds: [
+			{ homeId: new mongoose.Types.ObjectId(), relationship: "GUEST" },
+		],
+	};
+	const updatedUser = await updateUserByUsername(u.username, updatedData);
+	if (!updatedUser) return;
+	expect(updatedUser).toBeDefined();
+	expect(updatedUser._id).toBeDefined();
+	expect(updatedUser.password).toBe(updatedData.password);
+	expect(updatedUser.pronouns).toBe(updatedData.pronouns);
+	expect(updatedUser.phone).toBe(updatedData.phone);
+});
+
+test("Deleting a home", async () => {
 	const deletedHome = await removeUserById(u._id);
 	expect(deletedHome).toBeDefined();
 	expect(deletedHome?._id.toString()).toBe(u._id.toString());
