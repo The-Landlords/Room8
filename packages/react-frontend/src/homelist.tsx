@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import List from "./components/list";
 import { Link, useParams } from "react-router-dom";
 import Overlay from "./components/overlay";
@@ -22,6 +22,21 @@ export default function HomeList() {
 		console.log("Closed!");
 		setOverlayOpen(false);
 	};
+
+	useEffect(() => {
+		if (!username) return;
+
+		fetch(`http://localhost:8000/relation/${username}`)
+			.then((res) => {
+				if (!res.ok) throw new Error("Homes not found");
+				return res.json();
+			})
+			.then((data) => setHomes(data))
+			.catch((err) => {
+				console.error(err);
+				setHomes([]);
+			});
+	}, [username]);
 
 	return (
 		<div className="background-house flex flex-col items-center">
