@@ -1,7 +1,10 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { getHomeByCode } from "../models/Home-Services.ts";
-import { getUserByUsername } from "../models/User-Services.ts";
+import { getHomeByCode, getHomesByUser } from "../models/Home-Services.ts";
+import {
+	getUserByUsername,
+	getUsersByHomeAndRelation,
+} from "../models/User-Services.ts";
 import mongoose from "mongoose";
 
 interface UserRelation {
@@ -15,11 +18,11 @@ interface HomeRelation {
 
 export const relationRouter = express.Router();
 
+//creates a relation between user and home
 relationRouter.post(
 	"/relate/:username/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
-			console.log("Connected to relate route");
 			const relationship = req.body.relationship;
 			const h = await getHomeByCode(req.params.homeCode);
 
@@ -46,3 +49,21 @@ relationRouter.post(
 		}
 	}
 );
+
+//gets homes based off passed in user
+relationRouter.get("relate/:username", async (req: Request, res: Response) => {
+	try {
+		const u = await getUserByUsername(req.params.username);
+
+		if (!u) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
+		let homes = [];
+		homes = await getHomesByUser(u._id);
+		res.status(200).json(homes);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Failed to fetch homes from user" });
+	}
+});
