@@ -19,7 +19,10 @@ export default function List({
 			<h1 className="header-secondary">Current Homes</h1>
 			<ul>
 				{item.map((item, index) => (
-					<li className="list-item font-bold" key={index}>
+					<li
+						className="list-item font-bold animate-floatUp"
+						key={index}
+					>
 						{item}
 					</li>
 				))}

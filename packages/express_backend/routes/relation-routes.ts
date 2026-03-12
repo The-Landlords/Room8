@@ -23,6 +23,7 @@ relationRouter.post(
 	"/relate/:username/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
+			console.log("Adding relation!");
 			const relationship = req.body.relationship;
 			const h = await getHomeByCode(req.params.homeCode);
 
