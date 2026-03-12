@@ -141,7 +141,10 @@ export default function UserSetting() {
 					<div className="flex justify-end">
 						<button
 							type="button"
-							disabled={!isValidPhone(draft.phone)}
+							disabled={
+								draft.phone.length > 0 &&
+								!isValidPhone(draft.phone)
+							}
 							onClick={saveProfile}
 							className="button h-14 px-6 rounded-xl"
 						>
