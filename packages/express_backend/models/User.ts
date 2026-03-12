@@ -20,13 +20,14 @@ export const UserSchema = new mongoose.Schema(
 		phone: {
 			type: String,
 			trim: true,
+			match: /^\+?[1-9]\d{1,14}$/,
 		},
 		pronouns: {
 			type: String,
 			trim: true,
 		},
 		DOB: {
-			type: String, // This should be changed to a date
+			type: Date, // This should be changed to a date
 			trim: true,
 		},
 		likes: [
@@ -58,11 +59,14 @@ export const UserSchema = new mongoose.Schema(
 				default: "light",
 			},
 			colorBlindMode: {
-				type: Boolean,
-				default: false,
+				type: String,
+				enum: ["off", "protanopia", "deuteranopia", "tritanopia"],
+				default: "off",
 			},
+
 			scheduleVisibility: {
 				type: String,
+				enum: ["everyone", "roommates", "private"],
 				default: "roommates",
 			},
 		},
