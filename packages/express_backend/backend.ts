@@ -12,6 +12,7 @@ import { ruleRouter } from "./routes/rule-routes";
 import { groceryRouter } from "./routes/grocery-routes";
 import { relationRouter } from "./routes/relation-routes";
 
+import { eventToICSData } from "../express_backend/models/Event-Services"; // testing
 export const app = express();
 export const port = 8000;
 
@@ -72,5 +73,4 @@ start().catch((e) => {
 app.get("/", (req: Request, res: Response) => {
 	res.send("Hello World aksdhasbd!");
 });
-
 export default connectDB;
