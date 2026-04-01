@@ -17,7 +17,7 @@ export default function AddHomeOverlay({
 	username,
 }: AddHomeProps) {
 	const [homeCode, setHomeCode] = useState("");
-
+	const [errorMsg, setErrorMsg] = useState("");
 	async function addHome() {
 		if (!username) return;
 		console.log("connecting home to user!");
@@ -34,11 +34,15 @@ export default function AddHomeOverlay({
 	}
 	async function handleAddHome() {
 		addHome()
-			.then((res) => (res?.ok ? res.json() : undefined))
+			.then((res) => (res && res.status === 201 ? res.json() : undefined))
 			.then((json) => {
+				if (!json) {
+					setErrorMsg("Home not found with given code");
+					return;
+				}
 				onAdd(json);
 			})
-			.catch((error) => console.error("Error posting home:", error));
+			.catch((error) => setErrorMsg("Error posting home:" + error));
 	}
 
 	return (
@@ -55,6 +59,11 @@ export default function AddHomeOverlay({
 				className="font-secondary color-secondary"
 				onChange={(e) => setHomeCode(e.target.value)}
 			/>
+			{errorMsg && (
+				<p className="text-red-500 text-sm text-center mt-2">
+					{errorMsg}
+				</p>
+			)}
 			<button className="button self-center" onClick={handleAddHome}>
 				Add Home
 			</button>
