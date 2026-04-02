@@ -14,7 +14,7 @@ npm install prettier
 npm install lint
 pre-commit install
 npm i -g concurrently
-npm install -w packages/express_backend ics 
+npm install -w packages/express_backend ics
 npm install -w packages/react-frontend @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
 ```
 
