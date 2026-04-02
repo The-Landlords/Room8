@@ -1,4 +1,14 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	faCalendar,
+	faClipboardCheck,
+	faCartShopping,
+	faFileContract,
+	faAngleRight,
+	faPeopleRoof,
+} from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 /*
 Component takes in items as a prop and renders them as a list.
@@ -23,7 +33,40 @@ export default function List({
 						className="list-item font-bold animate-floatUp"
 						key={index}
 					>
-						{item}
+						<span>{item}</span>
+
+						<div className="ml-auto flex gap-4">
+							<Link to="/roommmates">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faPeopleRoof} />
+							</Link>
+							<Link to="/calendar">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faCalendar} />
+							</Link>
+							<Link to="/chores">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faClipboardCheck} />
+							</Link>
+							<Link to="/groceries">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faCartShopping} />
+							</Link>
+							<Link to="/rules">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faFileContract} />
+							</Link>
+							<Link to="/dropdown">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faAngleRight} />
+							</Link>
+						</div>
 					</li>
 				))}
 			</ul>
