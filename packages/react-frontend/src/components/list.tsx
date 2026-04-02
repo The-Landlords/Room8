@@ -5,6 +5,8 @@ import {
 	faClipboardCheck,
 	faCartShopping,
 	faFileContract,
+	faAngleRight,
+	faPeopleRoof,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
@@ -34,6 +36,11 @@ export default function List({
 						<span>{item}</span>
 
 						<div className="ml-auto flex gap-4">
+							<Link to="/roommmates">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faPeopleRoof} />
+							</Link>
 							<Link to="/calendar">
 								{" "}
 								{/* FIXME incorrect link */}
@@ -53,6 +60,11 @@ export default function List({
 								{" "}
 								{/* FIXME incorrect link */}
 								<FontAwesomeIcon icon={faFileContract} />
+							</Link>
+							<Link to="/dropdown">
+								{" "}
+								{/* FIXME incorrect link */}
+								<FontAwesomeIcon icon={faAngleRight} />
 							</Link>
 						</div>
 					</li>
