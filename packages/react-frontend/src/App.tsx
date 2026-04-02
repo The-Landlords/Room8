@@ -7,6 +7,7 @@ import RulesPage from "./rulesPage";
 import HomeList from "./homelist";
 import UserSetting from "./userSetting";
 import SignInPage from "./signInPage";
+import SignUpPage from "./signUpPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -14,7 +15,9 @@ function App() {
 		<>
 			<BrowserRouter>
 				<Routes>
+					{/* routes are in the form path and page element (a .tsx file) */}
 					<Route path="/" element={<SignInPage />} />
+					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/homelist/:username" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />

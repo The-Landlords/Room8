@@ -45,6 +45,7 @@ afterAll(async () => {
 	await mongoose.connection.close();
 });
 
+// a dummy user instance is created before all
 beforeEach(async () => {
 	u = await createUser(dummyUser);
 	expect(u).toBeDefined();
@@ -262,10 +263,19 @@ test("Updating a user by username", async () => {
 	expect(updatedUser.phone).toBe(updatedData.phone);
 });
 
-test("Deleting a home", async () => {
-	const deletedHome = await removeUserById(u._id);
-	expect(deletedHome).toBeDefined();
-	expect(deletedHome?._id.toString()).toBe(u._id.toString());
+test("Deleting a user", async () => {
+	const deletedUser = await removeUserById(u._id);
+	expect(deletedUser).toBeDefined();
+	expect(deletedUser?._id.toString()).toBe(u._id.toString());
 	const shouldBeNull = await getUserById(u._id);
 	expect(shouldBeNull).toBeNull();
+});
+
+test("Creating a user with an existing username should fail", async () => {
+	try {
+		await createUser(dummyUser);
+	} catch (err: any) {
+		expect(err.code).toBe(11000);
+		expect(err.keyValue).toHaveProperty("username");
+	}
 });
