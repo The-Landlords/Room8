@@ -30,12 +30,12 @@ export default function List({
 			<ul>
 				{item.map((item, index) => (
 					<li
-						className="list-item font-bold animate-floatUp"
+						className="list-item font-bold animate-floatUp flex items-center"
 						key={index}
 					>
 						<span>{item}</span>
 
-						<div className="ml-auto flex gap-4">
+						<div className="ml-auto relative flex gap-4">
 							<Link to="/roommmates">
 								{" "}
 								{/* FIXME incorrect link */}
