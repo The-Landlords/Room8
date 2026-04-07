@@ -63,7 +63,7 @@ export default function HomeList() {
 					/> */}
 					<FontAwesomeIcon
 						icon={faUserGear}
-						className="w-20 h-20 icon-wrapper text-7xl"
+						className="w-20 h-20 text-7xl"
 					/>
 				</Link>
 			</div>

@@ -35,44 +35,64 @@ export default function List({
 			<ul>
 				{items.map((listItem, index) => (
 					<li
-						className="list-item font-bold animate-floatUp items-center"
+						className="list-item font-bold animate-floatUp"
 						key={index}
 					>
-						<span>{listItem}</span>
-						{item == "Home Spaces" && (
-							<div className="ml-auto relative flex gap-4">
-								<Link to="/roommmates">
-									{" "}
-									{/* FIXME incorrect link */}
-									<FontAwesomeIcon icon={faPeopleRoof} />
-								</Link>
-								<Link to="/calendar">
-									{" "}
-									{/* FIXME incorrect link */}
-									<FontAwesomeIcon icon={faCalendar} />
-								</Link>
-								<Link to="/chores">
-									{" "}
-									{/* FIXME incorrect link */}
-									<FontAwesomeIcon icon={faClipboardCheck} />
-								</Link>
-								<Link to="/groceries">
-									{" "}
-									{/* FIXME incorrect link */}
-									<FontAwesomeIcon icon={faCartShopping} />
-								</Link>
-								<Link to="/rules">
-									{" "}
-									{/* FIXME incorrect link */}
-									<FontAwesomeIcon icon={faFileContract} />
-								</Link>
-								<Link to="/dropdown">
-									{" "}
-									{/* FIXME incorrect link */}
-									<FontAwesomeIcon icon={faAngleRight} />
-								</Link>
-							</div>
-						)}
+						<span className="flex flex-row  ">
+							{listItem}
+							{item == "Home Spaces" && (
+								<div className="relative ml-auto gap-4 self-end-safe ">
+									<Link to="/roommmates">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faPeopleRoof}
+										/>
+									</Link>
+									<Link to="/calendar">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faCalendar}
+										/>
+									</Link>
+									<Link to="/chores">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faClipboardCheck}
+										/>
+									</Link>
+									<Link to="/groceries">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faCartShopping}
+										/>
+									</Link>
+									<Link to="/rules">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faFileContract}
+										/>
+									</Link>
+									<Link to="/dropdown">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faAngleRight}
+										/>
+									</Link>
+								</div>
+							)}
+						</span>
 					</li>
 				))}
 			</ul>
