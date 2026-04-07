@@ -31,7 +31,7 @@ app.use("/", relationRouter);
 
 config({ path: "../../.env" });
 
-const url = process.env.MONGO_URI_LOCAL;
+const url = process.env.MONGO_URI;
 let connection: any = null;
 
 //singleton of connection (implemented so if fails it connects to localhost)
