@@ -19,6 +19,10 @@ userRouter.post("/users", async (req: Request, res: Response) => {
 		res.status(201).json(user);
 	} catch (error) {
 		console.error(error);
+		if (error.code === 11000) {
+			// duplicate key error code from MongoDB
+			return res.status(400).json({ error: "Username already exists" });
+		}
 		res.status(400).json({ error: "Failed to create User" });
 	}
 });
