@@ -34,13 +34,14 @@ export default function AddHomeOverlay({
 	}
 	async function handleAddHome() {
 		addHome()
-			.then((res) => (res && res.status === 201 ? res.json() : undefined))
-			.then((json) => {
-				if (!json) {
-					setErrorMsg("Home not found with given code");
-					return;
+			.then((res) => res?.json())
+			.then((data) => {
+				if (data.error) {
+					setErrorMsg(data.error);
+				} else {
+					setErrorMsg("");
+					onAdd(data);
 				}
-				onAdd(json);
 			})
 			.catch((error) => setErrorMsg("Error posting home:" + error));
 	}
