@@ -1,10 +1,11 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { getHomeByCode, getHomesByUser } from "../models/Home-Services.ts";
 import {
-	getUserByUsername,
-	getUsersByHomeAndRelation,
-} from "../models/User-Services.ts";
+	getHomeByCode,
+	getHomesByUser,
+	getHomesByUserAndRelation,
+} from "../models/Home-Services.ts";
+import { getUserByUsername } from "../models/User-Services.ts";
 import mongoose from "mongoose";
 
 interface UserRelation {
@@ -37,8 +38,8 @@ relationRouter.post(
 				return res.status(404).json({ error: "User not found" });
 			}
 			if (
-				await getUsersByHomeAndRelation(h._id, relationship).then(
-					(users) => users.some((user) => user._id.equals(u._id))
+				await getHomesByUserAndRelation(u._id, relationship).then(
+					(homes) => homes.some((home) => home._id.equals(h._id))
 				)
 			) {
 				return res
