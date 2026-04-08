@@ -7,6 +7,21 @@ function isValidPhone(phone: string) {
 	return phoneRegex.test(phone);
 }
 
+const bdayRegex = /^\d{2}-\d{2}$/;
+/**
+ *
+ * @param s the input string
+ * @returns true if the string is in form ##-## and is a valid mm-dd date
+ */
+function isValidDOB(s: string) {
+	if (!bdayRegex.test(s)) return false;
+	const [mm, dd] = s.split("-").map(Number);
+
+	const date = new Date(2000, mm - 1, dd);
+
+	return date.getMonth() === mm - 1 && date.getDate() === dd;
+}
+
 export default function UserSetting() {
 	const navigate = useNavigate();
 	const { username } = useParams();
@@ -49,7 +64,7 @@ export default function UserSetting() {
 				setDraft({
 					pronouns: data?.pronouns ?? "",
 					fullName: data?.fullName ?? "",
-					DOB: data?.DOB ? String(data.DOB).slice(0, 10) : "",
+					DOB: data?.DOB ? String(data.DOB).slice(5, 10) : "",
 					allergens: (data?.allergens ?? []).join(", "),
 					likes: (data?.likes ?? []).join(", "),
 					dislikes: (data?.dislikes ?? []).join(", "),
@@ -88,9 +103,24 @@ export default function UserSetting() {
 	}
 	async function saveProfile() {
 		if (!username) return;
-		console.log("sending:", draft);
+		// console.log("sending:", draft);
+
+		if (draft.phone && !isValidPhone(draft.phone)) {
+			alert(
+				"Phone must be in +19998887777 format (optional country code followed by 1-10 digits)"
+			);
+			return;
+		}
+
+		if (draft.DOB && !isValidDOB(draft.DOB)) {
+			alert("Birthday must be in MM-DD format and a valid date!");
+			return;
+		}
+		const dob = draft.DOB ? `2000-${draft.DOB}` : ""; // there is no way to not have a year, so we use a default year of 2000. Will need to be encrypted
+
 		const payload = {
 			...draft,
+			DOB: dob, // sent in MM-DD format
 			allergens: toList(draft.allergens),
 			likes: toList(draft.likes),
 			dislikes: toList(draft.dislikes),
@@ -106,6 +136,7 @@ export default function UserSetting() {
 				body: JSON.stringify(payload),
 			}
 		);
+		alert("saved!");
 	}
 	return (
 		<div className="settings-background">
@@ -155,7 +186,6 @@ export default function UserSetting() {
 					<div className="flex justify-end">
 						<button
 							type="button"
-							//FIX ME Change button nag. to correct page
 							onClick={() => navigate("/")}
 							className="button h-14 px-6 rounded-xl"
 						>
@@ -218,10 +248,13 @@ export default function UserSetting() {
 											Birthday ! :
 										</span>
 										<input
-											type="date"
+											type="text"
 											value={draft.DOB}
+											placeholder="MM-DD"
+											maxLength={5}
 											onChange={(e) => {
 												console.log(e.target.value);
+
 												setDraft((d) => ({
 													...d,
 													DOB: e.target.value,
@@ -229,6 +262,15 @@ export default function UserSetting() {
 											}}
 											className="bg-transparent border-b border-text outline-none"
 										/>
+										{draft.DOB.length === 5 &&
+											!bdayRegex.test(draft.DOB) &&
+											!isValidDOB(draft.DOB) && (
+												<p className="text-sm text-red-500">
+													Please enter a valid date
+													for birthday in the form
+													mm-dd !
+												</p>
+											)}
 									</label>
 								</div>
 
