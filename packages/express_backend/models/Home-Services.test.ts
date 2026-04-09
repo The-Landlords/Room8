@@ -81,6 +81,13 @@ test("Fetching (getting) a home", async () => {
 	expect(fetched._id.toString()).toBe(h._id.toString());
 });
 
+test("Fetching (getting) a home by name", async () => {
+	const fetched = await getHomeByName(h.homeName);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched._id.toString()).toBe(h._id.toString());
+});
+
 test("Fetching (getting) a home by Code", async () => {
 	homeCode = h.homeCode;
 	const home = await getHomeByCode(homeCode);

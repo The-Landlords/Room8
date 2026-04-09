@@ -54,13 +54,6 @@ export default function HomeList() {
 			<h1 className="header">Home Spaces</h1>
 			<div className="iconWrapper">
 				<Link to={`/settings/${username}`}>
-					{/* <img
-						src="/assets/settings.png"
-						alt="Settings Icon"
-						width={60}
-						height={60}
-						className="w-20 h-20"
-					/> */}
 					<FontAwesomeIcon
 						icon={faUserGear}
 						className="w-20 h-20 absolute top-15 right-15 text-7xl"
