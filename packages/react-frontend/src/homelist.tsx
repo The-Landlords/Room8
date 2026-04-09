@@ -56,7 +56,7 @@ export default function HomeList() {
 				<Link to={`/settings/${username}`}>
 					<FontAwesomeIcon
 						icon={faUserGear}
-						className="w-20 h-20 absolute top-15 right-15 text-7xl"
+						className="w-20 h-20 text-7xl"
 					/>
 				</Link>
 			</div>
@@ -89,14 +89,16 @@ export default function HomeList() {
 			</Overlay>
 			{homeNames.length > 0 && (
 				<List
-					item={homeNames}
+					item="Home Spaces"
+					items={homeNames}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
 				/>
 			)}
 			{homeNames.length == 0 && (
 				<List
-					item={["No Homes: Add below"]}
+					item="Home Spaces"
+					items={["No Homes: Add below"]}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
 				/>
