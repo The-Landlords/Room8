@@ -8,6 +8,7 @@ import HomeList from "./homelist";
 import UserSetting from "./userSetting";
 import SignInPage from "./signInPage";
 import SignUpPage from "./signUpPage";
+import ChorePage from "./chore";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
 					<Route path="/homelist/:username" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
-					<Route path="/chores" element={<h1>Chores</h1>} />
+					<Route path="/chores" element={<ChorePage />} />
 					<Route path="/rules/:homeId" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"
