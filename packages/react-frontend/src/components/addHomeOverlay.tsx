@@ -20,7 +20,6 @@ export default function AddHomeOverlay({
 	const [errorMsg, setErrorMsg] = useState("");
 	async function addHome() {
 		if (!username) return;
-		console.log("connecting home to user!");
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
 			`http://localhost:8000/relate/${username}/${homeCode}`,
@@ -33,6 +32,14 @@ export default function AddHomeOverlay({
 		return promise;
 	}
 	async function handleAddHome() {
+		if (!homeCode) {
+			setErrorMsg("Home code cannot be empty");
+			return;
+		}
+		if (homeCode.length > 10 || homeCode.length < 4) {
+			setErrorMsg("Home code must be between 4 and 10 characters");
+			return;
+		}
 		addHome()
 			.then((res) => res?.json())
 			.then((data) => {
