@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faCalendar,
@@ -7,6 +7,7 @@ import {
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
+	faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
@@ -20,7 +21,7 @@ interface ListProps {
 	item: string;
 	items: string[];
 	handleAddClick: () => void;
-	handleRemoveClick: () => void;
+	handleRemoveClick: (item: string) => void;
 }
 
 export default function List({
@@ -29,6 +30,7 @@ export default function List({
 	handleAddClick,
 	handleRemoveClick,
 }: ListProps) {
+	const [remove, setRemove] = useState(false);
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">Current {item}</h1>
@@ -38,9 +40,9 @@ export default function List({
 						className="list-item font-bold animate-floatUp"
 						key={index}
 					>
-						<span className="flex flex-row  ">
+						<span className="flex flex-row ">
 							{listItem}
-							{item == "Home Spaces" && (
+							{item == "Home Spaces" && remove == false && (
 								<div className="relative ml-auto gap-4 self-end-safe ">
 									<Link to="/roommmates">
 										{" "}
@@ -92,11 +94,22 @@ export default function List({
 									</Link>
 								</div>
 							)}
+							{item == "Home Spaces" && remove == true && (
+								<div className="relative ml-auto self-end-safe">
+									<FontAwesomeIcon
+										className="iconWrapper"
+										icon={faTrashCan}
+										onClick={() => {
+											handleRemoveClick(listItem);
+										}}
+									/>
+								</div>
+							)}
 						</span>
 					</li>
 				))}
 			</ul>
-			{item == "Home Spaces" && (
+			{item == "Home Spaces" && remove == false && (
 				<div className="flex flex-row flex-center self-center gap-4">
 					<button
 						onClick={handleAddClick}
@@ -105,11 +118,18 @@ export default function List({
 						+
 					</button>
 					<button
-						onClick={handleRemoveClick}
+						onClick={() => {
+							setRemove(true);
+						}}
 						className="button self-center"
 					>
 						-
 					</button>
+				</div>
+			)}
+			{item == "Home Spaces" && remove == true && (
+				<div className="button self-center">
+					<button onClick={() => setRemove(false)}> Cancel </button>
 				</div>
 			)}
 		</div>

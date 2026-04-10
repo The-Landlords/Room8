@@ -8,6 +8,7 @@ import {
 	getHomeByCode,
 	getHomesByUserAndRelation,
 	getHomesByUser,
+	getHomeByName,
 } from "./Home-Services";
 
 import { Home } from "./Home";

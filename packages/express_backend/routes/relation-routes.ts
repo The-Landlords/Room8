@@ -70,7 +70,7 @@ relationRouter.patch(
 	async (req: Request, res: Response) => {
 		try {
 			console.log("Deleting relation!");
-			const relationship = req.body.relationship;
+
 			const h = await getHomeByName(req.params.homeName);
 
 			if (!h) {
