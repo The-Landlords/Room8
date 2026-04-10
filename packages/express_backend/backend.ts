@@ -34,12 +34,12 @@ config({ path: "../../.env" });
 const url = process.env.MONGO_URI;
 let connection: any = null;
 
-//singleton of connection
+//singleton of connection (implemented so if fails it connects to localhost)
 const connectDB = async () => {
 	if (!connection) {
 		console.log(
-			"MongoDB Connected to cloud" +
-				(url ? ` at ${url}` : " at default localhost")
+			"MongoDB Connected" +
+				(url ? ` successfully` : " at default localhost")
 		);
 		connection = await mongoose.connect(
 			url || "mongodb://localhost:27017/room8"
@@ -50,11 +50,7 @@ const connectDB = async () => {
 
 const start = async () => {
 	try {
-		const uri = process.env.MONGO_URI;
-		console.log(process.env.MONGO_URI);
-		if (!uri) throw new Error("MONGO_URI not defined");
-		await mongoose.connect(uri);
-		console.log("Mongo connected");
+		connectDB();
 
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);

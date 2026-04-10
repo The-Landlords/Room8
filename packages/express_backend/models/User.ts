@@ -121,11 +121,11 @@ export const UserSchema = new mongoose.Schema(
 					type: mongoose.Schema.Types.ObjectId,
 					ref: "Home",
 					required: true,
+					unique: true,
 				},
 				relationship: {
 					type: String,
 					enum: ["RESIDENT", "GUEST"],
-					required: true,
 				},
 			},
 		],

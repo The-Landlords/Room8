@@ -5,6 +5,7 @@ import {
 	getHomesByUser,
 	getHomeByName,
 	updateHome,
+	getHomesByUserAndRelation,
 } from "../models/Home-Services.ts";
 import {
 	getUserByUsername,
@@ -20,8 +21,8 @@ relationRouter.post(
 	"/relate/:username/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
-			console.log("Adding relation!");
 			const relationship = req.body.relationship;
+
 			const h = await getHomeByCode(req.params.homeCode);
 
 			if (!h) {
@@ -34,10 +35,20 @@ relationRouter.post(
 				return res.status(404).json({ error: "User not found" });
 			}
 
+			if (
+				await getHomesByUserAndRelation(u._id, relationship).then(
+					(homes) => homes.some((home) => home._id.equals(h._id))
+				)
+			) {
+				return res
+					.status(400)
+					.json({ error: "Connection already exists" });
+			}
 			h.userIds.push({ userId: u._id, relationship: relationship });
 			await h.save();
 			u.homeIds.push({ homeId: h._id, relationship: relationship });
 			await u.save();
+			console.log("added relation");
 			res.status(200).json(h);
 		} catch (err) {
 			console.error(err);
