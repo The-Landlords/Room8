@@ -22,7 +22,7 @@ function App() {
 					<Route path="/homelist/:username" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
-					<Route path="/chores" element={<ChorePage />} />
+					<Route path="/chores/:homeId" element={<ChorePage />} />
 					<Route path="/rules/:homeId" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"

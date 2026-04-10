@@ -19,6 +19,7 @@ See below how the home spaces icons are implemented for refrence
 interface ListProps {
 	item: string;
 	items: string[];
+	ids?: string[];
 	handleAddClick: () => void;
 	handleRemoveClick: () => void;
 }
@@ -26,6 +27,7 @@ interface ListProps {
 export default function List({
 	item,
 	items,
+	ids,
 	handleAddClick,
 	handleRemoveClick,
 }: ListProps) {
@@ -58,9 +60,8 @@ export default function List({
 											icon={faCalendar}
 										/>
 									</Link>
-									<Link to="/chores">
+									<Link to={`/chores/${ids?.[index]}`}>
 										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faClipboardCheck}
