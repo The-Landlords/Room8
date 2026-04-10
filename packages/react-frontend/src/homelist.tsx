@@ -45,7 +45,7 @@ export default function HomeList() {
 	async function fetchHomes() {
 		if (!username) return;
 
-		const res = fetch(`http://localhost:8000/relate/${username}`)
+		fetch(`http://localhost:8000/relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();
@@ -112,22 +112,12 @@ export default function HomeList() {
 					/>
 				)}
 			</Overlay>
-			{homeNames.length > 0 && (
-				<List
-					item="Home Spaces"
-					items={homeNames}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={handleRemoveClick}
-				/>
-			)}
-			{homeNames.length == 0 && (
-				<List
-					item="Home Spaces"
-					items={["No Homes: Add below"]}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={() => {}}
-				/>
-			)}
+			<List
+				item="Home Spaces"
+				items={homeNames}
+				handleAddClick={handleAddClick}
+				handleRemoveClick={handleRemoveClick}
+			/>
 		</div>
 	);
 }

@@ -35,6 +35,11 @@ export default function List({
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">Current {item}</h1>
 			<ul>
+				{items.length == 0 && (
+					<li className="list-item font-bold animate-floatUp">
+						No {item}
+					</li>
+				)}
 				{items.map((listItem, index) => (
 					<li
 						className="list-item font-bold animate-floatUp"

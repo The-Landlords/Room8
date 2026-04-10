@@ -82,20 +82,36 @@ relationRouter.patch(
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
 			}
-			const removeOneUser = h.userIds.filter((userIds) => {
-				return userIds.userId !== u._id;
-			});
-			const removeOneHome = u.homeIds.filter((homeIds) => {
-				return homeIds.homeId !== h._id;
-			});
+			const removeOneUser = h.userIds.filter(
+				(user) => !user.userId.equals(u._id)
+			);
+			const removeOneHome = u.homeIds.filter(
+				(home) => !home.homeId.equals(h._id)
+			);
 
-			await updateHome(h._id, { userIds: removeOneUser });
-			await updateUserById(u._id, { homeIds: removeOneHome });
+			const updatedHome = await updateHome(h._id, {
+				userIds: removeOneUser,
+			});
+			if (!updatedHome) {
+				return res
+					.status(404)
+					.json({ error: "Home not found for update" });
+			}
+			await h.save();
+			const updatedUser = await updateUserById(u._id, {
+				homeIds: removeOneHome,
+			});
+			if (!updatedUser) {
+				return res
+					.status(404)
+					.json({ error: "User not found for update" });
+			}
+			await u.save();
 
 			res.status(200).json(h);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: "Failed to create relationship" });
+			res.status(500).json({ error: "Failed to remove relationship" });
 		}
 	}
 );
