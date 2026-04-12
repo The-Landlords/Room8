@@ -4,16 +4,16 @@ import List from "./components/list";
 
 export default function ChorePage() {
 	const [chores, setChores] = useState<string[]>([]);
-	const { homeId = "" } = useParams();
+	const { username = "", homeCode = "" } = useParams();
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		async function fetchChores() {
 			try {
-				if (!homeId) return;
+				if (!username || !homeCode) return;
 
 				const res = await fetch(
-					`http://localhost:8000/chores/${homeId}`
+					`http://localhost:8000/${username}/${homeCode}/chores`
 				);
 				if (!res.ok) throw new Error("Failed to fetch chores");
 
@@ -31,7 +31,7 @@ export default function ChorePage() {
 		}
 
 		fetchChores();
-	}, [homeId]);
+	}, [username, homeCode]);
 
 	const displayChores = chores.length > 0 ? chores : ["All chores done :)"];
 

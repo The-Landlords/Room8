@@ -49,7 +49,9 @@ export default function HomeList() {
 	}, [username]);
 
 	const homeNames = homes?.map((h) => h.homeName);
-	const homeIds = homes?.map((h) => h._id);
+	const homeCodes = homes?.map((h) => h.homeCode);
+
+	console.log("username:", username);
 	return (
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
@@ -99,7 +101,8 @@ export default function HomeList() {
 				<List
 					item="Home Spaces"
 					items={homeNames}
-					ids={homeIds}
+					codes={homeCodes}
+					username={username}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
 				/>
