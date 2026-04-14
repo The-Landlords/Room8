@@ -14,11 +14,13 @@ export default function CreateHomeOverlay({ onBack }: CreateHomeProps) {
 				←
 			</button>
 			<h1 className="header-secondary self-center">Create Home</h1>
+			<h2 className="">Home Name : </h2>
 			<input
 				type="text"
 				placeholder="Home Name"
 				className="font-secondary color-secondary"
 			/>
+			<h2 className="">Home Name : </h2>
 			<input
 				type="text"
 				placeholder="Home Address"
