@@ -1,7 +1,6 @@
 import React from "react";
 
 import { useState } from "react";
-//import mongoose from "mongoose";
 
 /*component is to add a new home based off a given code*/
 
@@ -17,10 +16,9 @@ export default function AddHomeOverlay({
 	username,
 }: AddHomeProps) {
 	const [homeCode, setHomeCode] = useState("");
-
+	const [errorMsg, setErrorMsg] = useState("");
 	async function addHome() {
 		if (!username) return;
-		console.log("connecting home to user!");
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
 			`http://localhost:8000/relate/${username}/${homeCode}`,
@@ -33,12 +31,25 @@ export default function AddHomeOverlay({
 		return promise;
 	}
 	async function handleAddHome() {
+		if (!homeCode) {
+			setErrorMsg("Home code cannot be empty");
+			return;
+		}
+		if (homeCode.length > 10 || homeCode.length < 4) {
+			setErrorMsg("Home code must be between 4 and 10 characters");
+			return;
+		}
 		addHome()
-			.then((res) => (res?.ok ? res.json() : undefined))
-			.then((json) => {
-				onAdd(json);
+			.then((res) => res?.json())
+			.then((data) => {
+				if (data.error) {
+					setErrorMsg(data.error);
+				} else {
+					setErrorMsg("");
+					onAdd(data);
+				}
 			})
-			.catch((error) => console.error("Error posting home:", error));
+			.catch((error) => setErrorMsg("Error posting home:" + error));
 	}
 
 	return (
@@ -55,6 +66,11 @@ export default function AddHomeOverlay({
 				className="font-secondary color-secondary"
 				onChange={(e) => setHomeCode(e.target.value)}
 			/>
+			{errorMsg && (
+				<p className="text-red-500 text-sm text-center mt-2">
+					{errorMsg}
+				</p>
+			)}
 			<button className="button self-center" onClick={handleAddHome}>
 				Add Home
 			</button>
