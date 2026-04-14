@@ -7,18 +7,17 @@ import AddHomeOverlay from "./components/addHomeOverlay";
 import CreateHomeOverlay from "./components/createHomeOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGear } from "@fortawesome/free-solid-svg-icons";
+import RemoveHomeOverlay from "./components/removeHomeOverlay";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
 	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
+	const [homeDelete, setHomeDelete] = useState();
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
-	};
-	const handleRemoveClick = () => {
-		console.log("Remove!");
 	};
 	const handleClose = () => {
 		console.log("Closed!");
@@ -30,10 +29,23 @@ export default function HomeList() {
 		setHomes((prev) => [...prev, data]);
 		handleClose();
 	}
+
+	async function handleRemove(data: any) {
+		setHomes(homes.filter((h) => h._id !== data._id));
+		handleClose();
+	}
+
+	async function handleRemoveClick(data: any) {
+		console.log("Remove " + data);
+		setHomeDelete(data);
+		setAddState("Remove");
+		setOverlayOpen(true);
+	}
+
 	async function fetchHomes() {
 		if (!username) return;
 
-		const res = fetch(`http://localhost:8000/relate/${username}`)
+		fetch(`http://localhost:8000/relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();
@@ -54,13 +66,6 @@ export default function HomeList() {
 			<h1 className="header">Home Spaces</h1>
 			<div className="iconWrapper">
 				<Link to={`/settings/${username}`}>
-					{/* <img
-						src="/assets/settings.png"
-						alt="Settings Icon"
-						width={60}
-						height={60}
-						className="w-20 h-20"
-					/> */}
 					<FontAwesomeIcon
 						icon={faUserGear}
 						className="w-20 h-20 text-7xl"
@@ -93,23 +98,26 @@ export default function HomeList() {
 						}}
 					/>
 				)}
+				{addState == "Remove" && (
+					<RemoveHomeOverlay
+						username={username}
+						homeRemove={homeDelete}
+						onRemove={(data: any) => {
+							handleRemove(data);
+						}}
+						onCancel={() => {
+							setOverlayOpen(false);
+							setAddState("Base");
+						}}
+					/>
+				)}
 			</Overlay>
-			{homeNames.length > 0 && (
-				<List
-					item="Home Spaces"
-					items={homeNames}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={handleRemoveClick}
-				/>
-			)}
-			{homeNames.length == 0 && (
-				<List
-					item="Home Spaces"
-					items={["No Homes: Add below"]}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={handleRemoveClick}
-				/>
-			)}
+			<List
+				item="Home Spaces"
+				items={homeNames}
+				handleAddClick={handleAddClick}
+				handleRemoveClick={handleRemoveClick}
+			/>
 		</div>
 	);
 }
