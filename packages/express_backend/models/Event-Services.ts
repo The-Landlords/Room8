@@ -1,6 +1,7 @@
 // event-services.ts
 import { Event } from "./Event";
 import mongoose from "mongoose";
+import { createEvent as createIcsEvent } from "ics";
 /**
  * @param homeId the home id to be searched
  * @returns
@@ -27,3 +28,55 @@ export function updateEvent(eventId: mongoose.Types.ObjectId, data: any) {
 		runValidators: true,
 	});
 }
+
+// FIXME should only be run if status ofe eventis confirmed
+/**
+ * Converts a JS Date object to an ics-compatible time array [YYYY, MM, DD, HH, mm]
+ * @param {Date} date - The JavaScript Date object to convert
+ * @returns {Array<number>}
+ */
+export const eventToICSData = async (
+	eventId: mongoose.Types.ObjectId
+): Promise<string | null> => {
+	const e = await Event.findById(eventId);
+	if (!e) return null;
+
+	const start = e.start;
+	const end = e.end;
+
+	// converts js date to ics formatted array [YYYY, MM, DD, HH, mm]
+	const startArray: [number, number, number, number, number] = [
+		start.getUTCFullYear(),
+		start.getUTCMonth() + 1,
+		start.getUTCDate(),
+		start.getUTCHours(),
+		start.getUTCMinutes(),
+	];
+
+	const endArray: [number, number, number, number, number] = [
+		end.getUTCFullYear(),
+		end.getUTCMonth() + 1,
+		end.getUTCDate(),
+		end.getUTCHours(),
+		end.getUTCMinutes(),
+	];
+
+	const event = {
+		title: e.title,
+		description: e.description,
+		start: startArray,
+		end: endArray,
+	};
+
+	return new Promise<string>((resolve, reject) => {
+		createIcsEvent(
+			event,
+			(error: Error | undefined, value: string | undefined) => {
+				if (error) return reject(error);
+				if (!value)
+					return reject(new Error("Failed to generate ICS data"));
+				resolve(value);
+			}
+		);
+	});
+};

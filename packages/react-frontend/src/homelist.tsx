@@ -5,6 +5,8 @@ import Overlay from "./components/overlay";
 import HomeAddOverlay from "./components/homeAddOverlay";
 import AddHomeOverlay from "./components/addHomeOverlay";
 import CreateHomeOverlay from "./components/createHomeOverlay";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserGear } from "@fortawesome/free-solid-svg-icons";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
@@ -52,12 +54,16 @@ export default function HomeList() {
 			<h1 className="header">Home Spaces</h1>
 			<div className="iconWrapper">
 				<Link to={`/settings/${username}`}>
-					<img
+					{/* <img
 						src="/assets/settings.png"
 						alt="Settings Icon"
 						width={60}
 						height={60}
 						className="w-20 h-20"
+					/> */}
+					<FontAwesomeIcon
+						icon={faUserGear}
+						className="w-20 h-20 text-7xl"
 					/>
 				</Link>
 			</div>
@@ -90,14 +96,16 @@ export default function HomeList() {
 			</Overlay>
 			{homeNames.length > 0 && (
 				<List
-					item={homeNames}
+					item="Home Spaces"
+					items={homeNames}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
 				/>
 			)}
 			{homeNames.length == 0 && (
 				<List
-					item={["No Homes: Add below"]}
+					item="Home Spaces"
+					items={["No Homes: Add below"]}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
 				/>

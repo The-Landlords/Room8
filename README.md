@@ -14,6 +14,8 @@ npm install prettier
 npm install lint
 pre-commit install
 npm i -g concurrently
+npm install -w packages/express_backend ics
+npm install -w packages/react-frontend @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
 ```
 
 additionally, a `.env` file in the root should look like:
@@ -78,28 +80,23 @@ _This table is unfinished as of 10 Mar_
 ## Unit Testing For Schemas
 
 As of `10 March 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage.
----------------------|---------|----------|---------|---------|-------------------
-File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
----------------------|---------|----------|---------|---------|-------------------
-All files | 100 | 100 | 100 | 100 |  
- Chore-Services.ts | 100 | 100 | 100 | 100 |  
- Chore.ts | 100 | 100 | 100 | 100 |  
- Event-Services.ts | 100 | 100 | 100 | 100 |  
- Event.ts | 100 | 100 | 100 | 100 |  
- Grocery-Services.ts | 100 | 100 | 100 | 100 |  
- Grocery.ts | 100 | 100 | 100 | 100 |  
- Home-Services.ts | 100 | 100 | 100 | 100 |  
- Home.ts | 100 | 100 | 100 | 100 |  
- Rule.ts | 100 | 100 | 100 | 100 |  
- Rules-Services.ts | 100 | 100 | 100 | 100 |  
- User-Services.ts | 100 | 100 | 100 | 100 |  
- User.ts | 100 | 100 | 100 | 100 |  
----------------------|---------|----------|---------|---------|-------------------
+| File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
+| ------------------- | ------- | -------- | ------- | ------- | ----------------- |
+| All files | 100 | 100 | 100 | 100 | |
+| Chore-Services.ts | 100 | 100 | 100 | 100 | |
+| Chore.ts | 100 | 100 | 100 | 100 | |
+| Event-Services.ts | 100 | 100 | 100 | 100 | |
+| Event.ts | 100 | 100 | 100 | 100 | |
+| Grocery-Services.ts | 100 | 100 | 100 | 100 | |
+| Grocery.ts | 100 | 100 | 100 | 100 | |
+| Home-Services.ts | 100 | 100 | 100 | 100 | |
+| Home.ts | 100 | 100 | 100 | 100 | |
+| Rule.ts | 100 | 100 | 100 | 100 | |
+| Rules-Services.ts | 100 | 100 | 100 | 100 | |
+| User-Services.ts | 100 | 100 | 100 | 100 | |
+| User.ts | 100 | 100 | 100 | 100 | |
 
-Test Suites: 6 passed, 6 total
-Tests: 40 passed, 40 total
-Snapshots: 0 total
-Time: 5.171 s
+Test Suites: 6 passed, 6 total Tests: 50 passed, 50 total Snapshots: 0 total Time: 5.384 s
 
 # Features
 

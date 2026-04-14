@@ -17,7 +17,7 @@ body {
 		@apply bg-primary/70 font-primary text-text text-4xl font-bold text-center p-4 rounded-lg shadow-md max-w-80;
 	}
 	.header-secondary {
-		@apply font-primary text-text text-2xl font-semibold p-2  max-w-48;
+		@apply font-primary text-text text-2xl font-semibold p-2  max-w-100;
 	}
 	.panel {
 		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
@@ -26,10 +26,10 @@ body {
 		@apply bg-primary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
 	}
 	.iconWrapper {
-		@apply opacity-70 rounded-3xl self-end-safe overflow-hidden hover:opacity-90 transition duration-200;
+		@apply opacity-70 self-end-safe hover:opacity-90 transition duration-200;
 	}
 	.list-item {
-		@apply bg-primary/70 text-text font-secondary text-lg p-3 rounded-md shadow-sm mb-2;
+		@apply bg-primary/70 text-text font-secondary text-xl p-3 rounded-md shadow-sm mb-2;
 	}
 	.animate-floatUp {
 		animation: floatUp 0.5s ease-out forwards;
