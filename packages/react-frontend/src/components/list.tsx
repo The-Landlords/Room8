@@ -20,6 +20,7 @@ See below how the home spaces icons are implemented for refrence
 interface ListProps {
 	item: string;
 	items: string[];
+	ids?: string[]; //added this to pass in homeId
 	handleAddClick: () => void;
 	handleRemoveClick: (item: string) => void;
 }
@@ -27,6 +28,7 @@ interface ListProps {
 export default function List({
 	item,
 	items,
+	ids, //added this to pass in homeId
 	handleAddClick,
 	handleRemoveClick,
 }: ListProps) {
@@ -40,7 +42,9 @@ export default function List({
 						No {item}
 					</li>
 				)}
-				{items.map((listItem, index) => (
+				{items.map((listItem, index) => {
+				    const id = ids?.[index]; //I added this to get homeId
+				return (
 					<li
 						className="list-item font-bold animate-floatUp"
 						key={index}
@@ -81,14 +85,14 @@ export default function List({
 											icon={faCartShopping}
 										/>
 									</Link>
-									<Link to="/rules">
-										{" "}
-										{/* FIXME incorrect link */}
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faFileContract}
-										/>
-									</Link>
+									{id && (
+							            <Link to={`/rules/${id}`}>
+								            <FontAwesomeIcon
+									            className="iconWrapper"
+									            icon={faFileContract}
+								            />
+							            </Link>
+					                )} 
 									<Link to="/dropdown">
 										{" "}
 										{/* FIXME incorrect link */}
@@ -112,7 +116,8 @@ export default function List({
 							)}
 						</span>
 					</li>
-				))}
+				);
+			})}
 			</ul>
 			{item == "Home Spaces" && remove == false && (
 				<div className="flex flex-row flex-center self-center gap-4">

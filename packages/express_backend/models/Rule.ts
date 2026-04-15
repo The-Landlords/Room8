@@ -1,31 +1,46 @@
 import mongoose from "mongoose";
 
+const VoteSchema = new mongoose.Schema(
+  {
+    voteId: {
+      type: String,
+      required: true,
+    },
+    vote: {
+      type: String,
+      enum: ["YES", "NO"],
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const RuleSchema = new mongoose.Schema({
-	description: {
-		type: String,
-		required: true,
-		maxLength: 100,
-		trim: true,
-	},
-	status: {
-		type: String,
-		enum: ["PENDING", "CONFIRMED", "CANCELLED"],
-		default: "PENDING",
-		index: true,
-		required: true,
-	},
-	createdAt: {
-		type: Date,
-		default: Date.now,
-		required: false,
-	},
-	homeId: {
-		// type:
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Home",
-		required: true,
-		index: true,
-	},
+  description: {
+    type: String,
+    required: true,
+    maxLength: 100,
+    trim: true,
+  },
+  status: {
+    type: String,
+    enum: ["PENDING", "CONFIRMED",  "REJECTED", "CANCELLED"],
+    default: "PENDING",
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  homeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Home",
+    required: true, 
+  },
+  votes: {
+    type: [VoteSchema],
+    default: [],
+  },
 });
 
 export const Rule = mongoose.model("Rules", RuleSchema);

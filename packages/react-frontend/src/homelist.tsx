@@ -11,6 +11,7 @@ import RemoveHomeOverlay from "./components/removeHomeOverlay";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
+	const homeIds = homes?.map((h) => h._id);  //added to get homeId
 	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
@@ -115,6 +116,7 @@ export default function HomeList() {
 			<List
 				item="Home Spaces"
 				items={homeNames}
+				ids={homeIds}   // added an id to the list
 				handleAddClick={handleAddClick}
 				handleRemoveClick={handleRemoveClick}
 			/>
