@@ -130,10 +130,10 @@ export default function RulesPage() {
 
         let status: Rule["status"] = "PENDING";
 
-        if (yes > no) {
-          status = "CONFIRMED";
-        } else if (no > yes) {
+        if (no > 0) {
           status = "REJECTED";
+        } else if (yes > 0) {
+          status = "CONFIRMED";
         }
 
         return {
