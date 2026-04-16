@@ -7,6 +7,227 @@ function isValidPhone(phone: string) {
 	return phoneRegex.test(phone);
 }
 
+/* This should definitely go somewhere else */
+/* But I don't know where yet */
+interface DraftProps {
+	pronouns: string;
+	fullName: string;
+	DOB: string;
+	allergens: string;
+	likes: string;
+	dislikes: string;
+	phone: string;
+	emergencyContact: {
+		name: string;
+		phone: string;
+		relationship: string;
+	};
+	settings: {
+		textSize: string;
+		theme: string;
+		colorBlindMode: string;
+		scheduleVisibility: string;
+	};
+}
+interface SettingsFieldProps {
+	label: string;
+	layout: string;
+	fields: DraftField [];
+}
+interface DraftStateProps {
+	draft: DraftProps;
+	setDraft: React.Dispatch<React.SetStateAction<DraftProps>>;
+}
+/* Types used in settings field construction */
+type StringKeys<T> = {
+	[K in keyof T]: T[K] extends string ? K : never;
+}[keyof T];
+type DraftField = 
+	| {type: "text"; 	field: StringKeys<DraftProps>; placeholder?: string}
+	| {type: "date"; 	field: StringKeys<DraftProps>; placeholder?: never}
+	| {type: "group"; 	field: keyof DraftProps; fields: {field: string; placeholder?: string}[]; placeholder?: never}
+	| {type: "dropdown"; field: keyof DraftProps["settings"]; options: {value: string, label: string}[]; placeholder?: never}
+	| {type: "select";	field: keyof DraftProps["settings"]; options: {value: string, label: string}[]; placeholder?: never}
+	| {type: "toggle";	field: keyof DraftProps["settings"]; onName: string; offName: string; placeholder?: never}
+/* Defining the layout to be called below */
+const settingsFields: Record<string, SettingsFieldProps> = {
+	fullName: {label: "Name", layout: "horizonal", fields: [
+		{ type: "text", field: "fullName", placeholder: "Barry B. Benson"}
+	]},
+	pronouns: {label: "Pronouns", layout: "horizonal", fields: [
+		{ type: "text", field: "pronouns", placeholder: "she/they"}
+	]},
+	DOB: {label: "Birthday", layout: "horizonal", fields: [
+		{ type: "date", field: "DOB"}
+	]},
+	allergens: {label: "Allergens", layout: "vertical", fields: [
+		{ type: "text", field: "allergens", placeholder: "pollen, dairy, etc."}
+	]},
+	likes: {label: "Likes", layout: "vertical", fields: [
+		{ type: "text", field: "likes", placeholder: "concerts, movies, etc."}
+	]},
+	dislikes: {label: "Dislikes", layout: "vertical", fields: [
+		{ type: "text", field: "dislikes", placeholder: "workouts, seafoods, etc."}
+	]},
+	phone: {label: "Phone", layout: "horizonal", fields: [
+		{type: "text", field: "phone", placeholder: "+15551239876"}
+	]},
+	emergencyContact: {label: "Emergency Contact", layout: "vertical", fields: [
+		{type: "group", field: "emergencyContact", fields: [
+			{field: "name", placeholder: "Adam Flayman"},
+			{field: "phone", placeholder: "+15551990123"},
+			{field: "relationship", placeholder: "Brother"}
+		]}
+	]},
+	textSize: {label: "Text Size", layout: "horizontal", fields: [
+		{type: "dropdown", field: "textSize", options: [
+			{value: "small", label: "Small"},
+			{value: "medium", label: "Medium"},
+			{value: "large", label: "Large"}
+		]}
+	]},
+	theme: {label: "Theme", layout: "horizonal", fields: [
+		{type: "toggle", field: "theme", onName: "light", offName: "dark"}
+	]},
+	colorBlindMode: {label: "Color-Blind Mode", layout: "horizonal", fields: [
+		{type: "dropdown", field: "colorBlindMode", options: [
+			{value: "off", label: "Off"},
+			{value: "protanopia", label: "Protanopia"},
+			{value: "deuteranopia", label: "Deuteranopia"},
+			{value: "tritanopia", label: "Tritanopia"}
+		]}
+	]},
+	/* This one is unused as a custom, prettier button is preferred */
+	scheduleVisibility: {label: "Who can see my schedule?", layout: "vertical", fields: [
+		{type: "select", field: "scheduleVisibility", options: [
+			{value: "everyone", label: "Everyone"},
+			{value: "roommates", label: "Only Roomates"},
+			{value: "private", label: "No One (Private)"}
+		]}
+	]}
+}
+
+/* Constructor for general input fields */
+function InputField({fieldName, state}: {fieldName: SettingsFieldProps, state: DraftStateProps}) {
+	return (
+		<div className="input-field">
+			<label className={`flex${fieldName.layout === "vertical" ? " flex-col" : ""} items-center justify-between w-full`}>
+				<span className="mr-3">{fieldName.label}:</span>
+				{fieldName.fields.map((f) => {
+					if (f.type === "text" || f.type === "date") {
+						return (
+							<input
+								key={f.field}
+								type={f.type}
+								value={state.draft[f.field]}
+								onChange={(e) =>
+									state.setDraft((d) => ({ ...d, [f.field]: e.target.value}))
+								}
+								placeholder={f.placeholder}
+								className="underlined-input"
+							/>
+						)}
+					if (f.type === "group") {
+						const group = state.draft[f.field] as Record<string, string>
+						return f.fields.map((sub) => (
+								<input
+									key={sub.field}
+									value={group[sub.field]}
+									onChange={(e) => state.setDraft((d) => ({
+										...d,
+										[f.field]: {
+											...(d[f.field] as Record<string, string>),
+											[sub.field]: e.target.value
+										}
+									}))}
+									placeholder={sub.placeholder}
+									className="underlined-input"
+								/>
+							)
+						)
+					}
+					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
+					if (f.type === "dropdown") {
+						const group = state.draft["settings"] as Record<string, string>
+						return (
+							<select
+								key={f.field}
+								value={group[f.field]}
+								onChange={(e) =>
+									state.setDraft((d) => ({
+										...d,
+										settings: {
+											...d.settings,
+											[f.field]: e.target.value,
+										},
+									}))
+								}
+								className="bg-transparent border-b border-text outline-none"
+							>
+								{f.options.map((opt) => (
+									<option key={opt.value} value={opt.value}>{opt.label}</option>
+								))}
+							</select>
+						)
+					}
+					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
+					if (f.type === "select") {
+						return f.options.map((opt) => (
+							<button
+								key={opt.value}
+								type="button"
+								onClick={() =>
+									state.setDraft((d) => ({
+										...d,
+										settings: {
+											...d.settings,
+											[f.field]: opt.value,
+										},
+									}))
+								}
+								className="input-field"
+							>
+								<span>{opt.label}</span>
+								<span className="toggle-text">
+									{state.draft.settings[f.field] ===
+										opt.value && (
+										<span className="h-3 w-3 rounded-full bg-text" />
+									)}
+								</span>
+							</button>
+						))
+					}
+					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
+					if (f.type === "toggle") {
+						return (
+							<button
+								key={f.field}
+								type="button"
+								onClick={() =>
+									state.setDraft((d) => ({
+										...d,
+										settings: {
+											...d.settings,
+											[f.field]: (d.settings[f.field] === f.onName ? f.offName : f.onName)
+										},
+									}))
+								}
+								className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
+									state.draft.settings[f.field] === f.onName
+										? "bg-yellow-400 justify-end" // light mode (right)
+										: "bg-gray-800 justify-start" // dark mode (left)
+								}`}
+							>
+								<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
+							</button>
+						)
+					}
+				})}
+			</label>
+		</div>
+	)
+}
+
 export default function UserSetting() {
 	const navigate = useNavigate();
 	const { username } = useParams();
@@ -170,343 +391,57 @@ export default function UserSetting() {
 				<div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10">
 					{/* LEFT COLUMN */}
 					<div className="md:order-1 w-full min-w-0 animate-floatUp">
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						<div className="bubble">
 							{/*COLUMN HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6">
+							<h2 className="bubble-header">
 								Personal Info
 							</h2>
 
 							{/*COLUMN MEMBERS*/}
 							<div className="space-y-6">
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Name:</span>
-										<input
-											value={draft.fullName}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													fullName: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="Barry B. Benson"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Pronouns:</span>
-										<input
-											value={draft.pronouns}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													pronouns: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., she/they"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">
-											Birthday ! :
-										</span>
-										<input
-											type="date"
-											value={draft.DOB}
-											onChange={(e) => {
-												console.log(e.target.value);
-												setDraft((d) => ({
-													...d,
-													DOB: e.target.value,
-												}));
-											}}
-											className="bg-transparent border-b border-text outline-none"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Allergens:</span>
-										<input
-											type="text" // need to split input by comma before post
-											value={draft.allergens}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													allergens: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., pollen, dairy"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Likes:</span>
-										<input
-											type="text" // need to split input by comma before post
-											value={draft.likes}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													likes: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., concerts, movies"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Dislikes:</span>
-										<input
-											type="text" // need to split input by comma before post
-											value={draft.dislikes}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													dislikes: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., workouts, seafood"
-										/>
-									</label>
-								</div>
+								<InputField fieldName={settingsFields.fullName} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.pronouns} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.DOB} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.allergens} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.likes} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.dislikes} state={{draft, setDraft}}/>
 							</div>
 						</div>
 					</div>
 
 					{/* RIGHT COLUMN */}
 					<div className="md:order-3 w-full min-w-0 animate-floatUp">
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6">
+							<h2 className="bubble-header">
 								Display Settings
 							</h2>
 
 							<div className="space-y-5">
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Text Size:</span>
-										<select
-											value={draft.settings.textSize}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													settings: {
-														...d.settings,
-														textSize:
-															e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-										>
-											<option value="small">Small</option>
-											<option value="medium">
-												Medium
-											</option>
-											<option value="large">Large</option>
-										</select>
-									</label>
-								</div>
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5 flex items-center justify-between">
-									<span>Theme</span>
-
-									<button
-										type="button"
-										onClick={() =>
-											setDraft((d) => ({
-												...d,
-												settings: {
-													...d.settings,
-													theme:
-														d.settings.theme ===
-														"light"
-															? "dark"
-															: "light",
-												},
-											}))
-										}
-										className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
-											draft.settings.theme === "light"
-												? "bg-yellow-400 justify-end" // light mode (right)
-												: "bg-gray-800 justify-start" // dark mode (left)
-										}`}
-									>
-										<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
-									</button>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">
-											Color-blind mode:
-										</span>
-										<select
-											value={
-												draft.settings.colorBlindMode
-											}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													settings: {
-														...d.settings,
-														colorBlindMode:
-															e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-										>
-											<option value="off">Off</option>
-											<option value="protanopia">
-												Protanopia
-											</option>
-											<option value="deuteranopia">
-												Deuteranopia
-											</option>
-											<option value="tritanopia">
-												Tritanopia
-											</option>
-										</select>
-									</label>
-								</div>
+								<InputField fieldName={settingsFields.textSize} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.theme} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.colorBlindMode} state={{draft, setDraft}}/>
 							</div>
 						</div>
 					</div>
 
 					{/* MIDDLE COLUMN */}
 					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6">
+							<h2 className="bubble-header">
 								Emergency Info
 							</h2>
 
 							<div className="space-y-5">
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Phone:</span>
-										<input
-											value={draft.phone}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													phone: e.target.value.replace(
-														/[^\d+]/g,
-														""
-													),
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="+19998887777"
-										/>
-										{draft.phone.length > 0 &&
-											!phoneRegex.test(draft.phone) && (
-												<p className="text-sm text-red-500">
-													Use E.164 format (e.g.
-													+14155552671)
-												</p>
-											)}
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									{/* Emergency: {user?.emergencyContact?.name}{" "}
-									{user?.emergencyContact?.phone} */}
-									<label className="block">
-										<span className="mr-3">
-											Emergency Contact:
-										</span>
-										<input
-											value={draft.emergencyContact.name}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													emergencyContact: {
-														...d.emergencyContact,
-														name: e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="Adam Flayman"
-										/>
-
-										<input
-											value={draft.emergencyContact.phone}
-											onChange={(e) => {
-												const raw =
-													e.target.value.replace(
-														/[^\d+]/g,
-														""
-													);
-												const cleaned =
-													raw[0] === "+"
-														? "+" +
-															raw
-																.slice(1)
-																.replace(
-																	/\+/g,
-																	""
-																)
-														: raw.replace(
-																/\+/g,
-																""
-															);
-
-												setDraft((d) => ({
-													...d,
-													emergencyContact: {
-														...d.emergencyContact,
-														phone: cleaned,
-													},
-												}));
-											}}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="+12224446666"
-										/>
-
-										<input
-											value={
-												draft.emergencyContact
-													.relationship
-											}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													emergencyContact: {
-														...d.emergencyContact,
-														relationship:
-															e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="Brother"
-										/>
-									</label>
-								</div>
+								<InputField fieldName={settingsFields.phone} state={{draft, setDraft}}/>
+								<InputField fieldName={settingsFields.emergencyContact} state={{draft, setDraft}}/>
 							</div>
 						</div>
 
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6 leading-tight">
+							<h2 className="bubble-header">
 								Who can see
 								<br />
 								my schedule?
@@ -514,6 +449,8 @@ export default function UserSetting() {
 
 							{/*CLICKABLE ROWS */}
 							<div className="space-y-5">
+								{/* Un-pretty version of the below button */}
+								{/* <InputField fieldName={settingsFields.scheduleVisibility} state={{draft, setDraft}}/> */}
 								<button
 									type="button"
 									onClick={() =>
@@ -525,10 +462,10 @@ export default function UserSetting() {
 											},
 										}))
 									}
-									className="w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between"
+									className="input-field"
 								>
 									<span>Everyone</span>
-									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
+									<span className="toggle-text">
 										{draft.settings.scheduleVisibility ===
 											"everyone" && (
 											<span className="h-3 w-3 rounded-full bg-text" />
@@ -547,10 +484,10 @@ export default function UserSetting() {
 											},
 										}))
 									}
-									className="w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between"
+									className="input-field"
 								>
 									<span>Only roommates</span>
-									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
+									<span className="toggle-text">
 										{draft.settings.scheduleVisibility ===
 											"roommates" && (
 											<span className="h-3 w-3 rounded-full bg-text" />
@@ -569,10 +506,10 @@ export default function UserSetting() {
 											},
 										}))
 									}
-									className="w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between"
+									className="input-field"
 								>
 									<span>No one (private)</span>
-									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
+									<span className="toggle-text">
 										{draft.settings.scheduleVisibility ===
 											"private" && (
 											<span className="h-3 w-3 rounded-full bg-text" />
