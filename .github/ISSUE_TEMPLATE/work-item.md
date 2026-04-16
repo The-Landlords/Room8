@@ -1,10 +1,8 @@
 ---
 name: Work Item
 about: A new task to be done for a sprint!
-title: "[Improvement]"
+title: "[Implementation]"
 labels: ''
-assignees: asellingson28
-
 ---
 
 ## Summary
@@ -14,7 +12,7 @@ _What needs to be done? Explain in explicit detail_
 _What user story, product goal, or problem does this support?_
 
 ## Scope
-_What is included in this task?_
+_What is included in this task? Relevant files?_
 
 ## Done When
 _what needs to be shown as complete for this to be marked done?_
