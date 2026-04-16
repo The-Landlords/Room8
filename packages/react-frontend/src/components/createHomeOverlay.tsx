@@ -124,6 +124,7 @@ export default function CreateHomeOverlay({
 				`${street}, ${city}, ${state}, ${postalCode}`
 			)}`;
 			try {
+				setValid(false);
 				const response = await fetch(url);
 				const data = await response.json();
 
@@ -260,25 +261,25 @@ export default function CreateHomeOverlay({
 					type="text"
 					placeholder="Street"
 					className="input"
-					onChange={(e) => setStreet(e.target.value)}
+					onBlur={(e) => setStreet(e.target.value)}
 				/>
 				<input
 					type="text"
 					placeholder="City"
 					className="input"
-					onChange={(e) => setCity(e.target.value)}
+					onBlur={(e) => setCity(e.target.value)}
 				/>
 				<input
 					type="text"
 					placeholder="State"
 					className="input"
-					onChange={(e) => setState(e.target.value)}
+					onBlur={(e) => setState(e.target.value)}
 				/>
 				<input
 					type="text"
 					placeholder="Postal Code"
 					className="input"
-					onChange={(e) => setPostalCode(e.target.value)}
+					onBlur={(e) => setPostalCode(e.target.value)}
 				/>
 			</div>
 
