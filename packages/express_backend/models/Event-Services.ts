@@ -32,19 +32,17 @@ export function updateEvent(eventId: mongoose.Types.ObjectId, data: any) {
 // FIXME should only be run if status ofe eventis confirmed
 /**
  * Converts a JS Date object to an ics-compatible time array [YYYY, MM, DD, HH, mm]
- * @param {Date} date - The JavaScript Date object to convert
  * @returns {Array<number>}
  */
 export const eventToICSData = async (
 	eventId: mongoose.Types.ObjectId
 ): Promise<string | null> => {
-	const e = await Event.findById(eventId);
+	const e = await getEventById(eventId);
 	if (!e) return null;
 
 	const start = e.start;
 	const end = e.end;
 
-	// converts js date to ics formatted array [YYYY, MM, DD, HH, mm]
 	const startArray: [number, number, number, number, number] = [
 		start.getUTCFullYear(),
 		start.getUTCMonth() + 1,
@@ -66,6 +64,7 @@ export const eventToICSData = async (
 		description: e.description ?? undefined,
 		start: startArray,
 		end: endArray,
+		location: e.location,
 	};
 
 	return new Promise<string>((resolve, reject) => {
@@ -74,7 +73,7 @@ export const eventToICSData = async (
 			(error: Error | undefined, value: string | undefined) => {
 				if (error) return reject(error);
 				if (!value)
-					return reject(new Error("Failed to generate ICS data"));
+					return reject(new Error("ICS generator returned no data"));
 				resolve(value);
 			}
 		);
