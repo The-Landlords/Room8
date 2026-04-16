@@ -11,17 +11,8 @@ import mongoose from "mongoose";
 
 export const eventRouter = express.Router();
 
-console.log("eventRouter loaded");
-
-eventRouter.get("/test", (_req: Request, res: Response) => {
-	console.log("hit /test");
-	res.send("test ok");
-});
-
-eventRouter.get("/test/ics/:id", async (req: Request, res: Response) => {
+eventRouter.get("/events/ics/:id", async (req: Request, res: Response) => {
 	try {
-		console.log("hit /test/ics/:id", req.params.id);
-
 		const result = await eventToICSData(
 			new mongoose.Types.ObjectId(req.params.id)
 		);
@@ -32,6 +23,10 @@ eventRouter.get("/test/ics/:id", async (req: Request, res: Response) => {
 		}
 
 		res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+		res.setHeader(
+			"Content-Disposition",
+			`attachment; filename="event-${req.params.id}.ics"`
+		);
 		return res.send(result);
 	} catch (err) {
 		console.error("route error:", err);
@@ -39,7 +34,7 @@ eventRouter.get("/test/ics/:id", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.get("/:home/events", async (req: Request, res: Response) => {
+eventRouter.get("/homeId/:home/events", async (req: Request, res: Response) => {
 	try {
 		const homeId = new mongoose.Types.ObjectId(req.params.home);
 		const events = await getEventsByHome(homeId);

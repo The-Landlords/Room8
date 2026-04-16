@@ -9,6 +9,7 @@ import UserSetting from "./userSetting";
 import SignInPage from "./signInPage";
 import SignUpPage from "./signUpPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import CalendarPage from "./CalendarPage";
 
 function App() {
 	return (
@@ -20,7 +21,10 @@ function App() {
 					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/homelist/:username" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
-					<Route path="/calendar" element={<h1>Calendar</h1>} />
+					<Route
+						path="/events/:username/:homeCode"
+						element={<CalendarPage />}
+					/>
 					<Route path="/chores" element={<h1>Chores</h1>} />
 					<Route path="/rules/:homeId" element={<RulesPage />} />
 					<Route

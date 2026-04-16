@@ -49,6 +49,7 @@ export default function HomeList() {
 	}, [username]);
 
 	const homeNames = homes?.map((h) => h.homeName);
+	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
@@ -100,6 +101,8 @@ export default function HomeList() {
 					items={homeNames}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
+					username={username}
+					homeCode={homeCodes}
 				/>
 			)}
 			{homeNames.length == 0 && (
@@ -108,6 +111,8 @@ export default function HomeList() {
 					items={["No Homes: Add below"]}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={handleRemoveClick}
+					username={username}
+					homeCode={homeCodes}
 				/>
 			)}
 		</div>
