@@ -1,6 +1,6 @@
 ---
 name: Improvement Task
-about: A
+about: An improvement to be done as a form of refactorint
 title: "[Improvement]"
 labels: ''
 ---
