@@ -11,6 +11,7 @@ import Point from "ol/geom/Point";
 import { Fill, Icon, Stroke, Style, Text } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
 import Zoom from "ol/control/Zoom";
+import { set } from "ol/transform";
 
 /*Component is a form field to create a new home object */
 type CreateHomeProps = {
@@ -34,6 +35,7 @@ export default function CreateHomeOverlay({
 	const [postalCode, setPostalCode] = useState("");
 	const [name, setName] = useState("");
 	const [loading, setLoading] = useState(true);
+	const [valid, setValid] = useState(false);
 	const [errorMsg, setErrorMsg] = useState("");
 	const [coords, setCoords] = useState<{ lon: number; lat: number }>({
 		lon: 0,
@@ -72,8 +74,8 @@ export default function CreateHomeOverlay({
 		return promise;
 	}
 	async function onCreateHome() {
-		if (!name || !street || !city || !state || !postalCode) {
-			setErrorMsg("All fields must be filled out");
+		if (!name || !street || !city || !state || !postalCode || !valid) {
+			setErrorMsg("All fields must be correctly filled out");
 			return;
 		}
 		const code = generateRandomString(6);
@@ -82,6 +84,7 @@ export default function CreateHomeOverlay({
 			homeName: name,
 			address: `${street}, ${city}, ${state}, ${postalCode}`,
 		};
+
 		console.log("Creating home with data:", homeData);
 		await createHome(homeData)
 			.then((res) => res?.json())
@@ -125,10 +128,12 @@ export default function CreateHomeOverlay({
 					setCoords({ lon: parseFloat(lon), lat: parseFloat(lat) });
 				}
 				setLoading(false);
+				setValid(true);
 			} catch (error) {
 				console.error("Failed to geocode address:", error);
 				setErrorMsg("Invalid Address");
 				setLoading(false);
+				setValid(false);
 			}
 		};
 
