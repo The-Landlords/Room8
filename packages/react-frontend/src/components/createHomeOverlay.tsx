@@ -15,9 +15,15 @@ import Zoom from "ol/control/Zoom";
 /*Component is a form field to create a new home object */
 type CreateHomeProps = {
 	onBack: (data: string) => void;
+	username: string | undefined;
+	onAdd: any;
 };
 
-export default function CreateHomeOverlay({ onBack }: CreateHomeProps) {
+export default function CreateHomeOverlay({
+	onBack,
+	username,
+	onAdd,
+}: CreateHomeProps) {
 	const mapDivRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<Map | null>(null);
 	const sourceRef = useRef<VectorSource | null>(null);
@@ -26,12 +32,81 @@ export default function CreateHomeOverlay({ onBack }: CreateHomeProps) {
 	const [city, setCity] = useState("");
 	const [state, setState] = useState("");
 	const [postalCode, setPostalCode] = useState("");
+	const [name, setName] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [errorMsg, setErrorMsg] = useState("");
 	const [coords, setCoords] = useState<{ lon: number; lat: number }>({
 		lon: 0,
 		lat: 0,
 	});
+	const generateRandomString = (length: number) => {
+		const chars =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		let result = "";
+		for (let i = 0; i < length; i++) {
+			result += chars.charAt(Math.floor(Math.random() * chars.length));
+		}
+		return result;
+	};
+	async function addRelation(homeCode: string) {
+		if (!username) return;
+		const relationship = { relationship: "RESIDENT" };
+		const promise = await fetch(
+			`http://localhost:8000/relate/${username}/${homeCode}`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(relationship),
+			}
+		);
+		return promise;
+	}
+	async function createHome(homeData: any) {
+		if (!username) return;
+
+		const promise = await fetch(`http://localhost:8000/homes`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(homeData),
+		});
+		return promise;
+	}
+	async function onCreateHome() {
+		if (!name || !street || !city || !state || !postalCode) {
+			setErrorMsg("All fields must be filled out");
+			return;
+		}
+		const code = generateRandomString(6);
+		const homeData = {
+			homeCode: code,
+			homeName: name,
+			address: `${street}, ${city}, ${state}, ${postalCode}`,
+		};
+		console.log("Creating home with data:", homeData);
+		await createHome(homeData)
+			.then((res) => res?.json())
+			.then((data) => {
+				if (data.error) {
+					setErrorMsg(data.error);
+				} else {
+					setErrorMsg("");
+					addRelation(homeData.homeCode)
+						.then((res) => res?.json())
+						.then((relationData) => {
+							if (relationData.error) {
+								setErrorMsg(relationData.error);
+							} else {
+								onAdd(data);
+							}
+						})
+						.catch((error) =>
+							setErrorMsg("Error relating home:" + error)
+						);
+				}
+			})
+			.catch((error) => setErrorMsg("Error posting home:" + error));
+	}
+
 	useEffect(() => {
 		setLoading(true);
 		if (!street || !city || !state || !postalCode) {
@@ -161,7 +236,12 @@ export default function CreateHomeOverlay({ onBack }: CreateHomeProps) {
 				Create Home
 			</h1>
 			<h2 className="header-thirdary">Home Name : </h2>
-			<input type="text" placeholder="Home Name" className="input" />
+			<input
+				type="text"
+				placeholder="Home Name"
+				className="input"
+				onChange={(e) => setName(e.target.value)}
+			/>
 			<h2 className="header-thirdary">Home Address : </h2>
 			<div className="flex flex-row gap-1">
 				<input
@@ -198,11 +278,13 @@ export default function CreateHomeOverlay({ onBack }: CreateHomeProps) {
 			<div className="bg-primary/70 rounded-lg shadow-md h-80 max-h-100 min-w-80 max-w-100 flex flex-col self-center-safe">
 				<div
 					ref={mapDivRef}
-					className="h-10/12 w-10/12 self-center-safe relative top-3"
+					className="h-10/12 w-10/12 self-center-safe rounded-lg relative top-3"
 				/>
 				<div ref={toolbarRef} className="self-center header-thirdary" />
 			</div>
-			<button className="button self-center">Create Home</button>
+			<button className="button self-center" onClick={onCreateHome}>
+				Create Home
+			</button>
 		</div>
 	);
 }
