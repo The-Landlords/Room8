@@ -10,7 +10,13 @@ import {
 } from "./Event-Services";
 import { Event } from "./Event";
 import { config } from "dotenv";
+import { createEvent as createIcsEvent } from "ics";
 
+jest.mock("ics", () => ({
+	createEvent: jest.fn(),
+}));
+
+const mockCreateIcsEvent = createIcsEvent as jest.Mock;
 config();
 
 let e: any; // FIXME type this later
@@ -45,6 +51,8 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+	jest.clearAllMocks();
+
 	e = await createEvent(basicEventData);
 	expect(e).toBeDefined();
 	if (!e) return;
@@ -133,10 +141,20 @@ test("Creating an event with end time before start time should fail", async () =
 		"End must be after start time"
 	);
 });
-
 test("Converts an event to ICS data", async () => {
-	const eventId = e._id;
+	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+		cb(
+			undefined,
+			`BEGIN:VCALENDAR
+BEGIN:VEVENT
+SUMMARY:${basicEventData.title}
+DESCRIPTION:${basicEventData.description}
+END:VEVENT
+END:VCALENDAR`
+		);
+	});
 
+	const eventId = e._id;
 	const ics = await eventToICSData(eventId);
 
 	expect(ics).toBeDefined();
@@ -147,6 +165,24 @@ test("Converts an event to ICS data", async () => {
 	expect(ics).toContain(`DESCRIPTION:${basicEventData.description}`);
 });
 
+test("eventToICSData rejects when createIcsEvent returns an error", async () => {
+	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+		cb(new Error("ICS creation failed"), undefined);
+	});
+
+	await expect(eventToICSData(e._id)).rejects.toThrow("ICS creation failed");
+});
+
+test("eventToICSData rejects when createIcsEvent returns no data", async () => {
+	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+		cb(undefined, undefined);
+	});
+
+	await expect(eventToICSData(e._id)).rejects.toThrow(
+		"ICS generator returned no data"
+	);
+});
+
 test("Converting a missing event to ICS data returns null", async () => {
 	const missingId = new mongoose.Types.ObjectId();
 
@@ -154,6 +190,25 @@ test("Converting a missing event to ICS data returns null", async () => {
 
 	expect(ics).toBeNull();
 });
+
+test("eventToICSData rejects when createIcsEvent returns an error", async () => {
+	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+		cb(new Error("ICS creation failed"), undefined);
+	});
+
+	await expect(eventToICSData(e._id)).rejects.toThrow("ICS creation failed");
+});
+
+test("eventToICSData rejects when createIcsEvent returns no data", async () => {
+	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+		cb(undefined, undefined);
+	});
+
+	await expect(eventToICSData(e._id)).rejects.toThrow(
+		"ICS generator returned no data"
+	);
+});
+
 test("eventToICSData rejects when stored event has invalid start/end values", async () => {
 	const rawId = new mongoose.Types.ObjectId();
 
