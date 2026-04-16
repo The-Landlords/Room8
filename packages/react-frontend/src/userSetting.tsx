@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { InputField } from "./components/input";
+import type { FieldsLayout } from "./components/input";
 
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
@@ -29,28 +31,9 @@ interface DraftProps {
 		scheduleVisibility: string;
 	};
 }
-interface SettingsFieldProps {
-	label: string;
-	layout: string;
-	fields: DraftField [];
-}
-interface DraftStateProps {
-	draft: DraftProps;
-	setDraft: React.Dispatch<React.SetStateAction<DraftProps>>;
-}
-/* Types used in settings field construction */
-type StringKeys<T> = {
-	[K in keyof T]: T[K] extends string ? K : never;
-}[keyof T];
-type DraftField = 
-	| {type: "text"; 	field: StringKeys<DraftProps>; placeholder?: string}
-	| {type: "date"; 	field: StringKeys<DraftProps>; placeholder?: never}
-	| {type: "group"; 	field: keyof DraftProps; fields: {field: string; placeholder?: string}[]; placeholder?: never}
-	| {type: "dropdown"; field: keyof DraftProps["settings"]; options: {value: string, label: string}[]; placeholder?: never}
-	| {type: "select";	field: keyof DraftProps["settings"]; options: {value: string, label: string}[]; placeholder?: never}
-	| {type: "toggle";	field: keyof DraftProps["settings"]; onName: string; offName: string; placeholder?: never}
+
 /* Defining the layout to be called below */
-const settingsFields: Record<string, SettingsFieldProps> = {
+const settingsFields: FieldsLayout<DraftProps> = {
 	fullName: {label: "Name", layout: "horizonal", fields: [
 		{ type: "text", field: "fullName", placeholder: "Barry B. Benson"}
 	]},
@@ -107,126 +90,7 @@ const settingsFields: Record<string, SettingsFieldProps> = {
 	]}
 }
 
-/* Constructor for general input fields */
-function InputField({fieldName, state}: {fieldName: SettingsFieldProps, state: DraftStateProps}) {
-	return (
-		<div className="input-field">
-			<label className={`flex${fieldName.layout === "vertical" ? " flex-col" : ""} items-center justify-between w-full`}>
-				<span className="mr-3">{fieldName.label}:</span>
-				{fieldName.fields.map((f) => {
-					if (f.type === "text" || f.type === "date") {
-						return (
-							<input
-								key={f.field}
-								type={f.type}
-								value={state.draft[f.field]}
-								onChange={(e) =>
-									state.setDraft((d) => ({ ...d, [f.field]: e.target.value}))
-								}
-								placeholder={f.placeholder}
-								className="underlined-input"
-							/>
-						)}
-					if (f.type === "group") {
-						const group = state.draft[f.field] as Record<string, string>
-						return f.fields.map((sub) => (
-								<input
-									key={sub.field}
-									value={group[sub.field]}
-									onChange={(e) => state.setDraft((d) => ({
-										...d,
-										[f.field]: {
-											...(d[f.field] as Record<string, string>),
-											[sub.field]: e.target.value
-										}
-									}))}
-									placeholder={sub.placeholder}
-									className="underlined-input"
-								/>
-							)
-						)
-					}
-					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
-					if (f.type === "dropdown") {
-						const group = state.draft["settings"] as Record<string, string>
-						return (
-							<select
-								key={f.field}
-								value={group[f.field]}
-								onChange={(e) =>
-									state.setDraft((d) => ({
-										...d,
-										settings: {
-											...d.settings,
-											[f.field]: e.target.value,
-										},
-									}))
-								}
-								className="bg-transparent border-b border-text outline-none"
-							>
-								{f.options.map((opt) => (
-									<option key={opt.value} value={opt.value}>{opt.label}</option>
-								))}
-							</select>
-						)
-					}
-					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
-					if (f.type === "select") {
-						return f.options.map((opt) => (
-							<button
-								key={opt.value}
-								type="button"
-								onClick={() =>
-									state.setDraft((d) => ({
-										...d,
-										settings: {
-											...d.settings,
-											[f.field]: opt.value,
-										},
-									}))
-								}
-								className="input-field"
-							>
-								<span>{opt.label}</span>
-								<span className="toggle-text">
-									{state.draft.settings[f.field] ===
-										opt.value && (
-										<span className="h-3 w-3 rounded-full bg-text" />
-									)}
-								</span>
-							</button>
-						))
-					}
-					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
-					if (f.type === "toggle") {
-						return (
-							<button
-								key={f.field}
-								type="button"
-								onClick={() =>
-									state.setDraft((d) => ({
-										...d,
-										settings: {
-											...d.settings,
-											[f.field]: (d.settings[f.field] === f.onName ? f.offName : f.onName)
-										},
-									}))
-								}
-								className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
-									state.draft.settings[f.field] === f.onName
-										? "bg-yellow-400 justify-end" // light mode (right)
-										: "bg-gray-800 justify-start" // dark mode (left)
-								}`}
-							>
-								<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
-							</button>
-						)
-					}
-				})}
-			</label>
-		</div>
-	)
-}
+
 
 export default function UserSetting() {
 	const navigate = useNavigate();
@@ -255,7 +119,6 @@ export default function UserSetting() {
 	});
 
 	const [user, setUser] = useState<any>(null);
-	const [error, setError] = useState("");
 
 	useEffect(() => {
 		if (!username) return;
@@ -327,6 +190,8 @@ export default function UserSetting() {
 				body: JSON.stringify(payload),
 			}
 		);
+		/* TODO: */
+		/* User feedback if saving failed goes here */
 	}
 	return (
 		<div className="settings-background">
@@ -398,7 +263,7 @@ export default function UserSetting() {
 							</h2>
 
 							{/*COLUMN MEMBERS*/}
-							<div className="space-y-6">
+							<div className="space-y-5">
 								<InputField fieldName={settingsFields.fullName} state={{draft, setDraft}}/>
 								<InputField fieldName={settingsFields.pronouns} state={{draft, setDraft}}/>
 								<InputField fieldName={settingsFields.DOB} state={{draft, setDraft}}/>
