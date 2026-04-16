@@ -74,8 +74,12 @@ export default function CreateHomeOverlay({
 		return promise;
 	}
 	async function onCreateHome() {
-		if (!name || !street || !city || !state || !postalCode || !valid) {
+		if (!name || !street || !city || !state || !postalCode) {
 			setErrorMsg("All fields must be correctly filled out");
+			return;
+		}
+		if (!valid) {
+			setErrorMsg("Address entered is not valid");
 			return;
 		}
 		const code = generateRandomString(6);
@@ -126,12 +130,15 @@ export default function CreateHomeOverlay({
 				if (data && data.length > 0) {
 					const { lat, lon } = data[0];
 					setCoords({ lon: parseFloat(lon), lat: parseFloat(lat) });
+					console.log("Geocoding successful:", { lat, lon });
+					setValid(true);
+				} else {
+					console.error("No geocoding results found");
+					setValid(false);
 				}
 				setLoading(false);
-				setValid(true);
 			} catch (error) {
 				console.error("Failed to geocode address:", error);
-				setErrorMsg("Invalid Address");
 				setLoading(false);
 				setValid(false);
 			}
