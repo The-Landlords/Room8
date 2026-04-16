@@ -8,7 +8,7 @@ import HomeList from "./homelist";
 import UserSetting from "./userSetting";
 import SignInPage from "./signInPage";
 import SignUpPage from "./signUpPage";
-import ChorePage from "./chore";
+import ChorePage from "./chorePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {

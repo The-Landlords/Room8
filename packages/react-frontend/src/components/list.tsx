@@ -107,22 +107,23 @@ export default function List({
 									</Link>
 								</div>
 							)}
-							{item == "Home Spaces" && remove == true && (
-								<div className="relative ml-auto self-end-safe">
-									<FontAwesomeIcon
-										className="iconWrapper"
-										icon={faTrashCan}
-										onClick={() => {
-											handleRemoveClick(listItem);
-										}}
-									/>
-								</div>
-							)}
+							{(item == "Home Spaces" || item == "Chores") &&
+								remove == true && (
+									<div className="relative ml-auto self-end-safe">
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faTrashCan}
+											onClick={() => {
+												handleRemoveClick(listItem);
+											}}
+										/>
+									</div>
+								)}
 						</span>
 					</li>
 				))}
 			</ul>
-			{item == "Home Spaces" && remove == false && (
+			{(item == "Home Spaces" || item == "Chores") && remove == false && (
 				<div className="flex flex-row flex-center self-center gap-4">
 					<button
 						onClick={handleAddClick}
@@ -140,7 +141,7 @@ export default function List({
 					</button>
 				</div>
 			)}
-			{item == "Home Spaces" && remove == true && (
+			{(item == "Home Spaces" || item == "Chores") && remove == true && (
 				<div className="button self-center">
 					<button onClick={() => setRemove(false)}> Cancel </button>
 				</div>

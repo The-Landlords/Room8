@@ -37,15 +37,15 @@ export default function ChorePage() {
 
 	return (
 		<div>
-			<div className="mb-4 pl-4 pt-2 flex items-center gap-4">
+			<div className="relative mb-4 pt-2">
 				<button
 					onClick={() => navigate(-1)}
-					className="button px-4 py-2 text-2xl"
+					className="button absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 text-2xl"
 				>
 					←
 				</button>
 
-				<div className="header inline-flex items-center justify-center px-8 py-3">
+				<div className="header mx-auto w-fit px-8 py-3 text-center">
 					Chores
 				</div>
 			</div>
