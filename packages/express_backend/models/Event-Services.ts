@@ -63,7 +63,7 @@ export const eventToICSData = async (
 
 	const event = {
 		title: e.title,
-		description: e.description,
+		description: e.description ?? undefined,
 		start: startArray,
 		end: endArray,
 	};

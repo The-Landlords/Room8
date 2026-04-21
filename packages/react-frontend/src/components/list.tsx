@@ -20,6 +20,8 @@ See below how the home spaces icons are implemented for refrence
 interface ListProps {
 	item: string;
 	items: string[];
+	codes?: string[];
+	username?: string;
 	handleAddClick: () => void;
 	handleRemoveClick: (item: string) => void;
 }
@@ -27,6 +29,8 @@ interface ListProps {
 export default function List({
 	item,
 	items,
+	codes,
+	username,
 	handleAddClick,
 	handleRemoveClick,
 }: ListProps) {
@@ -65,14 +69,18 @@ export default function List({
 											icon={faCalendar}
 										/>
 									</Link>
-									<Link to="/chores">
-										{" "}
-										{/* FIXME incorrect link */}
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faClipboardCheck}
-										/>
-									</Link>
+
+									{codes?.[index] && username && (
+										<Link
+											to={`/${username}/${codes[index]}/chores`}
+										>
+											{" "}
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faClipboardCheck}
+											/>
+										</Link>
+									)}
 									<Link to="/groceries">
 										{" "}
 										{/* FIXME incorrect link */}
@@ -99,22 +107,23 @@ export default function List({
 									</Link>
 								</div>
 							)}
-							{item == "Home Spaces" && remove == true && (
-								<div className="relative ml-auto self-end-safe">
-									<FontAwesomeIcon
-										className="iconWrapper"
-										icon={faTrashCan}
-										onClick={() => {
-											handleRemoveClick(listItem);
-										}}
-									/>
-								</div>
-							)}
+							{(item == "Home Spaces" || item == "Chores") &&
+								remove == true && (
+									<div className="relative ml-auto self-end-safe">
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faTrashCan}
+											onClick={() => {
+												handleRemoveClick(listItem);
+											}}
+										/>
+									</div>
+								)}
 						</span>
 					</li>
 				))}
 			</ul>
-			{item == "Home Spaces" && remove == false && (
+			{(item == "Home Spaces" || item == "Chores") && remove == false && (
 				<div className="flex flex-row flex-center self-center gap-4">
 					<button
 						onClick={handleAddClick}
@@ -132,7 +141,7 @@ export default function List({
 					</button>
 				</div>
 			)}
-			{item == "Home Spaces" && remove == true && (
+			{(item == "Home Spaces" || item == "Chores") && remove == true && (
 				<div className="button self-center">
 					<button onClick={() => setRemove(false)}> Cancel </button>
 				</div>
