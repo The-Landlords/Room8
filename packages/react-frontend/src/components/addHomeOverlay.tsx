@@ -1,7 +1,6 @@
 import React from "react";
 
 import { useState } from "react";
-//import mongoose from "mongoose";
 
 /*component is to add a new home based off a given code*/
 

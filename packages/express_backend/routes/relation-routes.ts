@@ -3,19 +3,16 @@ import type { Request, Response } from "express";
 import {
 	getHomeByCode,
 	getHomesByUser,
+	getHomeByName,
+	updateHome,
 	getHomesByUserAndRelation,
 } from "../models/Home-Services.ts";
-import { getUserByUsername } from "../models/User-Services.ts";
+import {
+	getUserByUsername,
+	getUsersByHomeAndRelation,
+	updateUserById,
+} from "../models/User-Services.ts";
 import mongoose from "mongoose";
-
-interface UserRelation {
-	userId: mongoose.Schema.Types.ObjectId;
-	relationship: string;
-}
-interface HomeRelation {
-	userId: mongoose.Schema.Types.ObjectId;
-	relationship: string;
-}
 
 export const relationRouter = express.Router();
 
@@ -37,6 +34,7 @@ relationRouter.post(
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
 			}
+
 			if (
 				await getHomesByUserAndRelation(u._id, relationship).then(
 					(homes) => homes.some((home) => home._id.equals(h._id))
@@ -76,3 +74,55 @@ relationRouter.get("/relate/:username", async (req: Request, res: Response) => {
 		res.status(500).json({ error: "Failed to fetch homes from user" });
 	}
 });
+
+//deletes a relation between user and home, used when a user leaves a home
+relationRouter.patch(
+	"/relate/:username/:homeName",
+	async (req: Request, res: Response) => {
+		try {
+			console.log("Deleting relation!");
+
+			const h = await getHomeByName(req.params.homeName);
+
+			if (!h) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const u = await getUserByUsername(req.params.username);
+
+			if (!u) {
+				return res.status(404).json({ error: "User not found" });
+			}
+			const removeOneUser = h.userIds.filter(
+				(user) => !user.userId.equals(u._id)
+			);
+			const removeOneHome = u.homeIds.filter(
+				(home) => !home.homeId.equals(h._id)
+			);
+
+			const updatedHome = await updateHome(h._id, {
+				userIds: removeOneUser,
+			});
+			if (!updatedHome) {
+				return res
+					.status(404)
+					.json({ error: "Home not found for update" });
+			}
+			await h.save();
+			const updatedUser = await updateUserById(u._id, {
+				homeIds: removeOneHome,
+			});
+			if (!updatedUser) {
+				return res
+					.status(404)
+					.json({ error: "User not found for update" });
+			}
+			await u.save();
+
+			res.status(200).json(h);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to remove relationship" });
+		}
+	}
+);
