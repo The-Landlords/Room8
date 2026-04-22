@@ -1,9 +1,17 @@
 
-/* Types used in settings field construction */
+/* Type-Safety: TSX needs confirmation that a field is, in fact, a string */
 type StringKeys<T> = Extract<{
 	[K in keyof T]: T[K] extends string ? K : never;
 }[keyof T], string>;
-type DraftField<T extends { settings: Record<string, any>}> = 
+/* Types of inputs supported include:
+    Text: general text field
+    Date: Calendar-selectable date field
+    Group: Sequence of text fields, mapped to separate attributes
+    NOTE: remaining inputs rely on nested attributees inside a 'setting' sub-group
+    Dropdown: Pull-down style selection menu, with labels for each attribute value they represent
+    Select: Mutually-exclusive attribute values with their label preceeding the bubble
+    Tobble: Simple On/Off toggle, with named values (no label per value) */
+type AttributeSetter<T extends { settings: Record<string, any>}> = 
 	| {type: "text"; 	field: StringKeys<T>; placeholder?: string}
 	| {type: "date"; 	field: StringKeys<T>; placeholder?: never}
 	| {type: "group"; 	field: Extract<keyof T, string>; fields: {field: string; placeholder?: string}[]; placeholder?: never}
@@ -11,22 +19,34 @@ type DraftField<T extends { settings: Record<string, any>}> =
 	| {type: "dropdown"; field: Extract<keyof T["settings"], string>; options: {value: string, label: string}[]; placeholder?: never}
 	| {type: "select";	field: Extract<keyof T["settings"], string>; options: {value: string, label: string}[]; placeholder?: never}
 	| {type: "toggle";	field: Extract<keyof T["settings"], string>; onName: string; offName: string; placeholder?: never}
-interface SettingsFieldProps<T extends { settings: Record<string, any>}> {
+/* Definition of a single InputField:
+    Label: Header-type description of the field
+    Layout: 'horizontal'/'vertical'
+    Fields: One or more selected AttributeSetter[s] used to prduce the input */
+interface AttributeFieldProps<T extends { settings: Record<string, any>}> {
 	label: string;
 	layout: string;
-	fields: DraftField<T> [];
+	fields: AttributeSetter<T> [];
 }
 
-/* This is the exportable template to code in the InputFields */
-export type FieldsLayout<T extends { settings: Record<string, any>}> = Record<string, SettingsFieldProps<T>>;
+/* Template for a page's input fields
+    Should define this along-side the draft/record for the page
+    As these input fields also need the draft/record passed as it's generic data-type */
+export type FieldsLayout<T extends { settings: Record<string, any>}> = Record<string, AttributeFieldProps<T>>;
 
-/* Constructor for general input fields */
-export function InputField<T extends { settings: Record<string, any>}>({fieldName, state}: {fieldName: SettingsFieldProps<T>, state: {draft: T, setDraft: React.Dispatch<React.SetStateAction<T>>}}) {
+/* Function that actually produces the Input Fields
+    Based on above-defined AttributeFieldProps
+    Also needs a 'state' passed in the form of {data fields, data fields setter} */
+export function InputField<T extends { settings: Record<string, any>}>({fieldName, state}: {fieldName: AttributeFieldProps<T>, state: {draft: T, setDraft: React.Dispatch<React.SetStateAction<T>>}}) {
 	return (
+        /* Standard 'input-field' class for all inputs */
 		<div className="input-field">
+            {/* Flex layout determined by AttributeFieldProps.layout, rest fixed as part of input-field */}
 			<label className={`flex${fieldName.layout === "vertical" ? " flex-col" : ""} items-center justify-between w-full`}>
+                {/* If AttributeFieldProps.label left blank, no header line will be printed */}
 				<span className="mr-3">{fieldName.label === "" ? "" : `${fieldName.label}:`}</span>
 				{fieldName.fields.map((f) => {
+                    /* Both 'Text' and 'Date' fields are handled effectively the same */
 					if (f.type === "text" || f.type === "date") {
 						return (
 							<input
@@ -40,6 +60,7 @@ export function InputField<T extends { settings: Record<string, any>}>({fieldNam
 								className="underlined-input"
 							/>
 						)}
+                    /* Inside mapping of assumed 'text' style fields */
 					if (f.type === "group") {
 						const group = state.draft[f.field] as Record<string, string>
 						return f.fields.map((sub) => (
@@ -125,6 +146,7 @@ export function InputField<T extends { settings: Record<string, any>}>({fieldNam
 										},
 									}))
 								}
+                                /* If we start using more toggles, we can export this class and color set somewhere */
 								className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
 									state.draft.settings[f.field] === f.onName
 										? "bg-yellow-400 justify-end" // light mode (right)
