@@ -72,7 +72,8 @@ export const eventToICSData = async (
 			event,
 			(error: Error | undefined, value: string | undefined) => {
 				if (error) return reject(error);
-				if (!value) return reject(new Error("ICS generator returned no data"));
+				if (!value)
+					return reject(new Error("ICS generator returned no data"));
 				resolve(value);
 			}
 		);

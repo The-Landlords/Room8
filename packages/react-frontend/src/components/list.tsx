@@ -9,59 +9,59 @@ import {
 	faPeopleRoof,
 	faDownload,
 	faTrashCan,
+	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-/*
-Component takes in items as a prop and renders them as a list. Note: to add and remove features like
-the add or remove buttons, you must add in a new item type and implement a conditional
-See below how the home spaces icons are implemented for refrence
-@V 2.0
-*/
-
-interface ListProps {
+interface ListProps<T> {
 	item: string;
-	items: string[];
+	items: T[];
 	handleAddClick: () => void;
-	handleRemoveClick: () => void;
-	username?: string; // question mark means optional
+	handleRemoveClick: (item: T) => void;
+	renderItem: (item: T) => React.ReactNode;
+	getKey: (item: T) => string;
+	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
 }
 
-export default function List({
+export default function List<T>({
 	item,
 	items,
 	handleAddClick,
 	handleRemoveClick,
+	renderItem,
+	getKey,
 	username,
 	homeCode,
 	eventIds,
-}: ListProps) {
+}: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
-	const [remove, setRemove] = useState(false);
+	const [removeMode, setRemoveMode] = useState(false);
+
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">Current {item}</h1>
+
 			<ul>
-				{items.length == 0 && (
+				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">
 						No {item}
 					</li>
 				)}
+
 				{items.map((listItem, index) => (
 					<li
 						className="list-item font-bold animate-floatUp"
-						key={index}
+						key={getKey(listItem)}
 					>
-						<span className="flex flex-row ">
-							{listItem}
+						<span className="flex flex-row">
+							{renderItem(listItem)}
+
 							{isHomeSpaces && username && (
-								<div className="relative ml-auto gap-4 self-end-safe ">
+								<div className="relative ml-auto gap-4 self-end-safe">
 									<Link to="/roommmates">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
@@ -78,33 +78,29 @@ export default function List({
 											/>
 										</Link>
 									)}
+
 									<Link to="/chores">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faClipboardCheck}
 										/>
 									</Link>
+
 									<Link to="/groceries">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faCartShopping}
 										/>
 									</Link>
+
 									<Link to="/rules">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faFileContract}
 										/>
 									</Link>
+
 									<Link to="/dropdown">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faAngleRight}
@@ -112,9 +108,9 @@ export default function List({
 									</Link>
 								</div>
 							)}
-							{/* FOR EVENTS PAGE ICONS*/}
+
 							{isEvents && eventIds?.[index] && (
-								<div className="relative ml-auto gap-4 self-end-safe">
+								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a
 										href={`http://localhost:8000/events/ics/${eventIds[index]}`}
 									>
@@ -123,52 +119,39 @@ export default function List({
 											icon={faDownload}
 										/>
 									</a>
+									<button><FontAwesomeIcon className="iconWrapper" icon={faPenToSquare} /></button>
 								</div>
+							)}
+
+							{removeMode && (
+								<button
+									onClick={() => handleRemoveClick(listItem)}
+									className="ml-4"
+								>
+									<FontAwesomeIcon icon={faTrashCan} />
+								</button>
 							)}
 						</span>
 					</li>
 				))}
 			</ul>
-			{/*BUTTONS SECTION AT BOTTOM*/}
-			{/*for adding a home or removing a home*/}
-			{isHomeSpaces && (
-				<div className="flex flex-row flex-center self-center gap-4">
-					<button
-						onClick={handleAddClick}
-						className="button self-center"
-					>
-						+
-					</button>
-					<button
-						onClick={handleRemoveClick}
-						className="button self-center"
-					>
-						-
-					</button>
-				</div>
-			)}
-			{/*for adding daily list of events */}
-			{isEvents && (
-				<div className="flex flex-row flex-center self-center gap-4">
-					<button
-						onClick={handleAddClick}
-						className="button self-center"
-					>
-						+
-					</button>
-					<button
-						onClick={() => {
-							setRemove(true);
-						}}
-						className="button self-center"
-					>
-						-
-					</button>
-				</div>
-			)}
-			{item == "Home Spaces" && remove == true && (
+
+			<div className="flex flex-row flex-center self-center gap-4">
+				<button onClick={handleAddClick} className="button self-center">
+					+
+				</button>
+
+				<button
+					onClick={() => setRemoveMode((prev) => !prev)}
+					className="button self-center"
+				>
+					-
+				</button>
+			</div>
+
+			{removeMode && (
 				<div className="button self-center">
-					<button onClick={() => setRemove(false)}> Cancel </button>
+					<button onClick={() => setRemoveMode(false)}>Cancel</button>
 				</div>
 			)}
 		</div>

@@ -102,7 +102,8 @@ test("Updating an event", async () => {
 	const eventId = e._id;
 	const updated = {
 		title: "Updated Test Event Service",
-		description: "Updated This is a test event for the Event Services tests.",
+		description:
+			"Updated This is a test event for the Event Services tests.",
 		start: Date.now(),
 		end: Date.now() + 10800000,
 		homeId: new mongoose.Types.ObjectId(),

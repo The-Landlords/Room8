@@ -7,7 +7,8 @@ import {
 	eventToICSData,
 } from "../models/Event-Services";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import { getHomeByCode } from "../models/Home-Services";
 
 export const eventRouter = express.Router();
 
@@ -60,9 +61,25 @@ eventRouter.get("/:home/events/:id", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.post("/:home/events", async (req: Request, res: Response) => {
+eventRouter.post("/:homeCode/events", async (req: Request, res: Response) => {
 	try {
-		const event = await createEvent(req.body);
+		const homeCode = req.params.homeCode as string;
+
+		if (!homeCode) {
+			return res.status(400).json({ error: "Missing homeCode" });
+		}
+
+		const home = await getHomeByCode(homeCode);
+
+		if (!home) {
+			return res.status(404).json({ error: "Home not found" });
+		}
+
+		const event = await createEvent({
+			...req.body,
+			homeId: home._id,
+		});
+
 		res.status(201).json(event);
 	} catch (error) {
 		console.error(error);
@@ -70,14 +87,18 @@ eventRouter.post("/:home/events", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.delete("/:home/events/:id", async (req: Request, res: Response) => {
+eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
 	try {
-		const event = await removeEventById(
-			new mongoose.Types.ObjectId(req.params.id)
-		);
+		const { eventId } = req.params;
+
+
+
+		const event = await removeEventById(eventId);
+
 		if (!event) {
 			return res.status(404).json({ error: "Event not found" });
 		}
+
 		return res.sendStatus(204);
 	} catch (error) {
 		console.error(error);
