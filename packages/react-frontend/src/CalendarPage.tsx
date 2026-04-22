@@ -2,32 +2,49 @@ import { useState, useEffect } from "react";
 import List from "./components/list";
 import Overlay from "./components/overlay";
 import { useParams } from "react-router-dom";
+import { faClock, faMapPin } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AddEventOverlay from "./components/addEventOverlay";
+import RemoveEventOverlay from "./components/removeEventOverlay";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
 	const [homeName, setHomeName] = useState("");
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
+	const [eventDelete, setEventDelete] = useState<any>();
 	const { homeCode, username } = useParams();
+
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
+		setAddState("Add");
 		setOverlayOpen(true);
 	};
-	const handleRemoveClick = () => {
-		console.log("Remove!");
-	};
+
 	const handleClose = () => {
 		console.log("Closed!");
 		setAddState("Base");
 		setOverlayOpen(false);
 	};
+
 	async function handleAdd(data: any) {
 		setEvents((prev) => [...prev, data]);
 		handleClose();
 	}
+
+	async function handleRemove(data: any) {
+		setEvents((prev) => prev.filter((e) => e._id !== data._id));
+		handleClose();
+	}
+
+	async function handleRemoveClick(data: any) {
+		console.log("Remove ", data);
+		setEventDelete(data);
+		setAddState("Remove");
+		setOverlayOpen(true);
+	}
+
 	async function fetchEvents() {
-		// FIXME
-		//  use homecode from url to fetch home id
 		const homeObject = await fetch(
 			`http://localhost:8000/homes/code/${homeCode}`
 		);
@@ -38,11 +55,7 @@ export default function CalendarPage() {
 
 		setHomeName(data.homeName);
 
-		console.log(homeObjectId);
-		// use that id to fetch below
-		const res = fetch(
-			`http://localhost:8000/homeId/${homeObjectId}/events/`
-		) // FIXME require username bc of event visibility
+		fetch(`http://localhost:8000/homeId/${homeObjectId}/events/`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Events not found");
 				return res.json();
@@ -56,57 +69,94 @@ export default function CalendarPage() {
 				setEvents([]);
 			});
 	}
+
 	useEffect(() => {
 		fetchEvents().catch(console.error);
 	}, [username, homeCode]);
 
-	const eventNames = events?.map((e) => e.title);
-	const eventIds = events.map((e) => e._id);
 	return (
 		<div>
 			<h1 className="header">Events for {homeName}</h1>
-			{events.length > 0 && (
-				<List
-					item="Events"
-					items={eventNames}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={handleRemoveClick}
-					eventIds={eventIds}
-				/>
-			)}
+
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
-				{addState == "Base" && (
-					<HomeAddOverlay
-						onPick={(data) => {
-							setAddState(data);
-						}}
-					/>
-				)}
 				{addState == "Add" && (
-					<AddHomeOverlay
+					<AddEventOverlay
+						homeCode={homeCode}
 						username={username}
-						onBack={(data) => {
-							setAddState(data);
-						}}
 						onAdd={(data: any) => {
 							handleAdd(data);
 						}}
+						onCancel={() => {
+							setOverlayOpen(false);
+							setAddState("Base");
+						}}
 					/>
 				)}
-				{addState == "Create" && (
-					<CreateHomeOverlay
-						onBack={(data) => {
-							setAddState(data);
+
+				{addState == "Remove" && (
+					<RemoveEventOverlay
+						eventRemove={eventDelete}
+						onRemove={(data: any) => {
+							handleRemove(data);
+						}}
+						onCancel={() => {
+							setOverlayOpen(false);
+							setAddState("Base");
 						}}
 					/>
 				)}
 			</Overlay>
-			{events.length == 0 && (
+
+			{events.length > 0 && (
 				<List
 					item="Events"
-					items={["No Events: Add below"]}
+					items={events}
 					handleAddClick={handleAddClick}
-					handleRemoveClick={handleRemoveClick}
+					handleRemoveClick={(event) => handleRemoveClick(event)}
+					getKey={(event) => event._id}
+					renderItem={(event) => (
+						<div>
+							<div>{event.title}</div>
+							<div className="text-sm">{event.description}</div>
+							<div className="text-sm flex items-center gap-2">
+								<FontAwesomeIcon icon={faClock} />
+								<span>
+									{new Date(event.start).toLocaleDateString("en-US", {
+										weekday: "long",
+										month: "short",
+										day: "numeric",
+									})}
+								</span>
+								<span>
+									{new Date(event.start).toLocaleTimeString("en-US", {
+										hour: "numeric",
+										minute: "2-digit",
+									})}
+								</span>
+								<span>-</span>
+								<span>
+									{new Date(event.end).toLocaleTimeString("en-US", {
+										hour: "numeric",
+										minute: "2-digit",
+									})}
+								</span>
+								<FontAwesomeIcon icon={faMapPin} className="ml-2" />
+								<span>{event.location}</span>
+							</div>
+						</div>
+					)}
+					eventIds={events.map((e) => e._id)}
+				/>
+			)}
+
+			{events.length == 0 && (
+				<List<string>
+					item="Events"
+					items={["No Events available! Click below to add."]}
+					handleAddClick={handleAddClick}
+					handleRemoveClick={() => {}}
+					getKey={(item) => item}
+					renderItem={(item) => <span>{item}</span>}
 				/>
 			)}
 		</div>

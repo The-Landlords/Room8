@@ -9,57 +9,60 @@ import {
 	faTrashCan,
 	faDownload,
 	faClipboardCheck,
+	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-/*
-Component takes in items as a prop and renders them as a list. Note: to add and remove features like
-the add or remove buttons, you must add in a new item type and implement a conditional
-See below how the home spaces icons are implemented for refrence
-@V 2.0
-*/
-
-interface ListProps {
+interface ListProps<T> {
 	item: string;
-	items: string[];
+	items: T[];
 	handleAddClick: () => void;
-	handleRemoveClick: (item: string) => void;
+	handleRemoveClick: (item: T) => void;
+	handleEditClick?: (item: T) => void;
+	renderItem: (item: T) => React.ReactNode;
+	getKey: (item: T) => string;
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
 }
 
-export default function List({
+export default function List<T>({
 	item,
 	items,
 	username,
 	handleAddClick,
 	handleRemoveClick,
+	handleEditClick,
+	renderItem,
+	getKey,
 	homeCode,
 	eventIds,
-}: ListProps) {
+}: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
-	const [remove, setRemove] = useState(false);
+	const [removeMode, setRemoveMode] = useState(false);
 
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">Current {item}</h1>
+
 			<ul>
-				{items.length == 0 && (
+				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">
 						No {item}
 					</li>
 				)}
+
 				{items.map((listItem, index) => (
 					<li
 						className="list-item font-bold animate-floatUp"
-						key={index}
+						key={getKey(listItem)}
 					>
-						<span className="flex flex-row ">
-							{listItem}
-							{isHomeSpaces && username && !remove && (
-								<div className="relative ml-auto gap-4 self-end-safe ">
+						<span className="flex flex-row">
+							{renderItem(listItem)}
+
+							{isHomeSpaces && username && !removeMode && (
+								<div className="relative ml-auto gap-4 self-end-safe">
 									<Link to="/roommmates">
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -106,8 +109,9 @@ export default function List({
 									</Link>
 								</div>
 							)}
+
 							{isEvents && eventIds?.[index] && (
-								<div className="relative ml-auto gap-4 self-end-safe">
+								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a
 										href={`http://localhost:8000/events/ics/${eventIds[index]}`}
 									>
@@ -116,40 +120,48 @@ export default function List({
 											icon={faDownload}
 										/>
 									</a>
+									{handleEditClick && (
+										<button
+											type="button"
+											onClick={() => handleEditClick(listItem)}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faPenToSquare}
+											/>
+										</button>
+									)}
 								</div>
 							)}
-							{(item == "Home Spaces" || item == "Chores") &&
-								remove && (
-									<div className="relative ml-auto self-end-safe">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faTrashCan}
-											onClick={() => {
-												handleRemoveClick(listItem);
-											}}
-										/>
-									</div>
-								)}
+
+							{removeMode && (
+								<button
+									onClick={() => handleRemoveClick(listItem)}
+									className="ml-4"
+								>
+									<FontAwesomeIcon icon={faTrashCan} />
+								</button>
+							)}
 						</span>
 					</li>
 				))}
 			</ul>
+
 			<div className="flex flex-row flex-center self-center gap-4">
 				<button onClick={handleAddClick} className="button self-center">
 					+
 				</button>
 				<button
-					onClick={() => {
-						setRemove((prev) => !prev);
-					}}
+					onClick={() => setRemoveMode((prev) => !prev)}
 					className="button self-center"
 				>
 					-
 				</button>
 			</div>
-			{(item == "Home Spaces" || item == "Chores") && remove && (
+
+			{removeMode && (
 				<div className="button self-center">
-					<button onClick={() => setRemove(false)}> Cancel </button>
+					<button onClick={() => setRemoveMode(false)}>Cancel</button>
 				</div>
 			)}
 		</div>
