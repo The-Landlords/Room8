@@ -63,7 +63,7 @@ export default function AddHomeOverlay({
 			<h1 className="header-secondary self-center">Add Home</h1>
 			<input
 				placeholder="Home Id"
-				className="font-secondary color-secondary"
+				className="input"
 				onChange={(e) => setHomeCode(e.target.value)}
 			/>
 			{errorMsg && (
