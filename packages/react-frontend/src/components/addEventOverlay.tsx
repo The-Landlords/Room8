@@ -23,6 +23,14 @@ export default function AddEventOverlay({
 	async function handleAddEvent(e: React.FormEvent) {
 		e.preventDefault();
 
+		const startDate = new Date(start);
+		const endDate = new Date(end);
+
+		if (startDate >= endDate) {
+			alert("Start time must be before end time.");
+			return;
+		}
+
 		const res = await fetch(`http://localhost:8000/${homeCode}/events`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -72,6 +80,7 @@ export default function AddEventOverlay({
 			<input
 				type="datetime-local"
 				value={end}
+				min={start}
 				onChange={(e) => setEnd(e.target.value)}
 				className="font-secondary color-secondary"
 			/>

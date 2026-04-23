@@ -88,6 +88,24 @@ eventRouter.post("/:homeCode/events", async (req: Request, res: Response) => {
 	}
 });
 
+
+eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
+	try {
+		const eventId = req.params.eventId;
+
+		const deletedEvent = await removeEventById(eventId);
+
+		if (!deletedEvent) {
+			return res.status(404).json({ error: "Event not found" });
+		}
+
+		return res.sendStatus(204);
+	} catch (error) {
+		console.error(error);
+		return res.status(400).json({ error: "Invalid ID" });
+	}
+});
+
 eventRouter.patch("/events/:eventId", async (req: Request, res: Response) => {
 	try {
 		
