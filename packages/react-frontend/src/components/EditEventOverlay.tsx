@@ -25,6 +25,14 @@ export default function EditEventOverlay({
 	async function handleEditEvent(e: React.FormEvent) {
 		e.preventDefault();
 
+		const startDate = new Date(start);
+		const endDate = new Date(end);
+
+		if (startDate >= endDate) {
+			alert("Start time must be before end time.");
+			return;
+		}
+
 		if (!eventEdit?._id) {
 			throw new Error("Missing event id");
 		}
@@ -79,6 +87,7 @@ export default function EditEventOverlay({
 			<input
 				type="datetime-local"
 				value={end}
+				min={start}
 				onChange={(e) => setEnd(e.target.value)}
 				className="font-secondary color-secondary"
 			/>
