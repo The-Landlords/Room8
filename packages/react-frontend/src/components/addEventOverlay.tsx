@@ -19,9 +19,15 @@ export default function AddEventOverlay({
 	const [location, setLocation] = useState("");
 	const [description, setDescription] = useState("");
 	const [status, setStatus] = useState("");
+	const [errorMsg, setErrorMsg] = useState("");
+	
 
 	async function handleAddEvent(e: React.FormEvent) {
 		e.preventDefault();
+		if (!title || !start || !end || !location || !description) {
+			setErrorMsg("All fields must be filled out.");
+			return;
+		}
 
 		const startDate = new Date(start);
 		const endDate = new Date(end);
@@ -92,6 +98,11 @@ export default function AddEventOverlay({
 				className="font-secondary color-secondary"
 			/>
 
+			{errorMsg && (
+				<p className="text-red-500 text-sm text-center mt-2">
+					{errorMsg}
+				</p>
+			)}
 			{/* FIXME add status display bar of approval depending on persons in the house */}
 
 			<div className="flex gap-2">
