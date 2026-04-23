@@ -18,6 +18,7 @@ interface ListProps<T> {
 	items: T[];
 	handleAddClick: () => void;
 	handleRemoveClick: (item: T) => void;
+	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
@@ -30,6 +31,7 @@ export default function List<T>({
 	items,
 	handleAddClick,
 	handleRemoveClick,
+	handleEditClick,
 	renderItem,
 	getKey,
 	username,
@@ -119,7 +121,18 @@ export default function List<T>({
 											icon={faDownload}
 										/>
 									</a>
-									<button><FontAwesomeIcon className="iconWrapper" icon={faPenToSquare} /></button>
+
+									{handleEditClick && (
+										<button
+											type="button"
+											onClick={() => handleEditClick(listItem)}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faPenToSquare}
+											/>
+										</button>
+									)}
 								</div>
 							)}
 

@@ -83,6 +83,8 @@ export default function AddEventOverlay({
 				className="font-secondary color-secondary"
 			/>
 
+			{/* FIXME add status display bar of approval depending on persons in the house */}
+
 			<div className="flex gap-2">
 				<button className="button self-center" onClick={handleAddEvent}>
 					Add Event
