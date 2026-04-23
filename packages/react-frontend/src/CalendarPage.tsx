@@ -4,8 +4,8 @@ import Overlay from "./components/overlay";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faMapPin, faCaretRight, faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import AddEventOverlay from "./components/addEventOverlay";
-import RemoveEventOverlay from "./components/removeEventOverlay";
+import AddEventOverlay from "./components/AddEventOverlay";
+import RemoveEventOverlay from "./components/RemoveEventOverlay";
 import EditEventOverlay from "./components/EditEventOverlay";
 
 export default function CalendarPage() {
