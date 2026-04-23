@@ -6,7 +6,7 @@ import HomeAddOverlay from "./components/homeAddOverlay";
 import AddHomeOverlay from "./components/addHomeOverlay";
 import CreateHomeOverlay from "./components/createHomeOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserGear } from "@fortawesome/free-solid-svg-icons";
+import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import RemoveHomeOverlay from "./components/removeHomeOverlay";
 
 export default function HomeList() {
@@ -126,7 +126,10 @@ export default function HomeList() {
 					renderItem={(home) => (
 						<div>
 							<div>{home.homeName}</div>
-							<div className="text-sm">{home.address}</div>
+							<div>
+								<FontAwesomeIcon icon={faMapPin} className="text-sm" />
+								{home.address}
+							</div>
 						</div>
 					)}
 				/>
