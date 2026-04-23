@@ -6,6 +6,7 @@ import { faClock, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddEventOverlay from "./components/addEventOverlay";
 import RemoveEventOverlay from "./components/removeEventOverlay";
+import EditEventOverlay from "./components/editEventOverlay";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
@@ -14,6 +15,9 @@ export default function CalendarPage() {
 	const [addState, setAddState] = useState("Base");
 	const [eventDelete, setEventDelete] = useState<any>();
 	const { homeCode, username } = useParams();
+	const [eventEdit, setEventEdit] = useState<any>(null);
+
+
 
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
@@ -44,6 +48,18 @@ export default function CalendarPage() {
 		setOverlayOpen(true);
 	}
 
+	async function handleEditClick(event: any) {
+		setEventEdit(event);
+		setAddState("Edit");
+		setOverlayOpen(true);
+	}
+
+	async function handleEdit(updatedEvent: any) {
+		setEvents((prev) =>
+			prev.map((e) => (e._id === updatedEvent._id ? updatedEvent : e))
+		);
+		handleClose();
+	}
 	async function fetchEvents() {
 		const homeObject = await fetch(
 			`http://localhost:8000/homes/code/${homeCode}`
@@ -79,7 +95,7 @@ export default function CalendarPage() {
 			<h1 className="header">Events for {homeName}</h1>
 
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
-				{addState == "Add" && (
+				{addState === "Add" && (
 					<AddEventOverlay
 						homeCode={homeCode}
 						username={username}
@@ -93,7 +109,7 @@ export default function CalendarPage() {
 					/>
 				)}
 
-				{addState == "Remove" && (
+				{addState === "Remove" && (
 					<RemoveEventOverlay
 						eventRemove={eventDelete}
 						onRemove={(data: any) => {
@@ -105,6 +121,13 @@ export default function CalendarPage() {
 						}}
 					/>
 				)}
+				{addState === "Edit" && (
+					<EditEventOverlay
+						eventEdit={eventEdit}
+						onEdit={handleEdit}
+						onCancel={handleClose}
+					/>
+				)}
 			</Overlay>
 
 			{events.length > 0 && (
@@ -113,6 +136,7 @@ export default function CalendarPage() {
 					items={events}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={(event) => handleRemoveClick(event)}
+					handleEditClick={(event) => handleEditClick(event)}
 					getKey={(event) => event._id}
 					renderItem={(event) => (
 						<div>
@@ -154,7 +178,8 @@ export default function CalendarPage() {
 					item="Events"
 					items={["No Events available! Click below to add."]}
 					handleAddClick={handleAddClick}
-					handleRemoveClick={() => {}}
+					handleRemoveClick={(event) => handleRemoveClick(event)}
+					handleEditClick={(event) => handleEditClick(event)}
 					getKey={(item) => item}
 					renderItem={(item) => <span>{item}</span>}
 				/>

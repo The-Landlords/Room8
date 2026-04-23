@@ -5,6 +5,7 @@ import {
 	createEvent,
 	removeEventById,
 	eventToICSData,
+	updateEvent,
 } from "../models/Event-Services";
 import type { Request, Response } from "express";
 import mongoose, { mongo } from "mongoose";
@@ -87,19 +88,21 @@ eventRouter.post("/:homeCode/events", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
+eventRouter.patch("/events/:eventId", async (req: Request, res: Response) => {
 	try {
-		const { eventId } = req.params;
+		
 
+		const updatedEvent = await updateEvent(
+			req.params.eventId,
+			req.body,
+			// { new: true } // return updated doc
+		);
 
-
-		const event = await removeEventById(eventId);
-
-		if (!event) {
+		if (!updatedEvent) {
 			return res.status(404).json({ error: "Event not found" });
 		}
 
-		return res.sendStatus(204);
+		return res.status(200).json(updatedEvent);
 	} catch (error) {
 		console.error(error);
 		res.status(400).json({ error: "Invalid ID" });
