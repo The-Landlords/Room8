@@ -44,8 +44,10 @@ export default function List<T>({
 
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
-			<h1 className="header-secondary">Current {item}</h1>
-
+		
+<h1 className="header-secondary">
+	{isHomeSpaces ? `Current ${item}` : item}
+</h1>
 			<ul>
 				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">

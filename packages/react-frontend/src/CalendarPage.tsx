@@ -6,7 +6,7 @@ import { faClock, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddEventOverlay from "./components/addEventOverlay";
 import RemoveEventOverlay from "./components/removeEventOverlay";
-import EditEventOverlay from "./components/editEventOverlay";
+import EditEventOverlay from "./components/EditEventOverlay";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
@@ -16,8 +16,6 @@ export default function CalendarPage() {
 	const [eventDelete, setEventDelete] = useState<any>();
 	const { homeCode, username } = useParams();
 	const [eventEdit, setEventEdit] = useState<any>(null);
-
-
 
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
@@ -60,6 +58,7 @@ export default function CalendarPage() {
 		);
 		handleClose();
 	}
+
 	async function fetchEvents() {
 		const homeObject = await fetch(
 			`http://localhost:8000/homes/code/${homeCode}`
@@ -77,8 +76,11 @@ export default function CalendarPage() {
 				return res.json();
 			})
 			.then((data) => {
-				console.log(data);
-				setEvents(data);
+				const sorted = data.sort(
+					(a: any, b: any) =>
+						new Date(a.start).getTime() - new Date(b.start).getTime()
+				);
+				setEvents(sorted);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -90,37 +92,76 @@ export default function CalendarPage() {
 		fetchEvents().catch(console.error);
 	}, [username, homeCode]);
 
+	const now = new Date();
+
+	const upcomingEvents = events
+		.filter((e) => new Date(e.start) >= now)
+		.sort(
+			(a, b) =>
+				new Date(a.start).getTime() - new Date(b.start).getTime()
+		);
+
+	const pastEvents = events
+		.filter((e) => new Date(e.start) < now)
+		.sort(
+			(a, b) =>
+				new Date(b.start).getTime() - new Date(a.start).getTime()
+		);
+
+	const renderItem = (event: any) => (
+		<div>
+			<div>{event.title}</div>
+			<div className="text-sm">{event.description}</div>
+			<div className="text-sm flex items-center gap-2">
+				<FontAwesomeIcon icon={faClock} />
+				<span>
+					{new Date(event.start).toLocaleDateString("en-US", {
+						weekday: "long",
+						month: "short",
+						day: "numeric",
+					})}
+				</span>
+				<span>
+					{new Date(event.start).toLocaleTimeString("en-US", {
+						hour: "numeric",
+						minute: "2-digit",
+					})}
+				</span>
+				<span>-</span>
+				<span>
+					{new Date(event.end).toLocaleTimeString("en-US", {
+						hour: "numeric",
+						minute: "2-digit",
+					})}
+				</span>
+				<FontAwesomeIcon icon={faMapPin} className="ml-2" />
+				<span>{event.location}</span>
+			</div>
+		</div>
+	);
+
 	return (
 		<div>
 			<h1 className="header">Events for {homeName}</h1>
 
-			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
+			<Overlay isOpen={overlayOpen} onClose={handleClose}>
 				{addState === "Add" && (
 					<AddEventOverlay
 						homeCode={homeCode}
 						username={username}
-						onAdd={(data: any) => {
-							handleAdd(data);
-						}}
-						onCancel={() => {
-							setOverlayOpen(false);
-							setAddState("Base");
-						}}
+						onAdd={handleAdd}
+						onCancel={handleClose}
 					/>
 				)}
 
 				{addState === "Remove" && (
 					<RemoveEventOverlay
 						eventRemove={eventDelete}
-						onRemove={(data: any) => {
-							handleRemove(data);
-						}}
-						onCancel={() => {
-							setOverlayOpen(false);
-							setAddState("Base");
-						}}
+						onRemove={handleRemove}
+						onCancel={handleClose}
 					/>
 				)}
+
 				{addState === "Edit" && (
 					<EditEventOverlay
 						eventEdit={eventEdit}
@@ -130,56 +171,44 @@ export default function CalendarPage() {
 				)}
 			</Overlay>
 
-			{events.length > 0 && (
-				<List
-					item="Events"
-					items={events}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(event) => handleRemoveClick(event)}
-					handleEditClick={(event) => handleEditClick(event)}
-					getKey={(event) => event._id}
-					renderItem={(event) => (
-						<div>
-							<div>{event.title}</div>
-							<div className="text-sm">{event.description}</div>
-							<div className="text-sm flex items-center gap-2">
-								<FontAwesomeIcon icon={faClock} />
-								<span>
-									{new Date(event.start).toLocaleDateString("en-US", {
-										weekday: "long",
-										month: "short",
-										day: "numeric",
-									})}
-								</span>
-								<span>
-									{new Date(event.start).toLocaleTimeString("en-US", {
-										hour: "numeric",
-										minute: "2-digit",
-									})}
-								</span>
-								<span>-</span>
-								<span>
-									{new Date(event.end).toLocaleTimeString("en-US", {
-										hour: "numeric",
-										minute: "2-digit",
-									})}
-								</span>
-								<FontAwesomeIcon icon={faMapPin} className="ml-2" />
-								<span>{event.location}</span>
-							</div>
-						</div>
-					)}
-					eventIds={events.map((e) => e._id)}
-				/>
+			{upcomingEvents.length > 0 && (
+				<>
+					<h2 className="header-secondary">Upcoming Events</h2>
+					<List
+						item="Events"
+						items={upcomingEvents}
+						handleAddClick={handleAddClick}
+						handleRemoveClick={handleRemoveClick}
+						handleEditClick={handleEditClick}
+						getKey={(event) => event._id}
+						renderItem={renderItem}
+						eventIds={upcomingEvents.map((e) => e._id)}
+					/>
+				</>
 			)}
 
-			{events.length == 0 && (
+			{pastEvents.length > 0 && (
+				<>
+					<h2 className="header-secondary">Past Events</h2>
+					<List
+						item="Events"
+						items={pastEvents}
+						handleAddClick={handleAddClick}
+						handleRemoveClick={handleRemoveClick}
+						handleEditClick={handleEditClick}
+						getKey={(event) => event._id}
+						renderItem={renderItem}
+						eventIds={pastEvents.map((e) => e._id)}
+					/>
+				</>
+			)}
+
+			{events.length === 0 && (
 				<List<string>
 					item="Events"
 					items={["No Events available! Click below to add."]}
 					handleAddClick={handleAddClick}
-					handleRemoveClick={(event) => handleRemoveClick(event)}
-					handleEditClick={(event) => handleEditClick(event)}
+					handleRemoveClick={() => {}}
 					getKey={(item) => item}
 					renderItem={(item) => <span>{item}</span>}
 				/>
