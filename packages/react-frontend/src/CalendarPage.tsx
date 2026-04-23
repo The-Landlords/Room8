@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import List from "./components/list";
 import Overlay from "./components/overlay";
 import { useParams } from "react-router-dom";
-import { faClock, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faMapPin, faCaretRight, faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import AddEventOverlay from "./components/addEventOverlay";
 import RemoveEventOverlay from "./components/removeEventOverlay";
 import EditEventOverlay from "./components/EditEventOverlay";
@@ -16,6 +16,9 @@ export default function CalendarPage() {
 	const [eventDelete, setEventDelete] = useState<any>();
 	const { homeCode, username } = useParams();
 	const [eventEdit, setEventEdit] = useState<any>(null);
+	const [showUpcoming, setShowUpcoming] = useState(true);
+	const [showPast, setShowPast] = useState(false);
+
 
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
@@ -58,7 +61,6 @@ export default function CalendarPage() {
 		);
 		handleClose();
 	}
-
 	async function fetchEvents() {
 		const homeObject = await fetch(
 			`http://localhost:8000/homes/code/${homeCode}`
@@ -91,6 +93,7 @@ export default function CalendarPage() {
 	useEffect(() => {
 		fetchEvents().catch(console.error);
 	}, [username, homeCode]);
+
 
 	const now = new Date();
 
@@ -139,29 +142,37 @@ export default function CalendarPage() {
 			</div>
 		</div>
 	);
-
 	return (
 		<div>
 			<h1 className="header">Events for {homeName}</h1>
 
-			<Overlay isOpen={overlayOpen} onClose={handleClose}>
+			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
 				{addState === "Add" && (
 					<AddEventOverlay
 						homeCode={homeCode}
 						username={username}
-						onAdd={handleAdd}
-						onCancel={handleClose}
+						onAdd={(data: any) => {
+							handleAdd(data);
+						}}
+						onCancel={() => {
+							setOverlayOpen(false);
+							setAddState("Base");
+						}}
 					/>
 				)}
 
 				{addState === "Remove" && (
 					<RemoveEventOverlay
 						eventRemove={eventDelete}
-						onRemove={handleRemove}
-						onCancel={handleClose}
+						onRemove={(data: any) => {
+							handleRemove(data);
+						}}
+						onCancel={() => {
+							setOverlayOpen(false);
+							setAddState("Base");
+						}}
 					/>
 				)}
-
 				{addState === "Edit" && (
 					<EditEventOverlay
 						eventEdit={eventEdit}
@@ -173,42 +184,63 @@ export default function CalendarPage() {
 
 			{upcomingEvents.length > 0 && (
 				<>
-					<h2 className="header-secondary">Upcoming Events</h2>
-					<List
-						item="Events"
-						items={upcomingEvents}
-						handleAddClick={handleAddClick}
-						handleRemoveClick={handleRemoveClick}
-						handleEditClick={handleEditClick}
-						getKey={(event) => event._id}
-						renderItem={renderItem}
-						eventIds={upcomingEvents.map((e) => e._id)}
-					/>
+					<button
+						type="button"
+						className="header-secondary"
+						onClick={() => setShowUpcoming((prev) => !prev)}
+					>
+						<span>Upcoming Events</span>
+						<FontAwesomeIcon icon={showUpcoming ? faCaretDown : faCaretRight} className="ml-2 transition-transform duration-200"/>
+					</button>
+
+					{showUpcoming && (
+						<List
+							item="Events"
+							items={upcomingEvents}
+							handleAddClick={handleAddClick}
+							handleRemoveClick={handleRemoveClick}
+							handleEditClick={handleEditClick}
+							getKey={(event) => event._id}
+							renderItem={renderItem}
+							eventIds={upcomingEvents.map((e) => e._id)}
+						/>
+					)}
 				</>
 			)}
 
 			{pastEvents.length > 0 && (
 				<>
-					<h2 className="header-secondary">Past Events</h2>
-					<List
-						item="Events"
-						items={pastEvents}
-						handleAddClick={handleAddClick}
-						handleRemoveClick={handleRemoveClick}
-						handleEditClick={handleEditClick}
-						getKey={(event) => event._id}
-						renderItem={renderItem}
-						eventIds={pastEvents.map((e) => e._id)}
-					/>
+					<button
+						type="button"
+						className="header-secondary"
+						onClick={() => setShowPast((prev) => !prev)}
+					>
+						<span>Past Events</span>
+						<FontAwesomeIcon icon={showPast ? faCaretDown : faCaretRight} className="ml-2 transition-transform duration-200"/>
+					</button>
+
+					{showPast && (
+						<List
+							item="Events"
+							items={pastEvents}
+							handleAddClick={handleAddClick}
+							handleRemoveClick={handleRemoveClick}
+							handleEditClick={handleEditClick}
+							getKey={(event) => event._id}
+							renderItem={renderItem}
+							eventIds={pastEvents.map((e) => e._id)}
+						/>
+					)}
 				</>
 			)}
 
-			{events.length === 0 && (
+			{events.length == 0 && (
 				<List<string>
 					item="Events"
 					items={["No Events available! Click below to add."]}
 					handleAddClick={handleAddClick}
-					handleRemoveClick={() => {}}
+					handleRemoveClick={(event) => handleRemoveClick(event)}
+					handleEditClick={(event) => handleEditClick(event)}
 					getKey={(item) => item}
 					renderItem={(item) => <span>{item}</span>}
 				/>
