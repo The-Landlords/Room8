@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import List from "./components/list";
-import Overlay from "./components/overlay";
+import List from "../components/list";
+import Overlay from "../components/overlay";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,9 +9,9 @@ import {
 	faCaretRight,
 	faCaretDown,
 } from "@fortawesome/free-solid-svg-icons";
-import AddEventOverlay from "./components/AddEventOverlay";
-import RemoveEventOverlay from "./components/RemoveEventOverlay";
-import EditEventOverlay from "./components/EditEventOverlay";
+import AddEventOverlay from "../components/AddEventOverlay";
+import RemoveEventOverlay from "../components/RemoveEventOverlay";
+import EditEventOverlay from "../components/EditEventOverlay";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
