@@ -12,6 +12,7 @@ Clone the repo, ensure node is installed, and run the following:
 npm ci
 npm install prettier
 npm install lint
+npm install jest
 pre-commit install
 npm i -g concurrently
 npm install -w packages/express_backend ics

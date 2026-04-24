@@ -131,7 +131,10 @@ export default function HomeList() {
 						<div>
 							<div>{home.homeName}</div>
 							<div>
-								<FontAwesomeIcon icon={faMapPin} className="text-sm" />
+								<FontAwesomeIcon
+									icon={faMapPin}
+									className="text-sm"
+								/>
 								{home.address}
 							</div>
 						</div>

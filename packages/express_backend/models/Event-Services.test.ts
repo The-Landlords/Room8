@@ -104,9 +104,6 @@ test("Updating an event", async () => {
 		title: "Updated Test Event Service",
 		description:
 			"Updated This is a test event for the Event Services tests.",
-		start: Date.now(),
-		end: Date.now() + 10800000,
-		homeId: new mongoose.Types.ObjectId(),
 	};
 
 	const fetched = await updateEvent(eventId, updated);
@@ -116,9 +113,9 @@ test("Updating an event", async () => {
 	expect(fetched._id.toString()).toBe(eventId.toString());
 	expect(fetched.title).toBe(updated.title);
 	expect(fetched.description).toBe(updated.description);
-	expect(fetched.start.getTime()).toBe(updated.start);
-	expect(fetched.end.getTime()).toBe(updated.end);
-	expect(fetched.homeId.toString()).toBe(updated.homeId.toString());
+	expect(fetched.start.getTime()).toBe(basicEventData.start);
+	expect(fetched.end.getTime()).toBe(basicEventData.end);
+	expect(fetched.homeId.toString()).toBe(basicEventData.homeId.toString());
 });
 
 test("Removing an event by ID", async () => {

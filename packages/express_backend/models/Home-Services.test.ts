@@ -98,14 +98,11 @@ test("Fetching (getting) a home by Code", async () => {
 test("Updating a home", async () => {
 	const updatedHomeData = {
 		homeName: "Test Home Service (UPDATED)",
-		homeCode: "abc123joinme!",
-		address: "456 Another House, San Luis Obispo, CA 93401",
-		memberIds: [],
 	};
 	const updatedHome = await updateHome(h._id, updatedHomeData);
 	expect(updatedHome).toBeDefined();
 	expect(updatedHome?.homeName).toBe(updatedHomeData.homeName); // question mark is for optional chaining, in case updatedHome is null or undefined
-	expect(updatedHome?.address).toBe(updatedHomeData.address);
+	expect(updatedHome?.address).toBe(basicHomeData.address);
 });
 
 test("Deleting a home", async () => {
