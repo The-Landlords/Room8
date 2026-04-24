@@ -3,14 +3,14 @@
 //import viteLogo from "/vite.svg";
 //import "./App.css";
 //import HomeList from "./homeList";
-import RulesPage from "./rulesPage";
-import HomeList from "./homelist";
-import UserSetting from "./userSetting";
-import SignInPage from "./signInPage";
-import SignUpPage from "./signUpPage";
-import ChorePage from "./chorePage";
+import RulesPage from "./pages/rulesPage";
+import HomeList from "./pages/homelistPage";
+import UserSetting from "./pages/userSetting";
+import SignInPage from "./pages/signInPage";
+import SignUpPage from "./pages/signUpPage";
+import ChorePage from "./pages/chorePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import CalendarPage from "./CalendarPage";
+import CalendarPage from "./pages/calendarPage";
 
 function App() {
 	return (

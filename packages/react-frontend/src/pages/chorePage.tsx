@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import List from "./components/list";
-import AddOverlay from "./components/addOverlay";
+import List from "../components/list";
+import AddOverlay from "../components/addOverlay";
 
 type Chore = {
 	_id: string;
