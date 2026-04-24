@@ -13,13 +13,17 @@ export default function EditEventOverlay({
 }: EditEventOverlayProps) {
 	const [title, setTitle] = useState(eventEdit?.title || "");
 	const [start, setStart] = useState(
-		eventEdit?.start ? new Date(eventEdit.start).toISOString().slice(0, 16) : ""
+		eventEdit?.start
+			? new Date(eventEdit.start).toISOString().slice(0, 16)
+			: ""
 	);
 	const [end, setEnd] = useState(
 		eventEdit?.end ? new Date(eventEdit.end).toISOString().slice(0, 16) : ""
 	);
 	const [location, setLocation] = useState(eventEdit?.location || "");
-	const [description, setDescription] = useState(eventEdit?.description || "");
+	const [description, setDescription] = useState(
+		eventEdit?.description || ""
+	);
 	const [status, setStatus] = useState(eventEdit?.status || "");
 
 	async function handleEditEvent(e: React.FormEvent) {
@@ -37,18 +41,21 @@ export default function EditEventOverlay({
 			throw new Error("Missing event id");
 		}
 
-		const res = await fetch(`http://localhost:8000/events/${eventEdit._id}`, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				title,
-				start,
-				end,
-				location,
-				description,
-				status,
-			}),
-		});
+		const res = await fetch(
+			`http://localhost:8000/events/${eventEdit._id}`,
+			{
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					title,
+					start,
+					end,
+					location,
+					description,
+					status,
+				}),
+			}
+		);
 
 		const data = await res.json();
 
@@ -111,7 +118,11 @@ export default function EditEventOverlay({
 			</select>
 
 			<div className="flex gap-2">
-				<button type="button" className="button self-center" onClick={onCancel}>
+				<button
+					type="button"
+					className="button self-center"
+					onClick={onCancel}
+				>
 					Cancel
 				</button>
 				<button type="submit" className="button self-center">

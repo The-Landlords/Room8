@@ -22,7 +22,7 @@ homeRouter.post("/homes", async (req: Request, res: Response) => {
 	}
 });
 
-homeRouter.put("/homes/id/:id", async (req: Request, res: Response) => {
+homeRouter.patch("/homes/:id", async (req: Request, res: Response) => {
 	try {
 		const updated = await updateHome(req.params.id, req.body);
 

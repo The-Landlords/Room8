@@ -98,13 +98,12 @@ test("Updating a rule item", async () => {
 	const updatedRule = {
 		description:
 			"This is a new rule that enforces washing your hands before using the kitchen, UPDATED",
-		status: "CONFIRMED",
-		homeId: ruleData.homeId,
 	};
 	const updated = await updateRule(r._id, updatedRule);
 	expect(updated).toBeDefined();
 	if (!updated) return;
 	expect(updated.description).toBe(updatedRule.description);
+	expect(updated.status).toBe(ruleData.status);
 });
 
 test("Deleting a rule", async () => {

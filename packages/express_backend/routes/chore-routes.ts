@@ -49,7 +49,7 @@ choreRouter.post("/:homeId/chores", async (req: Request, res: Response) => {
 	}
 });
 // update chore by id
-choreRouter.put(
+choreRouter.patch(
 	"/:homeId/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
