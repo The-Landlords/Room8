@@ -22,7 +22,7 @@ function App() {
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route path="/calendar" element={<h1>Calendar</h1>} />
 					<Route path="/chores" element={<h1>Chores</h1>} />
-					<Route path="/rules/:homeId" element={<RulesPage />} />
+					<Route path="/rules/:homeCode" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"
 						element={<UserSetting />}

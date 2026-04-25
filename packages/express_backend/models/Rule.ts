@@ -22,24 +22,40 @@ const RuleSchema = new mongoose.Schema({
     maxLength: 100,
     trim: true,
   },
+
   status: {
     type: String,
-    enum: ["PENDING", "CONFIRMED",  "REJECTED", "CANCELLED"],
+    enum: ["PENDING", "CONFIRMED", "REJECTED", "CANCELLED"],
     default: "PENDING",
     required: true,
   },
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
   homeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Home",
-    required: true, 
+    required: true,
   },
+
   votes: {
     type: [VoteSchema],
     default: [],
+  },
+
+  // ✅ DELETE VOTING SYSTEM
+  deleteVotes: {
+    type: [VoteSchema],
+    default: [],
+  },
+
+  deleteStatus: {
+    type: String,
+    enum: ["NONE", "PENDING", "CONFIRMED", "REJECTED"],
+    default: "NONE",
   },
 });
 
