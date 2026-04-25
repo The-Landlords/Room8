@@ -1,29 +1,30 @@
 import { Rule } from "./Rule";
 import mongoose from "mongoose";
-//create rule
+
+// create
 export function createRule(data: any) {
-	return Rule.create(data);
+  return Rule.create(data);
 }
 
-// get rule by id
+// Get rule by ID
 export function getRuleById(ruleId: string) {
-	return Rule.findById(ruleId);
+  return Rule.findById(ruleId);
 }
 
-// get all rules from a household
+// Get rules
 export function getRulesByHome(homeId: mongoose.Types.ObjectId) {
-	return Rule.find({ homeId: homeId });
+  return Rule.find({ homeId });
 }
 
-// update rule
+// Update rule
 export function updateRule(ruleId: mongoose.Types.ObjectId, data: any) {
-	return Rule.findByIdAndUpdate(ruleId, data, {
-		returnDocument: "after",
-		runValidators: true,
-	});
+  return Rule.findByIdAndUpdate(ruleId, data, {
+    returnDocument: "after",
+    runValidators: true,
+  });
 }
 
-// delete rule
+// Delete rule
 export function removeRuleById(ruleId: string) {
-	return Rule.findByIdAndDelete({ _id: ruleId });
+  return Rule.findByIdAndDelete(ruleId);
 }

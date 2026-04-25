@@ -1,214 +1,272 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+interface Vote {
+  voteId: string;
+  vote: "YES" | "NO";
+}
+
 interface Rule {
-	_id: string;
-	description: string;
-	status: "PENDING" | "CONFIRMED" | "CANCELLED";
-	createdAt: string;
+  _id: string;
+  description: string;
+  status: "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED";
+  createdAt: string;
+  votes?: Vote[];
 }
 
 export default function RulesPage() {
-	const [rules, setRules] = useState<Rule[]>([]);
-	const [newRuleDesc, setNewRuleDesc] = useState("");
-	const [newRuleStatus, setNewRuleStatus] = useState<
-		"PENDING" | "CONFIRMED" | "CANCELLED"
-	>("PENDING");
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState("");
-	const navigate = useNavigate();
-	const { homeId = "" } = useParams(); // URL: /rules/:homeId
+  const [rules, setRules] = useState<Rule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-	useEffect(() => {
-		if (!homeId) {
-			setError("No home ID");
-			setLoading(false);
-			return;
-		}
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-		fetch(`http://localhost:8000/homes/rules/${homeId}`)
-			.then((res) => {
-				if (!res.ok) throw new Error("Failed to fetch");
-				return res.json();
-			})
-			.then((data) => {
-				setRules(data);
-				setLoading(false);
-			})
-			.catch(() => {
-				setError("Could not load rules");
-				setLoading(false);
-			});
-	}, [homeId]);
+  const navigate = useNavigate();
+  const { homeId } = useParams();
+  const newRuleInputRef = useRef<HTMLTextAreaElement>(null);
 
-	const handleAddRule = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!newRuleDesc.trim() || !homeId) return;
+  // vote id
+  const getVoteId = () => {
+    let id = localStorage.getItem("voteId");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("voteId", id);
+    }
+    return id;
+  };
 
-		fetch(`http://localhost:8000/homes/rules`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				description: newRuleDesc.trim(),
-				status: newRuleStatus,
-				homeId,
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) throw new Error("Add failed");
-				return res.json();
-			})
-			.then((newRule) => {
-				setRules([...rules, newRule]);
-				setNewRuleDesc("");
-				setNewRuleStatus("PENDING");
-			})
-			.catch(() => setError("Failed to add rule"));
-	};
+  const voteId = getVoteId();
 
-	const handleDelete = (ruleId: string) => {
-		if (!window.confirm("Delete rule?")) return;
+  // fetch rules
+  const fetchRules = async () => {
+    if (!homeId) return;
 
-		fetch(`http://localhost:8000/homes/rules/${ruleId}`, {
-			method: "DELETE",
-		})
-			.then((res) => {
-				if (!res.ok) throw new Error("Delete failed");
-			})
-			.then(() => {
-				setRules(rules.filter((r) => r._id !== ruleId));
-			})
-			.catch(() => setError("Failed to delete rule"));
-	};
+    try {
+      setLoading(true);
 
-	if (loading) {
-		return (
-			<div className="background-house min-h-screen flex items-center justify-center">
-				Loading...
-			</div>
-		);
-	}
+      const res = await fetch(
+        `http://localhost:8000/homes/rules/${homeId}`
+      );
 
-	return (
-		<div className="background-house min-h-screen flex flex-col">
-			{/* Top Bar */}
-			<div className="flex items-center px-4 pt-4">
-				{/* Back button */}
-				<button
-					onClick={() => {
-						const username = localStorage.getItem("username");
-						if (username) {
-							navigate(`/homelist/${username}`);
-						} else {
-							navigate("/"); // go to sign in if no username found
-						}
-					}}
-					className="text-3xl text-text mr-4 hover:opacity-70 transition"
-					title="Back to Home List"
-				>
-					←
-				</button>
+      const data: Rule[] = await res.json();
+      setRules(data);
+    } catch (err) {
+      setError("Failed to load rules");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-				<div className="w-144" />
-				<h1 className="header flex-1 text-center">Rules</h1>
-			</div>
+  useEffect(() => {
+    fetchRules();
+  }, [homeId]);
 
-			{/* Rules list */}
-			<div className="flex-1 flex flex-col items-center p-4">
-				<div className="panel w-full max-w-2xl">
-					<h2 className="header-secondary mb-4">Current Rules:</h2>
+  // add rule
+  const handleAddRule = async () => {
+    const input = newRuleInputRef.current;
+    if (!input || !input.value.trim() || !homeId) return;
 
-					<div className="space-y-4">
-						{rules.length === 0 ? (
-							<p className="text-center text-text/70 py-6">
-								No rules yet — add one!
-							</p>
-						) : (
-							rules.map((rule) => (
-								<div
-									key={rule._id}
-									className="bg-primary/40 rounded-lg p-4 shadow-sm relative"
-								>
-									<div className="flex justify-between items-start">
-										<p className="text-text font-secondary text-lg">
-											{rule.description}
-										</p>
+    try {
+      const res = await fetch("http://localhost:8000/homes/rules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: input.value.trim(),
+          homeId,
+        }),
+      });
 
-										<button
-											onClick={() =>
-												handleDelete(rule._id)
-											}
-											className="text-red-700 hover:text-red-900 text-xl font-bold"
-											title="Remove rule"
-										>
-											−
-										</button>
-									</div>
-									<p className="text-sm mt-2 text-text/80">
-										Status: {rule.status}
-									</p>
-								</div>
-							))
-						)}
-					</div>
+      const newRule = await res.json();
+      setRules((prev) => [...prev, newRule]);
 
-					{/* Add Rule */}
-					<div className="mt-6 pt-4 border-t border-text/20">
-						<h3 className="header-secondary mb-2">Add Rule</h3>
-						<form
-							id="add-rule-form"
-							onSubmit={handleAddRule}
-							className="flex flex-col gap-3"
-						>
-							<textarea
-								value={newRuleDesc}
-								onChange={(e) => setNewRuleDesc(e.target.value)}
-								placeholder="e.g. Quiet hours after 10:00 pm"
-								className="list-item w-full resize-y min-h-[90px]"
-								maxLength={100}
-							/>
-							<div className="flex items-center gap-2">
-								<label
-									htmlFor="status"
-									className="text-text font-medium"
-								>
-									Status:
-								</label>
-								<select
-									id="status"
-									value={newRuleStatus}
-									onChange={(e) =>
-										setNewRuleStatus(
-											e.target.value as
-												| "PENDING"
-												| "CONFIRMED"
-												| "CANCELLED"
-										)
-									}
-									className="border border-gray-300 rounded px-2 py-1"
-								>
-									<option value="PENDING">Pending</option>
-									<option value="CONFIRMED">Confirmed</option>
-									<option value="CANCELLED">Cancelled</option>
-								</select>
-							</div>
-							<button
-								type="submit"
-								className="text-3xl text-text hover:opacity-70 transition font-bold self-start mt-2"
-								title="Add new rule"
-							>
-								+
-							</button>
-						</form>
-					</div>
-				</div>
+      input.value = "";
+      setIsAddOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-				{error && (
-					<p className="text-red-600 bg-red-100/50 px-4 py-2 rounded mt-6">
-						{error}
-					</p>
-				)}
-			</div>
-		</div>
-	);
+  // delete rule
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await fetch(
+        `http://localhost:8000/homes/rules/${deleteTarget}`,
+        { method: "DELETE" }
+      );
+
+      setRules((prev) =>
+        prev.filter((r) => r._id !== deleteTarget)
+      );
+
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // vote rule
+  const handleVote = async (ruleId: string, vote: "YES" | "NO") => {
+    setRules((prev) =>
+      prev.map((rule) => {
+        if (rule._id !== ruleId) return rule;
+
+        const votes = rule.votes ? [...rule.votes] : [];
+
+        const existing = votes.find(
+          (v) => v.voteId === voteId
+        );
+
+        if (existing) {
+          existing.vote = vote;
+        } else {
+          votes.push({ voteId, vote });
+        }
+
+        const yes = votes.filter((v) => v.vote === "YES").length;
+        const no = votes.filter((v) => v.vote === "NO").length;
+
+        let status: Rule["status"] = "PENDING";
+
+        if (no > 0) {
+          status = "REJECTED";
+        } else if (yes > 0) {
+          status = "CONFIRMED";
+        }
+
+        return {
+          ...rule,
+          votes,
+          status,
+        };
+      })
+    );
+
+    try {
+      await fetch(
+        `http://localhost:8000/homes/rules/${ruleId}/vote`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voteId, vote }),
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  {/* background */}
+  if (loading) {
+  return (
+    <div className="background-house min-h-screen flex items-center justify-center">
+      Loading...
+    </div>
+  );
 }
+
+return (
+  <div className="background-house min-h-screen">
+
+    {/* header */}
+    <header className="w-full flex items-center justify-between px-6 pt-8">
+      <button onClick={() => navigate(-1)} className="button px-4 py-2">← Back</button>
+      <h1 className="header">Rules</h1>
+      <div className="w-[80px]" />
+    </header>
+
+    {/* main */}
+    <main className="flex justify-center px-6 py-10">
+      <div className="w-full max-w-4xl bg-primary/60 rounded-2xl p-8 space-y-6">
+
+        {rules.map(rule => {
+          const yes = rule.votes?.filter(v => v.vote === "YES").length || 0;
+          const no = rule.votes?.filter(v => v.vote === "NO").length || 0;
+          const myVote = rule.votes?.find(v => v.voteId === voteId)?.vote;
+
+          const statusText =
+            rule.status === "CONFIRMED"
+              ? "Agreed by roommates"
+              : rule.status === "REJECTED"
+              ? "Rejected by roommates"
+              : "Pending";
+
+          return (
+            <div key={rule._id} className="bg-primary/70 rounded-2xl p-6 flex gap-4">
+              <div className="flex-1">
+                <p className="text-lg">{rule.description}</p>
+                <p className="text-sm mt-3">{statusText}</p>
+                <p className="text-sm text-text/70">YES {yes} | NO {no}</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => handleVote(rule._id, "YES")}
+                  className={`button px-3 py-1 ${myVote === "YES" ? "bg-green-500" : ""}`}
+                >
+                  Yes
+                </button>
+
+                <button
+                  onClick={() => handleVote(rule._id, "NO")}
+                  className={`button px-3 py-1 ${myVote === "NO" ? "bg-red-500" : ""}`}
+                >
+                  No
+                </button>
+
+                <button
+                  onClick={() => setDeleteTarget(rule._id)}
+                  className="text-red-700 text-2xl"
+                >
+                  −
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* add button */}
+        <div className="flex justify-center pt-6">
+          <button onClick={() => setIsAddOpen(true)} className="button px-10 py-3">
+            + Add Rule
+          </button>
+        </div>
+      </div>
+    </main>
+
+    {/* add rule*/}
+    {isAddOpen && (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-2xl w-[400px]">
+          <h2 className="text-xl mb-4">Add Rule</h2>
+
+          <textarea
+            ref={newRuleInputRef}
+            placeholder="e.g. Quiet hours after 10:00 pm"
+            className="w-full border p-2 rounded"
+          />
+
+          <div className="flex justify-end gap-3 mt-4">
+            <button onClick={() => setIsAddOpen(false)}>Cancel</button>
+            <button onClick={handleAddRule} className="button">Add</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* delete rule*/}
+    {deleteTarget && (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-2xl w-[350px] text-center">
+          <h2 className="text-lg mb-4">Delete this rule?</h2>
+          <div className="flex justify-center gap-4">
+            <button onClick={() => setDeleteTarget(null)}>No</button>
+            <button onClick={confirmDelete}>Yes</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+);}
