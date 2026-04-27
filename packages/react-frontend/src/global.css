@@ -20,7 +20,7 @@ body {
 		@apply font-primary text-text text-2xl font-semibold p-2  max-w-100;
 	}
 	.panel {
-		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
+		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-40 max-h-150 relative overflow-auto;
 	}
 	.panel-secondary {
 		@apply bg-primary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
@@ -49,6 +49,12 @@ body {
 	.settings-background {
 		@apply min-h-screen flex flex-col;
 		background-color: #efe7df;
+	}
+	.header-thirdary {
+		@apply font-primary text-text text-xl font-medium p-2  max-w-100;
+	}
+	.input {
+		@apply bg-secondary/70 text-text font-secondary  text-sm p-3 rounded-md shadow-sm w-full;
 	}
 }
 

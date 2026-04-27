@@ -96,8 +96,12 @@ export default function HomeList() {
 				)}
 				{addState == "Create" && (
 					<CreateHomeOverlay
+						username={username}
 						onBack={(data) => {
 							setAddState(data);
+						}}
+						onAdd={(data: any) => {
+							handleAdd(data);
 						}}
 					/>
 				)}
