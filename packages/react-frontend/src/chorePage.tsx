@@ -33,8 +33,6 @@ export default function ChorePage() {
 		fetchChores();
 	}, [username, homeCode]);
 
-	const displayChores = chores.length > 0 ? chores : ["All chores done :)"];
-
 	return (
 		<div>
 			<div className="relative mb-4 pt-2">
@@ -53,7 +51,7 @@ export default function ChorePage() {
 			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] bg-primary/70 p-6">
 				<List
 					item="Chores"
-					items={displayChores}
+					items={chores}
 					handleAddClick={() => console.log("add chore")}
 					handleRemoveClick={() => console.log("remove chore")}
 				/>
