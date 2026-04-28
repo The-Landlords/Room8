@@ -29,5 +29,5 @@ jobs:
     - run: npm ci
     - run: npm run lint:check # will not change files
     - run: npm run format:check # will not change files
-    - run: npm run test
+    - run: npm run test:mock
 

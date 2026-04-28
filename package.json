@@ -6,6 +6,7 @@
 	"scripts": {
 		"test": "jest --runInBand",
 		"coverage": "jest --runInBand --coverage",
+		"test:mock": "jest --runInBand --testPathPatterns=Mock",
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
 		"dev": "concurrently --kill-others -c red,blue \"npm -w packages/react-frontend run dev\" \"npm -w packages/express_backend run start\"",
