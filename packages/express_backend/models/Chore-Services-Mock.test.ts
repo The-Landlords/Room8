@@ -1,6 +1,6 @@
 import mockingoose from "mockingoose";
 import mongoose from "mongoose";
-import { expect, test, describe, beforeEach } from "@jest/globals";
+import { expect, test, describe, beforeEach, beforeAll } from "@jest/globals";
 import { Chore } from "./Chore";
 import {
 	createChore,
@@ -23,7 +23,7 @@ const choreData = {
 beforeEach(() => {
 	mockingoose.resetAll();
 });
-
+beforeAll(() => {});
 test("Creating a chore", async () => {
 	const chore = new Chore(choreData);
 	mockingoose(Chore).toReturn(chore, "save");
@@ -83,3 +83,5 @@ test("Removing a chore by ID", async () => {
 	expect(removed).toBeDefined();
 	expect(removed?._id.toString()).toBe(chore._id.toString());
 });
+
+//error testing

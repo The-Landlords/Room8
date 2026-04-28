@@ -160,3 +160,13 @@ test("Removing a user by username", async () => {
 	expect(deleted).toBeDefined();
 	expect(deleted?._id.toString()).toBe(user._id.toString());
 });
+
+test("Creating a user with same username should fail", async () => {
+	const user = new User(dummyUser);
+	mockingoose(User).toReturn(user, "save");
+	try {
+		await createUser(dummyUser);
+	} catch (error) {
+		expect(error).toBeDefined();
+	}
+});
