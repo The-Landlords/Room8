@@ -5,23 +5,16 @@ import {
 	createEvent,
 	removeEventById,
 	eventToICSData,
+	updateEvent,
 } from "../models/Event-Services";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import { getHomeByCode } from "../models/Home-Services";
 
 export const eventRouter = express.Router();
 
-console.log("eventRouter loaded");
-
-eventRouter.get("/test", (_req: Request, res: Response) => {
-	console.log("hit /test");
-	res.send("test ok");
-});
-
-eventRouter.get("/test/ics/:id", async (req: Request, res: Response) => {
+eventRouter.get("/events/ics/:id", async (req: Request, res: Response) => {
 	try {
-		console.log("hit /test/ics/:id", req.params.id);
-
 		const result = await eventToICSData(
 			new mongoose.Types.ObjectId(req.params.id)
 		);
@@ -32,6 +25,10 @@ eventRouter.get("/test/ics/:id", async (req: Request, res: Response) => {
 		}
 
 		res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+		res.setHeader(
+			"Content-Disposition",
+			`attachment; filename="event-${req.params.id}.ics"`
+		);
 		return res.send(result);
 	} catch (err) {
 		console.error("route error:", err);
@@ -39,7 +36,7 @@ eventRouter.get("/test/ics/:id", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.get("/:home/events", async (req: Request, res: Response) => {
+eventRouter.get("/homeId/:home/events", async (req: Request, res: Response) => {
 	try {
 		const homeId = new mongoose.Types.ObjectId(req.params.home);
 		const events = await getEventsByHome(homeId);
@@ -65,9 +62,25 @@ eventRouter.get("/:home/events/:id", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.post("/:home/events", async (req: Request, res: Response) => {
+eventRouter.post("/:homeCode/events", async (req: Request, res: Response) => {
 	try {
-		const event = await createEvent(req.body);
+		const homeCode = req.params.homeCode as string;
+
+		if (!homeCode) {
+			return res.status(400).json({ error: "Missing homeCode" });
+		}
+
+		const home = await getHomeByCode(homeCode);
+
+		if (!home) {
+			return res.status(404).json({ error: "Home not found" });
+		}
+
+		const event = await createEvent({
+			...req.body,
+			homeId: home._id,
+		});
+
 		res.status(201).json(event);
 	} catch (error) {
 		console.error(error);
@@ -75,15 +88,39 @@ eventRouter.post("/:home/events", async (req: Request, res: Response) => {
 	}
 });
 
-eventRouter.delete("/:home/events/:id", async (req: Request, res: Response) => {
+
+eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
 	try {
-		const event = await removeEventById(
-			new mongoose.Types.ObjectId(req.params.id)
-		);
-		if (!event) {
+		const eventId = req.params.eventId;
+
+		const deletedEvent = await removeEventById(eventId);
+
+		if (!deletedEvent) {
 			return res.status(404).json({ error: "Event not found" });
 		}
+
 		return res.sendStatus(204);
+	} catch (error) {
+		console.error(error);
+		return res.status(400).json({ error: "Invalid ID" });
+	}
+});
+
+eventRouter.patch("/events/:eventId", async (req: Request, res: Response) => {
+	try {
+		
+
+		const updatedEvent = await updateEvent(
+			req.params.eventId,
+			req.body,
+			// { new: true } // return updated doc
+		);
+
+		if (!updatedEvent) {
+			return res.status(404).json({ error: "Event not found" });
+		}
+
+		return res.status(200).json(updatedEvent);
 	} catch (error) {
 		console.error(error);
 		res.status(400).json({ error: "Invalid ID" });

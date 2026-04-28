@@ -1,5 +1,6 @@
 // https://mongoosejs.com/docs/
 import mongoose from "mongoose";
+// as of 14 April 2026, we are assuming all events created through this are shared events, and we are not importing individual calendars
 
 export const EventSchema = new mongoose.Schema(
 	{
@@ -15,6 +16,14 @@ export const EventSchema = new mongoose.Schema(
 			maxLength: 400,
 			trim: true,
 		},
+		// either home or valid address
+		location: {
+			type: String,
+			default: "Apartment", // TODO fix this to fetch apartment name
+			required: true,
+			maxLength: 100,
+			trim: true,
+		},
 		start: {
 			type: Date,
 			required: true,
@@ -25,13 +34,6 @@ export const EventSchema = new mongoose.Schema(
 			required: true,
 			index: true,
 		},
-		eventType: {
-			type: String,
-			enum: ["HOME", "TOGETHER", "PERSONAL"],
-			required: true,
-			index: true,
-		},
-
 		homeId: {
 			// type:
 			type: mongoose.Schema.Types.ObjectId,

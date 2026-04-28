@@ -18,14 +18,14 @@ interface ListProps<T> {
 	items: T[];
 	handleAddClick: () => void;
 	handleRemoveClick: (item: T) => void;
-	handleEditClick?: (item: T) => void;
+	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
 
-	// ✅ NEW (for rules or any future feature)
+	// ✅ ADDED: allows custom UI actions (e.g. rules voting)
 	customActions?: (item: T) => React.ReactNode;
 }
 
@@ -40,7 +40,7 @@ export default function List<T>({
 	username,
 	homeCode,
 	eventIds,
-	customActions, // ✅ NEW
+	customActions, // ✅ ADDED: pulled from props
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
@@ -52,7 +52,6 @@ export default function List<T>({
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
-
 			<ul>
 				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">
@@ -65,6 +64,7 @@ export default function List<T>({
 						className="list-item font-bold animate-floatUp"
 						key={getKey(listItem)}
 					>
+						{/* ✅ UPDATED: layout improved + supports custom actions */}
 						<span className="flex flex-row items-start w-full">
 
 							{/* MAIN CONTENT */}
@@ -72,53 +72,83 @@ export default function List<T>({
 								{renderItem(listItem)}
 							</div>
 
-							{/* ✅ NEW: Custom actions (Rules voting, etc.) */}
+							{/* ✅ ADDED: Custom actions (rules voting etc.) */}
 							{customActions && (
 								<div className="ml-4">
 									{customActions(listItem)}
 								</div>
 							)}
 
-							{/* EXISTING STUFF — UNCHANGED */}
 							{isHomeSpaces && username && (
 								<div className="relative ml-auto gap-4 self-end-safe">
 									<Link to="/roommmates">
-										<FontAwesomeIcon className="iconWrapper" icon={faPeopleRoof} />
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faPeopleRoof}
+										/>
 									</Link>
 
 									{homeCode?.[index] && (
-										<Link to={`/events/${username}/${homeCode[index]}`}>
-											<FontAwesomeIcon className="iconWrapper" icon={faCalendar} />
+										<Link
+											to={`/events/${username}/${homeCode[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faCalendar}
+											/>
 										</Link>
 									)}
 
 									<Link to="/chores">
-										<FontAwesomeIcon className="iconWrapper" icon={faClipboardCheck} />
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faClipboardCheck}
+										/>
 									</Link>
 
 									<Link to="/groceries">
-										<FontAwesomeIcon className="iconWrapper" icon={faCartShopping} />
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faCartShopping}
+										/>
 									</Link>
 
 									<Link to="/rules">
-										<FontAwesomeIcon className="iconWrapper" icon={faFileContract} />
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faFileContract}
+										/>
 									</Link>
 
 									<Link to="/dropdown">
-										<FontAwesomeIcon className="iconWrapper" icon={faAngleRight} />
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faAngleRight}
+										/>
 									</Link>
 								</div>
 							)}
 
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
-									<a href={`http://localhost:8000/events/ics/${eventIds[index]}`}>
-										<FontAwesomeIcon className="iconWrapper" icon={faDownload} />
+									<a
+										href={`http://localhost:8000/events/ics/${eventIds[index]}`}
+									>
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faDownload}
+										/>
 									</a>
 
 									{handleEditClick && (
-										<button type="button" onClick={() => handleEditClick(listItem)}>
-											<FontAwesomeIcon className="iconWrapper" icon={faPenToSquare} />
+										<button
+											type="button"
+											onClick={() => handleEditClick(listItem)}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faPenToSquare}
+											/>
 										</button>
 									)}
 								</div>
