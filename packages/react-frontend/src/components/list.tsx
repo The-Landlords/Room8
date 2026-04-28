@@ -61,6 +61,14 @@ export default function List({
 											icon={faPeopleRoof}
 										/>
 									</Link>
+									<Link to="/rules">
+										{" "}
+										{/* FIXME incorrect link */}
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faFileContract}
+										/>
+									</Link>
 									<Link to="/calendar">
 										{" "}
 										{/* FIXME incorrect link */}
@@ -87,14 +95,6 @@ export default function List({
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faCartShopping}
-										/>
-									</Link>
-									<Link to="/rules">
-										{" "}
-										{/* FIXME incorrect link */}
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faFileContract}
 										/>
 									</Link>
 									<Link to="/dropdown">
