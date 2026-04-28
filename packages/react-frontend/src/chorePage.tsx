@@ -3,14 +3,75 @@ import { useNavigate, useParams } from "react-router-dom";
 import List from "./components/list";
 import AddOverlay from "./components/addOverlay";
 
+type Chore = {
+	_id: string;
+	title: string;
+	assignedTo?: string;
+};
+
 export default function ChorePage() {
-	const [chores, setChores] = useState<string[]>([]);
+	const [chores, setChores] = useState<Chore[]>([]);
 	const [showAddOverlay, setShowAddOverlay] = useState(false);
 	const { username = "", homeCode = "" } = useParams();
 	const navigate = useNavigate();
 
+	function formatChore(chore: Chore) {
+		return chore.assignedTo
+			? `${chore.title} (${chore.assignedTo})`
+			: chore.title;
+	}
+
 	async function handleAddChore(value: string) {
-		console.log("new chore:", value);
+		try {
+			if (!username || !homeCode) return;
+
+			const res = await fetch(
+				`http://localhost:8000/${homeCode}/chores`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						title: value,
+					}),
+				}
+			);
+
+			if (!res.ok) throw new Error("Failed to add chore");
+
+			const newChore = await res.json();
+			setChores((prev) => [...prev, newChore]);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	async function handleRemoveChore(itemText: string) {
+		try {
+			if (!homeCode) return;
+
+			const choreToRemove = chores.find(
+				(chore) => formatChore(chore) === itemText
+			);
+
+			if (!choreToRemove) return;
+
+			const res = await fetch(
+				`http://localhost:8000/${homeCode}/chores/${choreToRemove._id}`,
+				{
+					method: "DELETE",
+				}
+			);
+
+			if (!res.ok) throw new Error("Failed to delete chore");
+
+			setChores((prev) =>
+				prev.filter((chore) => chore._id !== choreToRemove._id)
+			);
+		} catch (err) {
+			console.error(err);
+		}
 	}
 
 	useEffect(() => {
@@ -19,17 +80,12 @@ export default function ChorePage() {
 				if (!username || !homeCode) return;
 
 				const res = await fetch(
-					`http://localhost:8000/${username}/${homeCode}/chores`
+					`http://localhost:8000/${homeCode}/chores`
 				);
 				if (!res.ok) throw new Error("Failed to fetch chores");
 
 				const data = await res.json();
-
-				const formatted = data.map(
-					(chore: any) => `${chore.title} (${chore.assignedTo})`
-				);
-
-				setChores(formatted);
+				setChores(data);
 			} catch (err) {
 				console.error(err);
 				setChores([]);
@@ -38,6 +94,8 @@ export default function ChorePage() {
 
 		fetchChores();
 	}, [username, homeCode]);
+
+	const displayChores = chores.map(formatChore);
 
 	return (
 		<div>
@@ -64,9 +122,11 @@ export default function ChorePage() {
 				/>
 				<List
 					item="Chores"
-					items={chores}
+					items={displayChores}
 					handleAddClick={() => setShowAddOverlay(true)}
-					handleRemoveClick={() => console.log("remove chore")}
+					handleRemoveClick={(item: string) =>
+						handleRemoveChore(item)
+					}
 				/>
 			</div>
 		</div>
