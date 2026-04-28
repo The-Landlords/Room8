@@ -20,7 +20,6 @@ export default function AddEventOverlay({
 	const [description, setDescription] = useState("");
 	const [status, setStatus] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
-	
 
 	async function handleAddEvent(e: React.FormEvent) {
 		e.preventDefault();
@@ -46,7 +45,7 @@ export default function AddEventOverlay({
 				end,
 				location,
 				username,
-				description
+				description,
 			}),
 		});
 

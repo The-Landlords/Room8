@@ -106,6 +106,7 @@ test("Updating an event", async () => {
 	expect(fetched.title).toBe(updated.title);
 	expect(fetched.description).toBe(updated.description);
 	expect(fetched.isCompleted).toBe(updated.isCompleted);
+	expect(fetched.homeId.toString).toBe(choreData.homeId.toString); // shouldnt change
 	const now = Date.now();
 	const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 	const expected = now + ONE_WEEK;

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import List from "./components/list";
+import List from "../components/list";
 import { Link, useParams } from "react-router-dom";
-import Overlay from "./components/overlay";
-import HomeAddOverlay from "./components/homeAddOverlay";
-import AddHomeOverlay from "./components/addHomeOverlay";
-import CreateHomeOverlay from "./components/createHomeOverlay";
+import Overlay from "../components/overlay";
+import HomeAddOverlay from "../components/homeAddOverlay";
+import AddHomeOverlay from "../components/addHomeOverlay";
+import CreateHomeOverlay from "../components/createHomeOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
-import RemoveHomeOverlay from "./components/removeHomeOverlay";
+import RemoveHomeOverlay from "../components/removeHomeOverlay";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
@@ -131,7 +131,10 @@ export default function HomeList() {
 						<div>
 							<div>{home.homeName}</div>
 							<div>
-								<FontAwesomeIcon icon={faMapPin} className="text-sm" />
+								<FontAwesomeIcon
+									icon={faMapPin}
+									className="text-sm"
+								/>
 								{home.address}
 							</div>
 						</div>

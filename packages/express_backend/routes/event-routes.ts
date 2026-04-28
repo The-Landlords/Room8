@@ -88,7 +88,6 @@ eventRouter.post("/:homeCode/events", async (req: Request, res: Response) => {
 	}
 });
 
-
 eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
 	try {
 		const eventId = req.params.eventId;
@@ -108,11 +107,9 @@ eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
 
 eventRouter.patch("/events/:eventId", async (req: Request, res: Response) => {
 	try {
-		
-
 		const updatedEvent = await updateEvent(
 			req.params.eventId,
-			req.body,
+			req.body
 			// { new: true } // return updated doc
 		);
 
