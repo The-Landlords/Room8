@@ -14,6 +14,10 @@ export function getHomeByCode(homeCode: string) {
 	return Home.findOne({ homeCode: homeCode });
 }
 
+export function getHomeByName(homeName: string) {
+	return Home.findOne({ homeName: homeName });
+}
+
 export function getHomesByUser(userId: mongoose.Types.ObjectId) {
 	return Home.find({ userIds: { $elemMatch: { userId: userId } } });
 }

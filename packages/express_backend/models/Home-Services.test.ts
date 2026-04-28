@@ -8,6 +8,7 @@ import {
 	getHomeByCode,
 	getHomesByUserAndRelation,
 	getHomesByUser,
+	getHomeByName,
 } from "./Home-Services";
 
 import { Home } from "./Home";
@@ -76,6 +77,13 @@ test("Creating a home", async () => {
 
 test("Fetching (getting) a home", async () => {
 	const fetched = await getHomeById(h._id);
+	if (!fetched) return;
+	expect(fetched).toBeDefined();
+	expect(fetched._id.toString()).toBe(h._id.toString());
+});
+
+test("Fetching (getting) a home by name", async () => {
+	const fetched = await getHomeByName(h.homeName);
 	if (!fetched) return;
 	expect(fetched).toBeDefined();
 	expect(fetched._id.toString()).toBe(h._id.toString());

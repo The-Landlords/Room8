@@ -1,7 +1,7 @@
 // event-services.ts
 import { Event } from "./Event";
 import mongoose from "mongoose";
-import ics from "ics";
+import { createEvent as createIcsEvent } from "ics";
 /**
  * @param homeId the home id to be searched
  * @returns
@@ -68,15 +68,15 @@ export const eventToICSData = async (
 		end: endArray,
 	};
 
-	return new Promise((resolve, reject) => {
-		ics.createEvent(event, (error, value) => {
-			if (error) {
-				console.error("ICS create error:", error);
-				reject(error);
-				return;
+	return new Promise<string>((resolve, reject) => {
+		createIcsEvent(
+			event,
+			(error: Error | undefined, value: string | undefined) => {
+				if (error) return reject(error);
+				if (!value)
+					return reject(new Error("Failed to generate ICS data"));
+				resolve(value);
 			}
-
-			resolve(value);
-		});
+		);
 	});
 };

@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 
 type HomeAddProps = {
 	onPick: (data: string) => void;
