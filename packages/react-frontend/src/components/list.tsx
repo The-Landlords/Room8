@@ -59,7 +59,7 @@ export default function List<T>({
 						className="list-item font-bold animate-floatUp"
 						key={getKey(listItem)}
 					>
-						<span className="flex flex-row">
+						<span className="flex w-full items-center">
 							{renderItem(listItem)}
 
 							{isHomeSpaces && username && !removeMode && (
@@ -139,8 +139,9 @@ export default function List<T>({
 
 							{removeMode && (
 								<button
+									type="button"
 									onClick={() => handleRemoveClick(listItem)}
-									className="ml-4"
+									className="ml-auto"
 								>
 									<FontAwesomeIcon icon={faTrashCan} />
 								</button>
