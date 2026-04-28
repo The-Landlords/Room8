@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import {
 	expect,
 	test,
-	describe,
 	beforeAll,
 	afterAll,
 	beforeEach,
@@ -34,7 +33,7 @@ const basicHomeData = {
 		},
 	],
 };
-let homeId: mongoose.Types.ObjectId;
+// let homeId: mongoose.Types.ObjectId;
 let homeCode: string;
 let h: any; // FIXME type this later
 beforeAll(async () => {

@@ -1,6 +1,6 @@
 import mockingoose from "mockingoose";
 import mongoose from "mongoose";
-import { expect, test, describe, beforeEach } from "@jest/globals";
+import { expect, test, beforeEach } from "@jest/globals";
 import { Event } from "./Event";
 import {
 	createEvent,

@@ -11,14 +11,14 @@ export default function AddEventOverlay({
 	homeCode,
 	username,
 	onAdd,
-	onCancel,
+	// onCancel,
 }: AddEventOverlayProps) {
 	const [title, setTitle] = useState("");
 	const [start, setStart] = useState("");
 	const [end, setEnd] = useState("");
 	const [location, setLocation] = useState("");
 	const [description, setDescription] = useState("");
-	const [status, setStatus] = useState("");
+	// const [status, setStatus] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 
 	async function handleAddEvent(e: React.FormEvent) {
