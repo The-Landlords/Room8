@@ -47,15 +47,9 @@ export default function ChorePage() {
 		}
 	}
 
-	async function handleRemoveChore(itemText: string) {
+	async function handleRemoveChore(choreToRemove: Chore) {
 		try {
 			if (!homeCode) return;
-
-			const choreToRemove = chores.find(
-				(chore) => formatChore(chore) === itemText
-			);
-
-			if (!choreToRemove) return;
 
 			const res = await fetch(
 				`http://localhost:8000/${homeCode}/chores/${choreToRemove._id}`,
@@ -95,8 +89,6 @@ export default function ChorePage() {
 		fetchChores();
 	}, [username, homeCode]);
 
-	const displayChores = chores.map(formatChore);
-
 	return (
 		<div>
 			<div className="relative mb-4 pt-2">
@@ -122,11 +114,11 @@ export default function ChorePage() {
 				/>
 				<List
 					item="Chores"
-					items={displayChores}
+					items={chores}
 					handleAddClick={() => setShowAddOverlay(true)}
-					handleRemoveClick={(item: string) =>
-						handleRemoveChore(item)
-					}
+					handleRemoveClick={handleRemoveChore}
+					getKey={(chore) => chore._id}
+					renderItem={(chore) => <span>{formatChore(chore)}</span>}
 				/>
 			</div>
 		</div>
