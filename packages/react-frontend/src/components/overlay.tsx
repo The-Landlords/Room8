@@ -14,10 +14,10 @@ const Overlay: React.FC<OverlayProps> = ({ children, isOpen, onClose }) => {
 	if (!isOpen) return null;
 
 	return (
-		<div className="overlay-backdrop animate-floatUp" onClick={onClose}>
+		<div className="overlay-backdrop animate-floatUp" onMouseDown={onClose}>
 			<div
 				className="overlay-content"
-				onClick={(e) => e.stopPropagation()}
+				onMouseDown={(e) => e.stopPropagation()}
 			>
 				{children}
 			</div>
