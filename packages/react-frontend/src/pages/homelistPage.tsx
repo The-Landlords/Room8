@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import List from "./components/list";
+import List from "../components/list";
 import { Link, useParams } from "react-router-dom";
-import Overlay from "./components/overlay";
-import HomeAddOverlay from "./components/homeAddOverlay";
-import AddHomeOverlay from "./components/addHomeOverlay";
-import CreateHomeOverlay from "./components/createHomeOverlay";
+import Overlay from "../components/overlay";
+import HomeAddOverlay from "../components/homeAddOverlay";
+import AddHomeOverlay from "../components/addHomeOverlay";
+import CreateHomeOverlay from "../components/createHomeOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserGear } from "@fortawesome/free-solid-svg-icons";
-import RemoveHomeOverlay from "./components/removeHomeOverlay";
+import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
+import RemoveHomeOverlay from "../components/removeHomeOverlay";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
@@ -61,6 +61,8 @@ export default function HomeList() {
 	}, [username]);
 
 	const homeNames = homes?.map((h) => h.homeName);
+	const homeLocations = homes?.map((h) => h.address);
+	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
@@ -116,12 +118,41 @@ export default function HomeList() {
 					/>
 				)}
 			</Overlay>
-			<List
-				item="Home Spaces"
-				items={homeNames}
-				handleAddClick={handleAddClick}
-				handleRemoveClick={handleRemoveClick}
-			/>
+			{homeNames.length > 0 && (
+				<List
+					item="Home Spaces"
+					items={homes}
+					handleAddClick={handleAddClick}
+					handleRemoveClick={(home) => handleRemoveClick(home)}
+					username={username}
+					homeCode={homeCodes}
+					getKey={(home) => home._id}
+					renderItem={(home) => (
+						<div>
+							<div>{home.homeName}</div>
+							<div>
+								<FontAwesomeIcon
+									icon={faMapPin}
+									className="text-sm"
+								/>
+								{home.address}
+							</div>
+						</div>
+					)}
+				/>
+			)}
+			{homeNames.length == 0 && (
+				<List<string>
+					item="Home Spaces"
+					items={["No Homes available! Click below to add."]}
+					handleAddClick={handleAddClick}
+					handleRemoveClick={(name) => handleRemoveClick(name)}
+					username={username}
+					homeCode={homeCodes}
+					getKey={(name) => name}
+					renderItem={(name) => <span>{name}</span>}
+				/>
+			)}
 		</div>
 	);
 }

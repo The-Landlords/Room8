@@ -236,9 +236,6 @@ test("Updating a user", async () => {
 	const updatedData = {
 		username: "barrybbenson",
 		password: "yumyumhoneyyestasty",
-		fullName: "Barry B. Benson",
-		phone: "12345678900",
-		pronouns: "she/her",
 		homeIds: [
 			{ homeId: new mongoose.Types.ObjectId(), relationship: "GUEST" },
 		],
@@ -247,28 +244,22 @@ test("Updating a user", async () => {
 	if (!updatedUser) return;
 	expect(updatedUser).toBeDefined();
 	expect(updatedUser.password).toBe(updatedData.password);
-	expect(updatedUser.pronouns).toBe(updatedData.pronouns);
-	expect(updatedUser.phone).toBe(updatedData.phone);
+	expect(updatedUser.pronouns).toBe(dummyUser.pronouns);
+	expect(updatedUser.phone).toBe(dummyUser.phone);
 });
 
 test("Updating a user by username", async () => {
 	const updatedData = {
 		username: "barrybbenson",
 		password: "yumyumhoneyyestasty",
-		fullName: "Barry B. Benson",
-		phone: "12345678900",
-		pronouns: "she/her",
-		homeIds: [
-			{ homeId: new mongoose.Types.ObjectId(), relationship: "GUEST" },
-		],
 	};
 	const updatedUser = await updateUserByUsername(u.username, updatedData);
 	if (!updatedUser) return;
 	expect(updatedUser).toBeDefined();
 	expect(updatedUser._id).toBeDefined();
 	expect(updatedUser.password).toBe(updatedData.password);
-	expect(updatedUser.pronouns).toBe(updatedData.pronouns);
-	expect(updatedUser.phone).toBe(updatedData.phone);
+	expect(updatedUser.pronouns).toBe(dummyUser.pronouns);
+	expect(updatedUser.phone).toBe(dummyUser.phone);
 });
 
 test("Deleting a user", async () => {

@@ -5,6 +5,7 @@ import {
 	getHomeById,
 	updateHome,
 	deleteHome,
+	getHomeByCode,
 	// addMember,
 	// removeMember,
 } from "../models/Home-Services";
@@ -21,7 +22,7 @@ homeRouter.post("/homes", async (req: Request, res: Response) => {
 	}
 });
 
-homeRouter.put("/homes/:id", async (req: Request, res: Response) => {
+homeRouter.patch("/homes/:id", async (req: Request, res: Response) => {
 	try {
 		const updated = await updateHome(req.params.id, req.body);
 
@@ -37,7 +38,7 @@ homeRouter.put("/homes/:id", async (req: Request, res: Response) => {
 	}
 });
 
-homeRouter.get("/homes/:id", async (req: Request, res: Response) => {
+homeRouter.get("/homes/id/:id", async (req: Request, res: Response) => {
 	try {
 		const event = await getHomeById(req.params.id);
 		if (!event) {
@@ -50,8 +51,21 @@ homeRouter.get("/homes/:id", async (req: Request, res: Response) => {
 		res.status(400).json({ error: "Invalid ID" });
 	}
 });
+homeRouter.get("/homes/code/:code", async (req: Request, res: Response) => {
+	try {
+		const event = await getHomeByCode(req.params.code);
+		if (!event) {
+			return res.status(404).json({ error: "Home not found" });
+		}
+		res.status(200).json(event);
+	} catch (error) {
+		console.error(error);
 
-homeRouter.delete("/homes/:id", async (req: Request, res: Response) => {
+		res.status(400).json({ error: "Code" });
+	}
+});
+
+homeRouter.delete("/homes/id/:id", async (req: Request, res: Response) => {
 	try {
 		const event = await deleteHome(req.params.id);
 		if (!event) {
@@ -66,33 +80,39 @@ homeRouter.delete("/homes/:id", async (req: Request, res: Response) => {
 });
 
 //Add resident to home, creates a relationship of type resident between the user and home
-homeRouter.post("/homes/:id/members", async (req: Request, res: Response) => {
-	try {
-		const relationship = await createRelationship({
-			home: req.params.id,
-			user: req.body.userId,
-			type: "resident",
-		});
-		res.status(201).json(relationship);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Failed to add resident" });
+homeRouter.post(
+	"/homes/id/:id/members",
+	async (req: Request, res: Response) => {
+		try {
+			const relationship = await createRelationship({
+				home: req.params.id,
+				user: req.body.userId,
+				type: "resident",
+			});
+			res.status(201).json(relationship);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Failed to add resident" });
+		}
 	}
-});
+);
 
 //Add guest to home, creates a relationship of type resident between the user and home
-homeRouter.post("/homes/:id/resident", async (req: Request, res: Response) => {
-	try {
-		const relationship = await createRelationship({
-			home: req.params.id,
-			user: req.body.userId,
-			type: "guest",
-		});
-		res.status(201).json(relationship);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Failed to add guest" });
+homeRouter.post(
+	"/homes/id/:id/resident",
+	async (req: Request, res: Response) => {
+		try {
+			const relationship = await createRelationship({
+				home: req.params.id,
+				user: req.body.userId,
+				type: "guest",
+			});
+			res.status(201).json(relationship);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Failed to add guest" });
+		}
 	}
-});
+);
 
 //TODO AddMember and RemoveMember routes
