@@ -5,8 +5,11 @@ import "@testing-library/jest-dom";
 import ChorePage from "./chorePage";
 
 jest.mock("./components/list", () => {
-	return function MockList() {
-		return <button>+</button>;
+	return function MockList(props: {
+		handleAddClick: () => void;
+		handleRemoveClick: () => void;
+	}) {
+		return <button onClick={props.handleAddClick}>+</button>;
 	};
 });
 
@@ -44,11 +47,20 @@ afterEach(() => {
 	jest.restoreAllMocks();
 });
 
-test("renders the add button", async () => {
+test("clicking the add button opens the add overlay", async () => {
+	const user = userEvent.setup();
+
 	renderChorePageWithHistory();
 
+	const addButton = await screen.findByRole("button", { name: "+" });
+	await user.click(addButton);
+
+	expect(await screen.findByText("Add Chore")).toBeInTheDocument();
 	expect(
-		await screen.findByRole("button", { name: "+" })
+		await screen.findByPlaceholderText("enter text")
+	).toBeInTheDocument();
+	expect(
+		await screen.findByRole("button", { name: "Submit" })
 	).toBeInTheDocument();
 });
 

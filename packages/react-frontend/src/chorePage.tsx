@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import List from "./components/list";
+import AddOverlay from "./components/addOverlay";
 
 export default function ChorePage() {
 	const [chores, setChores] = useState<string[]>([]);
+	const [showAddOverlay, setShowAddOverlay] = useState(false);
 	const { username = "", homeCode = "" } = useParams();
 	const navigate = useNavigate();
+
+	async function handleAddChore(value: string) {
+		console.log("new chore:", value);
+	}
 
 	useEffect(() => {
 		async function fetchChores() {
@@ -49,10 +55,17 @@ export default function ChorePage() {
 			</div>
 
 			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] bg-primary/70 p-6">
+				<AddOverlay
+					isOpen={showAddOverlay}
+					title="Add Chore"
+					placeholder="enter text"
+					onSubmit={handleAddChore}
+					onClose={() => setShowAddOverlay(false)}
+				/>
 				<List
 					item="Chores"
 					items={chores}
-					handleAddClick={() => console.log("add chore")}
+					handleAddClick={() => setShowAddOverlay(true)}
 					handleRemoveClick={() => console.log("remove chore")}
 				/>
 			</div>
