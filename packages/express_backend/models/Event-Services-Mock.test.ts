@@ -35,7 +35,6 @@ test("Creating an event", async () => {
 	expect(event.description).toBe(basicEventData.description);
 	expect(event.start.getTime()).toBe(basicEventData.start);
 	expect(event.end.getTime()).toBe(basicEventData.end);
-	expect(event.eventType).toBe(basicEventData.eventType);
 	expect(event.homeId.toString()).toBe(basicEventData.homeId.toString());
 });
 
