@@ -22,11 +22,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-      - name: npm install, build, and test in packages/express_backend
+      - name: npm install
+        run: npm ci
+
+      - name: npm build, and test in packages/express_backend
         run: |
-          npm install --workspaces=false
           npm run -w express_backend build --if-present
-          working-directory: packages/express_backend
+        working-directory: packages/express_backend
+
       - name: Run mock tests
         run: npm run test:mock --workspaces=false
       - name: Upload artifact for deployment job
