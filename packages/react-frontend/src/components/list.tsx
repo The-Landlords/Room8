@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faCalendar,
-	faClipboardCheck,
 	faCartShopping,
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
 	faDownload,
 	faTrashCan,
+	faClipboardCheck,
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -29,12 +29,12 @@ interface ListProps<T> {
 export default function List<T>({
 	item,
 	items,
+	username,
 	handleAddClick,
 	handleRemoveClick,
 	handleEditClick,
 	renderItem,
 	getKey,
-	username,
 	homeCode,
 	eventIds,
 }: ListProps<T>) {
@@ -47,6 +47,7 @@ export default function List<T>({
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
+
 			<ul>
 				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">
@@ -59,7 +60,7 @@ export default function List<T>({
 						className="list-item font-bold animate-floatUp"
 						key={getKey(listItem)}
 					>
-						<span className="flex flex-row">
+						<span className="flex w-full items-center">
 							{renderItem(listItem)}
 
 							{isHomeSpaces && username && !removeMode && (
@@ -68,6 +69,13 @@ export default function List<T>({
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
+										/>
+									</Link>
+
+									<Link to="/rules">
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faFileContract}
 										/>
 									</Link>
 
@@ -82,24 +90,21 @@ export default function List<T>({
 										</Link>
 									)}
 
-									<Link to="/chores">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faClipboardCheck}
-										/>
-									</Link>
+									{homeCode?.[index] && (
+										<Link
+											to={`/${username}/${homeCode[index]}/chores`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faClipboardCheck}
+											/>
+										</Link>
+									)}
 
 									<Link to="/groceries">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faCartShopping}
-										/>
-									</Link>
-
-									<Link to="/rules">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faFileContract}
 										/>
 									</Link>
 
@@ -141,6 +146,7 @@ export default function List<T>({
 
 							{removeMode && (
 								<button
+									type="button"
 									onClick={() => handleRemoveClick(listItem)}
 									className="relative ml-auto flex gap-4 self-end-safe"
 								>

@@ -62,7 +62,7 @@ export const deleteGroceryItem = async (id: mongoose.Types.ObjectId) => {
  * @returns the updated grocery item as a jsonified body
  */
 export const updateGroceryItemQuantity = async (
-	id: string,
+	id: mongoose.Types.ObjectId,
 	newQuantity: number
 ) => {
 	return await Grocery.findByIdAndUpdate(
