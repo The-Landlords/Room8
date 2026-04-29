@@ -6,9 +6,9 @@ export function createRule(data: any) {
   return Rule.create(data);
 }
 
-// Get rule by ID
-export function getRuleById(ruleId: string) {
-  return Rule.findById(ruleId);
+// get rule by id
+export function getRuleById(ruleId: mongoose.Types.ObjectId) {
+	return Rule.findById(ruleId);
 }
 
 // Get rules
@@ -24,7 +24,7 @@ export function updateRule(ruleId: mongoose.Types.ObjectId, data: any) {
   });
 }
 
-// Delete rule
-export function removeRuleById(ruleId: string) {
-  return Rule.findByIdAndDelete(ruleId);
+// delete rule
+export function removeRuleById(ruleId: mongoose.Types.ObjectId) {
+	return Rule.findByIdAndDelete({ _id: ruleId });
 }

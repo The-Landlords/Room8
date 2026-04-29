@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
-import List from "./components/list";
-import Overlay from "./components/overlay";
+import List from "../components/list";
+import Overlay from "../components/overlay";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faMapPin, faCaretRight, faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import AddEventOverlay from "./components/AddEventOverlay";
-import RemoveEventOverlay from "./components/RemoveEventOverlay";
-import EditEventOverlay from "./components/EditEventOverlay";
+import {
+	faClock,
+	faMapPin,
+	faCaretRight,
+	faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
+import AddEventOverlay from "../components/AddEventOverlay";
+import RemoveEventOverlay from "../components/RemoveEventOverlay";
+import EditEventOverlay from "../components/EditEventOverlay";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
@@ -18,7 +23,6 @@ export default function CalendarPage() {
 	const [eventEdit, setEventEdit] = useState<any>(null);
 	const [showUpcoming, setShowUpcoming] = useState(true);
 	const [showPast, setShowPast] = useState(false);
-
 
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
@@ -80,7 +84,8 @@ export default function CalendarPage() {
 			.then((data) => {
 				const sorted = data.sort(
 					(a: any, b: any) =>
-						new Date(a.start).getTime() - new Date(b.start).getTime()
+						new Date(a.start).getTime() -
+						new Date(b.start).getTime()
 				);
 				setEvents(sorted);
 			})
@@ -94,21 +99,18 @@ export default function CalendarPage() {
 		fetchEvents().catch(console.error);
 	}, [username, homeCode]);
 
-
 	const now = new Date();
 
 	const upcomingEvents = events
 		.filter((e) => new Date(e.start) >= now)
 		.sort(
-			(a, b) =>
-				new Date(a.start).getTime() - new Date(b.start).getTime()
+			(a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
 		);
 
 	const pastEvents = events
 		.filter((e) => new Date(e.start) < now)
 		.sort(
-			(a, b) =>
-				new Date(b.start).getTime() - new Date(a.start).getTime()
+			(a, b) => new Date(b.start).getTime() - new Date(a.start).getTime()
 		);
 
 	const renderItem = (event: any) => (
@@ -190,7 +192,10 @@ export default function CalendarPage() {
 						onClick={() => setShowUpcoming((prev) => !prev)}
 					>
 						<span>Upcoming Events</span>
-						<FontAwesomeIcon icon={showUpcoming ? faCaretDown : faCaretRight} className="ml-2 transition-transform duration-200"/>
+						<FontAwesomeIcon
+							icon={showUpcoming ? faCaretDown : faCaretRight}
+							className="ml-2 transition-transform duration-200"
+						/>
 					</button>
 
 					{showUpcoming && (
@@ -216,7 +221,10 @@ export default function CalendarPage() {
 						onClick={() => setShowPast((prev) => !prev)}
 					>
 						<span>Past Events</span>
-						<FontAwesomeIcon icon={showPast ? faCaretDown : faCaretRight} className="ml-2 transition-transform duration-200"/>
+						<FontAwesomeIcon
+							icon={showPast ? faCaretDown : faCaretRight}
+							className="ml-2 transition-transform duration-200"
+						/>
 					</button>
 
 					{showPast && (

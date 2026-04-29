@@ -45,7 +45,6 @@ export default function List<T>({
 
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
-
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
@@ -134,7 +133,9 @@ export default function List<T>({
 									{handleEditClick && (
 										<button
 											type="button"
-											onClick={() => handleEditClick(listItem)}
+											onClick={() =>
+												handleEditClick(listItem)
+											}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"

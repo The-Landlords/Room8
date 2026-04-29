@@ -12,6 +12,7 @@ Clone the repo, ensure node is installed, and run the following:
 npm ci
 npm install prettier
 npm install lint
+npm install jest
 pre-commit install
 npm i -g concurrently
 npm install -w packages/express_backend ics
@@ -79,9 +80,9 @@ _This table is unfinished as of 10 Mar_
 
 ## Unit Testing For Schemas
 
-As of `10 March 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage.
+As of `28 April 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage with updated with Mockinggoose.
 | File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
-| ------------------- | ------- | -------- | ------- | ------- | ----------------- |
+|---------------------|--------:|---------:|--------:|--------:|-------------------|
 | All files | 100 | 100 | 100 | 100 | |
 | Chore-Services.ts | 100 | 100 | 100 | 100 | |
 | Chore.ts | 100 | 100 | 100 | 100 | |
