@@ -122,10 +122,12 @@ export default function HomeList() {
 			<List
 				item="Home Spaces"
 				items={homeNames}
-				codes={homeCodes}
+				homeCode={homeCodes}
 				username={username}
 				handleAddClick={handleAddClick}
 				handleRemoveClick={handleRemoveClick}
+				renderItem={(item) => <span>{item}</span>}
+				getKey={(item) => item}
 			/>
 		</div>
 	);

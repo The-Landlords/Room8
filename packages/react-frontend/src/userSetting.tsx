@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { API_BASE } from "./config";
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
 function isValidPhone(phone: string) {
@@ -34,7 +34,7 @@ export default function UserSetting() {
 	});
 
 	const [user, setUser] = useState<any>(null);
-	const [error, setError] = useState("");
+	// const [error, setError] = useState("");
 
 	useEffect(() => {
 		if (!username) return;
@@ -98,14 +98,11 @@ export default function UserSetting() {
 
 		console.log("sending:", payload);
 
-		const res = await fetch(
-			`http://localhost:8000/users/${user.username}`,
-			{
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			}
-		);
+		await fetch(`${API_BASE}/users/${user.username}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
 	}
 	return (
 		<div className="settings-background">
