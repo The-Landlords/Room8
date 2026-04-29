@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - room8
 on:
   push:
     branches:
-      - CI/CD
+      - CI/CD # FIXME change to main for production
   workflow_dispatch:
 
 jobs:
@@ -48,18 +48,16 @@ jobs:
         with:
           name: node-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EB8B5B76C040469EAD8A4200BD4C2340 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_40813F112FDF4677BEBAA0156A2680FB }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_685AB0B357C1457FA38BE2DB71D70184 }}
+      # - name: Login to Azure
+      #   uses: azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EB8B5B76C040469EAD8A4200BD4C2340 }}
+      #     tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_40813F112FDF4677BEBAA0156A2680FB }}
+      #     subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_685AB0B357C1457FA38BE2DB71D70184 }}
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'room8'
-          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
-          
