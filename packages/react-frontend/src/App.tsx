@@ -26,7 +26,7 @@ function App() {
 						element={<CalendarPage />}
 					/>
 					<Route path="/chores" element={<h1>Chores</h1>} />
-					<Route path="/rules/:homeCode" element={<RulesPage />} />
+					<Route path="/rules/:username/:homeCode" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"
 						element={<UserSetting />}

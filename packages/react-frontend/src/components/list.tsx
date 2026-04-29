@@ -25,8 +25,6 @@ interface ListProps<T> {
 	homeCode?: string[];
 	eventIds?: string[];
 
-	// ✅ ADDED: allows custom UI actions (e.g. rules voting)
-	customActions?: (item: T) => React.ReactNode;
 }
 
 export default function List<T>({
@@ -40,7 +38,6 @@ export default function List<T>({
 	username,
 	homeCode,
 	eventIds,
-	customActions, // ✅ ADDED: pulled from props
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
@@ -64,20 +61,14 @@ export default function List<T>({
 						className="list-item font-bold animate-floatUp"
 						key={getKey(listItem)}
 					>
-						{/* ✅ UPDATED: layout improved + supports custom actions */}
-						<span className="flex flex-row items-start w-full">
+						
+						<span className="flex flex-row">
 
 							{/* MAIN CONTENT */}
 							<div className="flex-1">
 								{renderItem(listItem)}
 							</div>
 
-							{/* ✅ ADDED: Custom actions (rules voting etc.) */}
-							{customActions && (
-								<div className="ml-4">
-									{customActions(listItem)}
-								</div>
-							)}
 
 							{isHomeSpaces && username && (
 								<div className="relative ml-auto gap-4 self-end-safe">
@@ -113,7 +104,7 @@ export default function List<T>({
 										/>
 									</Link>
 
-									<Link to="/rules">
+									<Link to={`/rules/${username}/${homeCode?.[index]}`}>
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faFileContract}

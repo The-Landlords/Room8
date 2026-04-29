@@ -46,7 +46,6 @@ const RuleSchema = new mongoose.Schema({
     default: [],
   },
 
-  // ✅ DELETE VOTING SYSTEM
   deleteVotes: {
     type: [VoteSchema],
     default: [],
