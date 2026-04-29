@@ -9,10 +9,10 @@ import {
 } from "../models/Home-Services.ts";
 import {
 	getUserByUsername,
-	// getUsersByHomeAndRelation,
+	getUsersByHomeAndRelation,
 	updateUserById,
 } from "../models/User-Services.ts";
-// import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 export const relationRouter = express.Router();
 

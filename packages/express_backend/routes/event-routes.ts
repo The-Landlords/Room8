@@ -8,7 +8,7 @@ import {
 	updateEvent,
 } from "../models/Event-Services";
 import type { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import { getHomeByCode } from "../models/Home-Services";
 
 export const eventRouter = express.Router();

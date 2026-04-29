@@ -63,7 +63,7 @@ export default function HomeList() {
 	}, [username]);
 
 	const homeNames = homes?.map((h) => h.homeName);
-	// const homeLocations = homes?.map((h) => h.address);
+	const homeLocations = homes?.map((h) => h.address);
 	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
 		<div className="background-house flex flex-col items-center">

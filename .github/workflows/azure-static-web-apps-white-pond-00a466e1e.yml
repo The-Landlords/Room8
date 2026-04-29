@@ -15,8 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+
       - uses: actions/checkout@v4
 
+      - name: install node modules
+        run: | 
+          npm ci
+          npm install -w react-frontend ol
+          
       - name: Build And Deploy
         uses: Azure/static-web-apps-deploy@v1
         with:

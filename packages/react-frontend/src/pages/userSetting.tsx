@@ -34,7 +34,7 @@ export default function UserSetting() {
 	});
 
 	const [user, setUser] = useState<any>(null);
-	// const [error, setError] = useState("");
+	const [error, setError] = useState("");
 
 	useEffect(() => {
 		if (!username) return;
@@ -89,8 +89,8 @@ export default function UserSetting() {
 			.filter(Boolean);
 	}
 	async function saveProfile() {
-		if (!username || !user) return;
-
+		if (!username) return;
+		console.log("sending:", draft);
 		const payload = {
 			...draft,
 			allergens: toList(draft.allergens),
@@ -107,16 +107,9 @@ export default function UserSetting() {
 					body: JSON.stringify(payload),
 				}
 			);
-
-			if (!res.ok) {
-				throw new Error(`Save failed: ${res.status}`);
-			}
-
-			const updatedUser = await res.json();
-			setUser(updatedUser);
-			navigate(`/homelist/${username}`);
 		} catch (err) {
 			console.error(err);
+			setError("Unable to save profile.");
 		}
 	}
 	return (
