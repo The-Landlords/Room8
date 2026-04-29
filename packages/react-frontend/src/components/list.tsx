@@ -61,19 +61,8 @@ export default function List<T>({
 						className="list-item font-bold animate-floatUp"
 						key={getKey(listItem)}
 					>
-<<<<<<< HEAD
-						
-						<span className="flex flex-row">
-
-							{/* MAIN CONTENT */}
-							<div className="flex-1">
-								{renderItem(listItem)}
-							</div>
-
-=======
 						<span className="flex w-full items-center">
 							{renderItem(listItem)}
->>>>>>> main
 
 							{isHomeSpaces && username && !removeMode && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
@@ -84,12 +73,6 @@ export default function List<T>({
 										/>
 									</Link>
 
-									<Link to="/rules">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faFileContract}
-										/>
-									</Link>
 
 									{homeCode?.[index] && (
 										<Link
@@ -119,17 +102,16 @@ export default function List<T>({
 											icon={faCartShopping}
 										/>
 									</Link>
+                                    
+									{homeCode?.[index] && (
+									    <Link to={`/rules/${username}/${homeCode[index]}`}>
+										    <FontAwesomeIcon
+											    className="iconWrapper"
+											    icon={faFileContract}
+										    />
+									    </Link>
+                                    )}
 
-<<<<<<< HEAD
-									<Link to={`/rules/${username}/${homeCode?.[index]}`}>
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faFileContract}
-										/>
-									</Link>
-
-=======
->>>>>>> main
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"
