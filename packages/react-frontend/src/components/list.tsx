@@ -6,8 +6,8 @@ import {
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
-	faTrashCan,
 	faDownload,
+	faTrashCan,
 	faClipboardCheck,
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,7 @@ interface ListProps<T> {
 	items: T[];
 	handleAddClick: () => void;
 	handleRemoveClick: (item: T) => void;
-	handleEditClick?: (item: T) => void;
+	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
@@ -47,6 +47,7 @@ export default function List<T>({
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
+
 			<ul>
 				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">
@@ -63,19 +64,21 @@ export default function List<T>({
 							{renderItem(listItem)}
 
 							{isHomeSpaces && username && !removeMode && (
-								<div className="relative ml-auto gap-4 self-end-safe">
+								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<Link to="/roommmates">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
 										/>
 									</Link>
+
 									<Link to="/rules">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faFileContract}
 										/>
 									</Link>
+
 									{homeCode?.[index] && (
 										<Link
 											to={`/events/${username}/${homeCode[index]}`}
@@ -86,6 +89,7 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
+
 									{homeCode?.[index] && (
 										<Link
 											to={`/${username}/${homeCode[index]}/chores`}
@@ -96,12 +100,14 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
+
 									<Link to="/groceries">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faCartShopping}
 										/>
 									</Link>
+
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -121,6 +127,7 @@ export default function List<T>({
 											icon={faDownload}
 										/>
 									</a>
+
 									{handleEditClick && (
 										<button
 											type="button"
@@ -155,6 +162,7 @@ export default function List<T>({
 				<button onClick={handleAddClick} className="button self-center">
 					+
 				</button>
+
 				<button
 					onClick={() => setRemoveMode((prev) => !prev)}
 					className="button self-center"
