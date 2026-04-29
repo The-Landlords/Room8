@@ -15,6 +15,7 @@ export default function HomeList() {
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [homeDelete, setHomeDelete] = useState();
+	const API_BASE = import.meta.env.VITE_API_URL;
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
@@ -45,9 +46,7 @@ export default function HomeList() {
 	async function fetchHomes() {
 		if (!username) return;
 
-		fetch(
-			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/relate/${username}`
-		)
+		fetch(`${API_BASE}//relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();

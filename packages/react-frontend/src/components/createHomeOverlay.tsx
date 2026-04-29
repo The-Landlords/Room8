@@ -10,6 +10,7 @@ import Point from "ol/geom/Point";
 import { Fill, Stroke, Style, Text } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
 import Zoom from "ol/control/Zoom";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 /*Component is a form field to create a new home object */
 type CreateHomeProps = {
@@ -52,7 +53,7 @@ export default function CreateHomeOverlay({
 		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/relate/${username}/${homeCode}`,
+			`${API_BASE}//relate/${username}/${homeCode}`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -64,14 +65,11 @@ export default function CreateHomeOverlay({
 	async function createHome(homeData: any) {
 		if (!username) return;
 
-		const promise = await fetch(
-			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/homes`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(homeData),
-			}
-		);
+		const promise = await fetch(`${API_BASE}//homes`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(homeData),
+		});
 		return promise;
 	}
 	async function onCreateHome() {

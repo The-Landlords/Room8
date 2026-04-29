@@ -1,4 +1,5 @@
 import { useState } from "react";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 interface AddEventOverlayProps {
 	homeCode?: string;
@@ -34,21 +35,18 @@ export default function AddEventOverlay({
 			return;
 		}
 
-		const res = await fetch(
-			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/${homeCode}/events`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					title,
-					start,
-					end,
-					location,
-					username,
-					description,
-				}),
-			}
-		);
+		const res = await fetch(`${API_BASE}//${homeCode}/events`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				title,
+				start,
+				end,
+				location,
+				username,
+				description,
+			}),
+		});
 
 		const data = await res.json();
 

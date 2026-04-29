@@ -41,21 +41,18 @@ export default function EditEventOverlay({
 			throw new Error("Missing event id");
 		}
 
-		const res = await fetch(
-			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/events/${eventEdit._id}`,
-			{
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					title,
-					start,
-					end,
-					location,
-					description,
-					status,
-				}),
-			}
-		);
+		const res = await fetch(`${API_BASE}//events/${eventEdit._id}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				title,
+				start,
+				end,
+				location,
+				description,
+				status,
+			}),
+		});
 
 		const data = await res.json();
 

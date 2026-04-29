@@ -16,12 +16,9 @@ export default function RemoveEventOverlay({
 				return;
 			}
 
-			const res = await fetch(
-				`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/events/${eventRemove._id}`,
-				{
-					method: "DELETE",
-				}
-			);
+			const res = await fetch(`${API_BASE}//events/${eventRemove._id}`, {
+				method: "DELETE",
+			});
 
 			console.log("delete status:", res.status);
 

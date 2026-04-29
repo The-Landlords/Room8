@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
 function isValidPhone(phone: string) {
@@ -39,9 +41,7 @@ export default function UserSetting() {
 	useEffect(() => {
 		if (!username) return;
 
-		fetch(
-			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/users/username/${username}`
-		)
+		fetch(`${API_BASE}//users/username/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
@@ -99,14 +99,11 @@ export default function UserSetting() {
 		};
 
 		try {
-			const res = await fetch(
-				`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/users/${user.username}`,
-				{
-					method: "PATCH",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(payload),
-				}
-			);
+			const res = await fetch(`${API_BASE}//users/${user.username}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
 
 			if (!res.ok) {
 				throw new Error("Unable to save profile.");
