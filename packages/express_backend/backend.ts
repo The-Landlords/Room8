@@ -17,14 +17,15 @@ export const port = 8000;
 
 //default port to listen
 
-app.use(
+app.options(
+	"*",
 	cors({
 		origin: "https://white-pond-00a466e1e.7.azurestaticapps.net",
-		methods: ["GET", "POST", "PUT", "DELETE"],
+		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization"],
 		credentials: true,
 	})
 );
-
 app.use(express.json());
 
 //TODO FIX clarify this practice with prof & team
