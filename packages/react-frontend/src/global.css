@@ -113,6 +113,14 @@ body {
 	.bubble-header {
 		@apply font-primary text-text text-3xl text-center mb-6 leading-tight;
 	}
+    
+	.header-thirdary {
+		@apply font-primary text-text text-xl font-medium p-2  max-w-100;
+	}
+    
+	.input {
+		@apply bg-secondary/70 text-text font-secondary  text-sm p-3 rounded-md shadow-sm w-full;
+	}
 }
 
 @keyframes floatUp {
