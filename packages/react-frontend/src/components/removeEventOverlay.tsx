@@ -1,5 +1,3 @@
-import React from "react";
-
 type RemoveEventProps = {
 	onRemove: (data: any) => void;
 	eventRemove: any;

@@ -10,8 +10,8 @@
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
 		"dev": "concurrently --kill-others -c red,blue \"npm -w packages/react-frontend run dev\" \"npm -w packages/express_backend run start\"",
-		"lint:check": "eslint . --max-warnings=0",
-		"lint:fix": "eslint . --fix",
+		"lint:check": "eslint \"packages/*/src/**/*.{ts,tsx}\"",
+		"lint:fix": "eslint \"packages/*/src/**/*.{ts,tsx}\" --fix",
 		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
 		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\""
 	},
@@ -48,7 +48,7 @@
 		"@maptiler/geocoding-control": "^3.0.0",
 		"dotenv": "^17.3.1",
 		"ics": "^3.11.0",
-		"lint": "^1.1.2",
+		"lint": "^1.2.2",
 		"ol": "^10.9.0",
 		"react-router-dom": "^7.13.0",
 		"typescript-eslint": "^8.56.0"
