@@ -46,6 +46,7 @@
 	},
 	"dependencies": {
 		"@maptiler/geocoding-control": "^3.0.0",
+		"cors": "^2.8.6",
 		"dotenv": "^17.3.1",
 		"ics": "^3.11.0",
 		"lint": "^1.2.2",
