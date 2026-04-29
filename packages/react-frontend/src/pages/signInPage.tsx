@@ -21,7 +21,7 @@ export default function SignInPage() {
 		}
 
 		//send login request
-		fetch(`${API_BASE}//login`, {
+		fetch(`${API_BASE}/login`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

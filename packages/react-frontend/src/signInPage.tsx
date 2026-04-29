@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { API_BASE } from "./config";
 export default function SignInPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -21,7 +22,7 @@ export default function SignInPage() {
 		}
 
 		//send login request
-		fetch(`http://localhost:8000/login`, {
+		fetch(`${API_BASE}/login`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
