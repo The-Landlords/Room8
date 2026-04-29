@@ -15,7 +15,7 @@ export default function HomeList() {
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [homeDelete, setHomeDelete] = useState();
-	const API_BASE = import.meta.env.VITE_API_URL;
+	import { API_BASE } from "../config";
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);

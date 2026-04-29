@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 

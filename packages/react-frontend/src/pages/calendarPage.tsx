@@ -12,7 +12,7 @@ import {
 import AddEventOverlay from "../components/addEventOverlay";
 import RemoveEventOverlay from "../components/removeEventOverlay";
 import EditEventOverlay from "../components/EditEventOverlay";
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);

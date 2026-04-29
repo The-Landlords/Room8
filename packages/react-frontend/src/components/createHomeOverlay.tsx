@@ -10,7 +10,7 @@ import Point from "ol/geom/Point";
 import { Fill, Stroke, Style, Text } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
 import Zoom from "ol/control/Zoom";
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 
 /*Component is a form field to create a new home object */
 type CreateHomeProps = {

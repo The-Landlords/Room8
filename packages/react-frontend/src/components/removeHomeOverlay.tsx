@@ -3,7 +3,7 @@
 // import { useState } from "react";
 
 /*component is to add a new home based off a given code*/
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 
 type RemoveHomeProps = {
 	onRemove: any;

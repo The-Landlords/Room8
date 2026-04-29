@@ -1,5 +1,5 @@
 import { useState } from "react";
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 
 /*component is to add a new home based off a given code*/
 

@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 
 interface ListProps<T> {
 	item: string;

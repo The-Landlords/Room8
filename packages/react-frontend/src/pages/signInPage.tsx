@@ -1,5 +1,5 @@
 // src/signInPage.tsx
-const API_BASE = import.meta.env.VITE_API_URL;
+import { API_BASE } from "../config";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
