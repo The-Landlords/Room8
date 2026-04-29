@@ -25,8 +25,8 @@ jobs:
       - name: npm install, build, and test in packages/express_backend
         run: |
           npm install --workspaces=false
-          npm run -w express-backend build --if-present
-          npm run -w express-backend test --if-present
+          npm run -w express_backend build --if-present
+          npm run -w express_backend test --if-present
           working-directory: packages/express_backend
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
