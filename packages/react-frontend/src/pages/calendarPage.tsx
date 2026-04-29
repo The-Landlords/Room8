@@ -67,7 +67,7 @@ export default function CalendarPage() {
 	}
 	async function fetchEvents() {
 		const homeObject = await fetch(
-			`http://localhost:8000/homes/code/${homeCode}`
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/homes/code/${homeCode}`
 		);
 		if (!homeObject.ok) throw new Error("Home not found");
 
@@ -76,7 +76,9 @@ export default function CalendarPage() {
 
 		setHomeName(data.homeName);
 
-		fetch(`http://localhost:8000/homeId/${homeObjectId}/events/`)
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/homeId/${homeObjectId}/events/`
+		)
 			.then((res) => {
 				if (!res.ok) throw new Error("Events not found");
 				return res.json();

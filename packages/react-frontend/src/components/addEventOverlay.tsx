@@ -36,18 +36,21 @@ export default function AddEventOverlay({
 			return;
 		}
 
-		const res = await fetch(`http://localhost:8000/${homeCode}/events`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				title,
-				start,
-				end,
-				location,
-				username,
-				description,
-			}),
-		});
+		const res = await fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/${homeCode}/events`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					title,
+					start,
+					end,
+					location,
+					username,
+					description,
+				}),
+			}
+		);
 
 		const data = await res.json();
 

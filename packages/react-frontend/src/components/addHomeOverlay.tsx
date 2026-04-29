@@ -21,7 +21,7 @@ export default function AddHomeOverlay({
 		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`http://localhost:8000/relate/${username}/${homeCode}`,
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/relate/${username}/${homeCode}`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },

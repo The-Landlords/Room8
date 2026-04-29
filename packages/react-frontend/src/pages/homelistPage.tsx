@@ -45,7 +45,9 @@ export default function HomeList() {
 	async function fetchHomes() {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/relate/${username}`)
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/relate/${username}`
+		)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();

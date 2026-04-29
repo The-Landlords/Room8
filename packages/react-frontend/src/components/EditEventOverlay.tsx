@@ -42,7 +42,7 @@ export default function EditEventOverlay({
 		}
 
 		const res = await fetch(
-			`http://localhost:8000/events/${eventEdit._id}`,
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/events/${eventEdit._id}`,
 			{
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },

@@ -22,7 +22,7 @@ export default function RemoveHomeOverlay({
 		console.log("connecting home to user!");
 
 		const promise = await fetch(
-			`http://localhost:8000/relate/${username}/${homeRemove}`,
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/relate/${username}/${homeRemove}`,
 			{
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },

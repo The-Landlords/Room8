@@ -18,14 +18,17 @@ export default function SignInPage() {
 			setError("Please fill in username, password, and full name");
 			return;
 		}
-		fetch(`http://localhost:8000/users`, {
-			// matches user-routes.ts POST /users
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ username, password, fullName }),
-		})
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/users`,
+			{
+				// matches user-routes.ts POST /users
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ username, password, fullName }),
+			}
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.error) {

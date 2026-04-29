@@ -26,7 +26,9 @@ export default function RulesPage() {
 			return;
 		}
 
-		fetch(`http://localhost:8000/homes/rules/${homeId}`)
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/homes/rules/${homeId}`
+		)
 			.then((res) => {
 				if (!res.ok) throw new Error("Failed to fetch");
 				return res.json();
@@ -45,15 +47,18 @@ export default function RulesPage() {
 		e.preventDefault();
 		if (!newRuleDesc.trim() || !homeId) return;
 
-		fetch(`http://localhost:8000/homes/rules`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				description: newRuleDesc.trim(),
-				status: newRuleStatus,
-				homeId,
-			}),
-		})
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/homes/rules`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					description: newRuleDesc.trim(),
+					status: newRuleStatus,
+					homeId,
+				}),
+			}
+		)
 			.then((res) => {
 				if (!res.ok) throw new Error("Add failed");
 				return res.json();
@@ -69,9 +74,12 @@ export default function RulesPage() {
 	const handleDelete = (ruleId: string) => {
 		if (!window.confirm("Delete rule?")) return;
 
-		fetch(`http://localhost:8000/homes/rules/${ruleId}`, {
-			method: "DELETE",
-		})
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/homes/rules/${ruleId}`,
+			{
+				method: "DELETE",
+			}
+		)
 			.then((res) => {
 				if (!res.ok) throw new Error("Delete failed");
 			})

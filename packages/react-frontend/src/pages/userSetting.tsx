@@ -39,7 +39,9 @@ export default function UserSetting() {
 	useEffect(() => {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/users/username/${username}`)
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/users/username/${username}`
+		)
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
@@ -98,7 +100,7 @@ export default function UserSetting() {
 
 		try {
 			const res = await fetch(
-				`http://localhost:8000/users/${user.username}`,
+				`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/users/${user.username}`,
 				{
 					method: "PATCH",
 					headers: { "Content-Type": "application/json" },

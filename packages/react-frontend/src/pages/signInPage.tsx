@@ -21,13 +21,16 @@ export default function SignInPage() {
 		}
 
 		//send login request
-		fetch(`http://localhost:8000/login`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ username, password }),
-		})
+		fetch(
+			`https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net/login`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ username, password }),
+			}
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.error) {
