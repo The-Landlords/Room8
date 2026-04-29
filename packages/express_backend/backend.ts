@@ -16,9 +16,11 @@ export const app = express();
 export const port = 8000;
 
 //default port to listen
+
 app.use(
 	cors({
 		origin: "https://white-pond-00a466e1e.7.azurestaticapps.net",
+		methods: ["GET", "POST", "PUT", "DELETE"],
 		credentials: true,
 	})
 );
