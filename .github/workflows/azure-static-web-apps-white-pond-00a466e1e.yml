@@ -15,14 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-
       - uses: actions/checkout@v4
 
-      - name: install node modules
-        run: | 
+      - name: Install node modules
+        run: |
           npm ci
-          npm install -w react-frontend ol
-          
+
       - name: Build And Deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -31,6 +29,5 @@ jobs:
           action: upload
           app_location: "packages/react-frontend"
           api_location: ""
-          app_build_command: "npm run build"
+          app_build_command: "npm run build --workspace react-frontend"
           output_location: "dist"
-
