@@ -1,3 +1,4 @@
+const API_BASE = import.meta.env.VITE_API_URL;
 type RemoveEventProps = {
 	onRemove: (data: any) => void;
 	eventRemove: any;
