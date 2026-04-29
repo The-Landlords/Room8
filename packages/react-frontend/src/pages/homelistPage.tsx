@@ -8,6 +8,7 @@ import CreateHomeOverlay from "../components/createHomeOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import RemoveHomeOverlay from "../components/removeHomeOverlay";
+import { API_BASE } from "../config";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
@@ -15,7 +16,6 @@ export default function HomeList() {
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [homeDelete, setHomeDelete] = useState();
-	import { API_BASE } from "../config";
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
