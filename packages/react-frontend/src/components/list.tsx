@@ -64,7 +64,7 @@ export default function List<T>({
 							{renderItem(listItem)}
 
 							{isHomeSpaces && username && !removeMode && (
-								<div className="relative ml-auto gap-4 self-end-safe">
+								<div className="relative ml-auto gap-4 flex self-end-safe">
 									<Link to="/roommmates">
 										<FontAwesomeIcon
 											className="iconWrapper"
