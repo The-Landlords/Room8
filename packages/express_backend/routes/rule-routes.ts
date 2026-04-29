@@ -117,10 +117,15 @@ ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
     const yes = rule.votes.filter(v => v.vote === "YES").length;
     const no = rule.votes.filter(v => v.vote === "NO").length;
 
-    rule.status =
-      yes > no ? "CONFIRMED" :
-      no > yes ? "REJECTED" :
-      "PENDING";
+    const TOTAL_RESIDENTS = 4;
+
+    if (no > 0) {
+      rule.status = "REJECTED";
+    } else if (yes >= TOTAL_RESIDENTS) {
+      rule.status = "CONFIRMED";
+    } else {
+      rule.status = "PENDING";
+    }
 
     await rule.save();
 

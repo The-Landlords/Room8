@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import List from "./components/list";
-import RuleCard from "./components/RuleCard";
-import DeleteVotePanel from "./components/DeleteVotePanel";
+import List from "../components/list";
+import RuleCard from "../components/RuleCard";
+import DeleteVotePanel from "../components/DeleteVotePanel";
 
 interface Vote {
   voteId: string;
