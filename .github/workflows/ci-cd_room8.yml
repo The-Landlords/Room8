@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - room8
+name: Azure Web App CD
 
 on:
   push:
     branches:
-      - CI/CD # FIXME change to main for production
+      - CI/CD # FIXME change to main for production before merging
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
+          npm run test:mock --if-present
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
