@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Azure Web App CD
+name: Azure Web App CD (backend only)
 
 on:
   push:
@@ -22,16 +22,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-      - name: npm install
+      - name: Install deps
         run: npm ci
+
+      - name: Run mock tests
+        run: npm run test:mock
 
       - name: npm build, and test in packages/express_backend
         run: |
           npm run -w express_backend build --if-present
         working-directory: packages/express_backend
 
-      - name: Run mock tests
-        run: npm run test:mock --workspaces=false
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -51,13 +52,6 @@ jobs:
         with:
           name: node-app
       
-      # - name: Login to Azure
-      #   uses: azure/login@v2
-      #   with:
-      #     client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EB8B5B76C040469EAD8A4200BD4C2340 }}
-      #     tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_40813F112FDF4677BEBAA0156A2680FB }}
-      #     subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_685AB0B357C1457FA38BE2DB71D70184 }}
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:

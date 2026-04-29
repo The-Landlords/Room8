@@ -3,12 +3,12 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - CI/CD
+      - CI/CD # FIXME change to main for production before merging
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
-      - CI/CD
-
+      - CI/CD # FIXME change to main for production before merging
+      
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
@@ -28,9 +28,9 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./packages" # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "build" # Built app content directory - optional
+          app_location: "packages/react-frontend"
+          output_location: "dist"
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
