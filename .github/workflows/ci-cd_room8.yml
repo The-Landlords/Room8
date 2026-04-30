@@ -23,7 +23,8 @@ jobs:
         with:
           node-version: '22.x'
       - name: Install deps
-        run: npm ci
+        run: npm install 
+        # change to npm ci
 
       - name: Run mock tests
         run: npm run test:mock
