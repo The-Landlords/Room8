@@ -31,7 +31,7 @@ function App() {
 						path="/:username/:homeCode/chores"
 						element={<ChorePage />}
 					/>
-					<Route path="/rules/:homeId" element={<RulesPage />} />
+					<Route path="/rules/:homeCode" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"
 						element={<UserSetting />}

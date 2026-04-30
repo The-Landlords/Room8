@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+const VoteSchema = new mongoose.Schema(
+	{
+		voteId: {
+			type: String,
+			required: true,
+		},
+		vote: {
+			type: String,
+			enum: ["YES", "NO"],
+			required: true,
+		},
+	},
+	{ _id: false }
+);
+
 const RuleSchema = new mongoose.Schema({
 	description: {
 		type: String,
@@ -7,24 +22,39 @@ const RuleSchema = new mongoose.Schema({
 		maxLength: 100,
 		trim: true,
 	},
+
 	status: {
 		type: String,
-		enum: ["PENDING", "CONFIRMED", "CANCELLED"],
+		enum: ["PENDING", "CONFIRMED", "REJECTED", "CANCELLED"],
 		default: "PENDING",
-		index: true,
 		required: true,
 	},
+
 	createdAt: {
 		type: Date,
 		default: Date.now,
-		required: false,
 	},
+
 	homeId: {
-		// type:
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Home",
 		required: true,
-		index: true,
+	},
+
+	votes: {
+		type: [VoteSchema],
+		default: [],
+	},
+
+	deleteVotes: {
+		type: [VoteSchema],
+		default: [],
+	},
+
+	deleteStatus: {
+		type: String,
+		enum: ["NONE", "PENDING", "CONFIRMED", "REJECTED"],
+		default: "NONE",
 	},
 });
 
