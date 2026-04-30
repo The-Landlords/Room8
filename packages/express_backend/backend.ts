@@ -40,7 +40,7 @@ app.use("/", relationRouter);
 config({ path: "../../.env" });
 
 const url = process.env.MONGO_URI;
-let connection: any = null;
+let connection: typeof mongoose | null = null;
 
 //singleton of connection (implemented so if fails it connects to localhost)
 const connectDB = async () => {
@@ -58,7 +58,7 @@ const connectDB = async () => {
 
 const start = async () => {
 	try {
-		connectDB();
+		await connectDB();
 
 		app.listen(process.env.PORT || port, () => {
 			console.log(`Server running on port ${process.env.PORT || port}`);
