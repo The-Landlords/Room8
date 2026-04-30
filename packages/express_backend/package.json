@@ -6,7 +6,11 @@
 	"type": "module",
 	"scripts": {
 		"start": "tsx watch backend.ts",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint:check": "eslint \"packages/*/src/**/*.{ts,tsx}\"",
+		"lint:fix": "eslint \"packages/*/src/**/*.{ts,tsx}\" --fix",
+		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\""
 	},
 	"author": "",
 	"license": "ISC",
