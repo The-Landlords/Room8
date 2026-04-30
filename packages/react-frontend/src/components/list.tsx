@@ -24,7 +24,6 @@ interface ListProps<T> {
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
-
 }
 
 export default function List<T>({
@@ -72,8 +71,14 @@ export default function List<T>({
 											icon={faPeopleRoof}
 										/>
 									</Link>
-
-
+									{homeCode?.[index] && (
+										<Link to={`/rules/${homeCode[index]}`}>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faFileContract}
+											/>
+										</Link>
+									)}
 									{homeCode?.[index] && (
 										<Link
 											to={`/events/${username}/${homeCode[index]}`}
@@ -84,7 +89,6 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-
 									{homeCode?.[index] && (
 										<Link
 											to={`/${username}/${homeCode[index]}/chores`}
@@ -95,23 +99,12 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-
 									<Link to="/groceries">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faCartShopping}
 										/>
 									</Link>
-                                    
-									{homeCode?.[index] && (
-									    <Link to={`/rules/${username}/${homeCode[index]}`}>
-										    <FontAwesomeIcon
-											    className="iconWrapper"
-											    icon={faFileContract}
-										    />
-									    </Link>
-                                    )}
-
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"
