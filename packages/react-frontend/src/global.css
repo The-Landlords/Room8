@@ -72,11 +72,24 @@ body {
 	}
     
 	.header-thirdary {
-		@apply font-primary text-text text-xl font-medium p-2  max-w-100;
+		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
 	}
     
+
 	.input {
-		@apply bg-secondary/70 text-text font-secondary  text-sm p-3 rounded-md shadow-sm w-full;
+		@apply bg-secondary/70 text-text font-secondary text-sm p-3 rounded-md shadow-sm w-full;
+	}
+
+	.card {
+		@apply bg-primary/70 rounded-2xl p-6 flex gap-4 justify-between items-start shadow-sm;
+	}
+
+	.vote-yes {
+		@apply bg-green-500 text-white;
+	}
+
+	.vote-no {
+		@apply bg-red-500 text-white;
 	}
 }
 

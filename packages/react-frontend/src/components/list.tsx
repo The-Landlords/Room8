@@ -64,21 +64,21 @@ export default function List<T>({
 							{renderItem(listItem)}
 
 							{isHomeSpaces && username && !removeMode && (
-								<div className="relative ml-auto flex gap-4 self-end-safe">
+								<div className="relative ml-auto gap-4 flex self-end-safe">
 									<Link to="/roommmates">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
 										/>
 									</Link>
-
-									<Link to="/rules">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faFileContract}
-										/>
-									</Link>
-
+									{homeCode?.[index] && (
+										<Link to={`/rules/${homeCode[index]}`}>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faFileContract}
+											/>
+										</Link>
+									)}
 									{homeCode?.[index] && (
 										<Link
 											to={`/events/${username}/${homeCode[index]}`}
@@ -89,7 +89,6 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-
 									{homeCode?.[index] && (
 										<Link
 											to={`/${username}/${homeCode[index]}/chores`}
@@ -100,14 +99,12 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-
 									<Link to="/groceries">
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faCartShopping}
 										/>
 									</Link>
-
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -148,7 +145,7 @@ export default function List<T>({
 								<button
 									type="button"
 									onClick={() => handleRemoveClick(listItem)}
-									className="ml-auto"
+									className="relative ml-auto flex gap-4 self-end-safe"
 								>
 									<FontAwesomeIcon icon={faTrashCan} />
 								</button>
@@ -157,19 +154,23 @@ export default function List<T>({
 					</li>
 				))}
 			</ul>
+			{!removeMode && (
+				<div className="flex flex-row flex-center self-center gap-4">
+					<button
+						onClick={handleAddClick}
+						className="button self-center"
+					>
+						+
+					</button>
 
-			<div className="flex flex-row flex-center self-center gap-4">
-				<button onClick={handleAddClick} className="button self-center">
-					+
-				</button>
-
-				<button
-					onClick={() => setRemoveMode((prev) => !prev)}
-					className="button self-center"
-				>
-					-
-				</button>
-			</div>
+					<button
+						onClick={() => setRemoveMode((prev) => !prev)}
+						className="button self-center"
+					>
+						-
+					</button>
+				</div>
+			)}
 
 			{removeMode && (
 				<div className="button self-center">
