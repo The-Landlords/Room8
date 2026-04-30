@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { InputField } from "./components/input";
-import type { FieldsLayout } from "./components/input";
+import { InputField } from "../components/input";
+import type { FieldsLayout } from "../components/input";
 
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
@@ -182,7 +182,7 @@ export default function UserSetting() {
 
 		console.log("sending:", payload);
 
-		const res = await fetch(
+		await fetch(
 			`http://localhost:8000/users/${user.username}`,
 			{
 				method: "PATCH",
