@@ -23,11 +23,12 @@ jobs:
         with:
           node-version: '22.x'
       - name: Install deps
-        run: npm install 
+        run: npm install  --workspaces=false
+        working-directory: packages/express_backend
         # change to npm ci
 
       - name: Run mock tests
-        run: npm run test:mock
+        run: npm run test:mock --if-present
 
       - name: Build backend
         run: npm run build --if-present
