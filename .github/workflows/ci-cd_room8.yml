@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
     permissions:
       contents: read #This is required for actions/checkout
 
