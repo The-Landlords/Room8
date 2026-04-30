@@ -17,7 +17,7 @@ export function removeChoreById(choreId: mongoose.Types.ObjectId) {
 	return Chore.findByIdAndDelete({ _id: choreId });
 }
 
-export function updateChore(choreId: string, data: any) {
+export function updateChore(choreId: mongoose.Types.ObjectId, data: any) {
 	return Chore.findByIdAndUpdate(choreId, data, {
 		returnDocument: "after",
 		runValidators: true,

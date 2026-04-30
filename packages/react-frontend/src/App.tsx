@@ -8,6 +8,7 @@ import HomeList from "./pages/homelistPage";
 import UserSetting from "./pages/userSetting";
 import SignInPage from "./pages/signInPage";
 import SignUpPage from "./pages/signUpPage";
+import ChorePage from "./pages/chorePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CalendarPage from "./pages/calendarPage";
 
@@ -25,7 +26,10 @@ function App() {
 						path="/events/:username/:homeCode"
 						element={<CalendarPage />}
 					/>
-					<Route path="/chores" element={<h1>Chores</h1>} />
+					<Route
+						path="/:username/:homeCode/chores"
+						element={<ChorePage />}
+					/>
 					<Route path="/rules/:homeId" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"
