@@ -1,6 +1,15 @@
 import mongoose from "mongoose";
 import { Grocery } from "./Grocery";
 import { config } from "dotenv";
+import {
+	expect,
+	test,
+	describe,
+	beforeAll,
+	afterAll,
+	beforeEach,
+	afterEach,
+} from "@jest/globals";
 config();
 
 import {
@@ -118,19 +127,15 @@ test("Getting grocery items by home", async () => {
 test("Updating a grocery item", async () => {
 	const updatedData = {
 		title: "Milk (Updated)",
-		quantity: 2,
-		isShared: true,
-		price: 0.99,
-		status: "CANCELLED",
 	};
 	const updated = await updateGroceryItem(g._id, updatedData);
 	expect(updated).toBeDefined();
 	if (!updated) return;
 	expect(updated.title).toBe(updatedData.title);
-	expect(updated?.quantity).toBe(updatedData.quantity);
-	expect(updated?.isShared).toBe(updatedData.isShared);
-	expect(updated?.status).toBe(updatedData.status);
-	expect(updated?.price).toBe(updatedData.price);
+	expect(updated?.quantity).toBe(groceryItem.quantity);
+	expect(updated?.isShared).toBe(groceryItem.isShared);
+	expect(updated?.status).toBe(groceryItem.status);
+	expect(updated?.price).toBe(groceryItem.price);
 });
 
 test("Updating a grocery item, quantity only", async () => {

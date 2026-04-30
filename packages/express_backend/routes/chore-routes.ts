@@ -7,13 +7,21 @@ import {
 	removeChoreById,
 	updateChore,
 } from "../models/Chore-Services";
+import { Home } from "../models/Home";
+
 export const choreRouter = express.Router();
 
 // get all chores for an apartment
-choreRouter.get("/:homeId/chores", async (req: Request, res: Response) => {
+choreRouter.get("/:homeCode/chores", async (req: Request, res: Response) => {
 	try {
-		const { homeId } = req.params;
-		const chores = await getChoresByHome(homeId);
+		const { homeCode } = req.params;
+		const home = await Home.findOne({ homeCode }).select("_id");
+
+		if (!home) {
+			return res.status(404).json({ error: "Home not found" });
+		}
+
+		const chores = await getChoresByHome(home._id);
 		res.json(chores);
 	} catch (err) {
 		console.error(err);
@@ -23,7 +31,7 @@ choreRouter.get("/:homeId/chores", async (req: Request, res: Response) => {
 
 // get a chore by its id
 choreRouter.get(
-	"/:homeId/chores/:choreId",
+	"/:homeCode/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
 			const { choreId } = req.params;
@@ -38,19 +46,31 @@ choreRouter.get(
 		}
 	}
 );
+
 // create chore
-choreRouter.post("/:homeId/chores", async (req: Request, res: Response) => {
+choreRouter.post("/:homeCode/chores", async (req: Request, res: Response) => {
 	try {
-		const chore = await createChore(req.body);
+		const { homeCode } = req.params;
+		const home = await Home.findOne({ homeCode }).select("_id");
+
+		if (!home) {
+			return res.status(404).json({ error: "Home not found" });
+		}
+
+		const chore = await createChore({
+			...req.body,
+			homeId: home._id,
+		});
 		res.status(201).json(chore);
 	} catch (error) {
 		console.error(error);
 		res.status(400).json({ error: "Failed to create chore" });
 	}
 });
+
 // update chore by id
-choreRouter.put(
-	"/:homeId/chores/:choreId",
+choreRouter.patch(
+	"/:homeCode/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
 			const chore = await updateChore(req.params.choreId, req.body);
@@ -64,9 +84,10 @@ choreRouter.put(
 		}
 	}
 );
+
 // delete chore by id
 choreRouter.delete(
-	"/:homeId/chores/:choreId",
+	"/:homeCode/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
 			const deleted = await removeChoreById(req.params.choreId);

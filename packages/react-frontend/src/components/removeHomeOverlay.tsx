@@ -1,6 +1,6 @@
-import React from "react";
+// import React from "react";
 
-import { useState } from "react";
+// import { useState } from "react";
 
 /*component is to add a new home based off a given code*/
 

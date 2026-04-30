@@ -2,96 +2,113 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faCalendar,
-	faClipboardCheck,
 	faCartShopping,
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
+	faDownload,
 	faTrashCan,
+	faClipboardCheck,
+	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-/*
-Component takes in items as a prop and renders them as a list. Note: to add and remove features like
-the add or remove buttons, you must add in a new item type and implement a conditional
-See below how the home spaces icons are implemented for refrence
-@V 2.0
-*/
-interface ListProps {
+interface ListProps<T> {
 	item: string;
-	items: string[];
+	items: T[];
 	handleAddClick: () => void;
-	handleRemoveClick: (item: string) => void;
+	handleRemoveClick: (item: T) => void;
+	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
+	renderItem: (item: T) => React.ReactNode;
+	getKey: (item: T) => string;
+	username?: string;
+	homeCode?: string[];
+	eventIds?: string[];
 }
 
-export default function List({
+export default function List<T>({
 	item,
 	items,
+	username,
 	handleAddClick,
 	handleRemoveClick,
-}: ListProps) {
-	const [remove, setRemove] = useState(false);
+	handleEditClick,
+	renderItem,
+	getKey,
+	homeCode,
+	eventIds,
+}: ListProps<T>) {
+	const isHomeSpaces = item === "Home Spaces";
+	const isEvents = item === "Events";
+	const [removeMode, setRemoveMode] = useState(false);
+
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
-			<h1 className="header-secondary">Current {item}</h1>
+			<h1 className="header-secondary">
+				{isHomeSpaces ? `Current ${item}` : item}
+			</h1>
+
 			<ul>
-				{items.length == 0 && (
+				{items.length === 0 && (
 					<li className="list-item font-bold animate-floatUp">
 						No {item}
 					</li>
 				)}
+
 				{items.map((listItem, index) => (
 					<li
 						className="list-item font-bold animate-floatUp"
-						key={index}
+						key={getKey(listItem)}
 					>
-						<span className="flex flex-row ">
-							{listItem}
-							{item == "Home Spaces" && remove == false && (
-								<div className="relative ml-auto gap-4 self-end-safe ">
+						<span className="flex w-full items-center">
+							{renderItem(listItem)}
+
+							{isHomeSpaces && username && !removeMode && (
+								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<Link to="/roommmates">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
 										/>
 									</Link>
-									<Link to="/calendar">
-										{" "}
-										{/* FIXME incorrect link */}
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faCalendar}
-										/>
-									</Link>
-									<Link to="/chores">
-										{" "}
-										{/* FIXME incorrect link */}
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faClipboardCheck}
-										/>
-									</Link>
-									<Link to="/groceries">
-										{" "}
-										{/* FIXME incorrect link */}
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faCartShopping}
-										/>
-									</Link>
+
 									<Link to="/rules">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faFileContract}
 										/>
 									</Link>
+
+									{homeCode?.[index] && (
+										<Link
+											to={`/events/${username}/${homeCode[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faCalendar}
+											/>
+										</Link>
+									)}
+
+									{homeCode?.[index] && (
+										<Link
+											to={`/${username}/${homeCode[index]}/chores`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faClipboardCheck}
+											/>
+										</Link>
+									)}
+
+									<Link to="/groceries">
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faCartShopping}
+										/>
+									</Link>
+
 									<Link to="/dropdown">
-										{" "}
-										{/* FIXME incorrect link */}
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faAngleRight}
@@ -99,42 +116,64 @@ export default function List({
 									</Link>
 								</div>
 							)}
-							{item == "Home Spaces" && remove == true && (
-								<div className="relative ml-auto self-end-safe">
-									<FontAwesomeIcon
-										className="iconWrapper"
-										icon={faTrashCan}
-										onClick={() => {
-											handleRemoveClick(listItem);
-										}}
-									/>
+
+							{isEvents && eventIds?.[index] && (
+								<div className="relative ml-auto flex gap-4 self-end-safe">
+									<a
+										href={`http://localhost:8000/events/ics/${eventIds[index]}`}
+									>
+										<FontAwesomeIcon
+											className="iconWrapper"
+											icon={faDownload}
+										/>
+									</a>
+
+									{handleEditClick && (
+										<button
+											type="button"
+											onClick={() =>
+												handleEditClick(listItem)
+											}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faPenToSquare}
+											/>
+										</button>
+									)}
 								</div>
+							)}
+
+							{removeMode && (
+								<button
+									type="button"
+									onClick={() => handleRemoveClick(listItem)}
+									className="ml-auto"
+								>
+									<FontAwesomeIcon icon={faTrashCan} />
+								</button>
 							)}
 						</span>
 					</li>
 				))}
 			</ul>
-			{item == "Home Spaces" && remove == false && (
-				<div className="flex flex-row flex-center self-center gap-4">
-					<button
-						onClick={handleAddClick}
-						className="button self-center"
-					>
-						+
-					</button>
-					<button
-						onClick={() => {
-							setRemove(true);
-						}}
-						className="button self-center"
-					>
-						-
-					</button>
-				</div>
-			)}
-			{item == "Home Spaces" && remove == true && (
+
+			<div className="flex flex-row flex-center self-center gap-4">
+				<button onClick={handleAddClick} className="button self-center">
+					+
+				</button>
+
+				<button
+					onClick={() => setRemoveMode((prev) => !prev)}
+					className="button self-center"
+				>
+					-
+				</button>
+			</div>
+
+			{removeMode && (
 				<div className="button self-center">
-					<button onClick={() => setRemove(false)}> Cancel </button>
+					<button onClick={() => setRemoveMode(false)}>Cancel</button>
 				</div>
 			)}
 		</div>

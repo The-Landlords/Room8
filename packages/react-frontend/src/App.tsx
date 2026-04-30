@@ -3,12 +3,14 @@
 //import viteLogo from "/vite.svg";
 //import "./App.css";
 //import HomeList from "./homeList";
-import RulesPage from "./rulesPage";
-import HomeList from "./homelist";
-import UserSetting from "./userSetting";
-import SignInPage from "./signInPage";
-import SignUpPage from "./signUpPage";
+import RulesPage from "./pages/rulesPage";
+import HomeList from "./pages/homelistPage";
+import UserSetting from "./pages/userSetting";
+import SignInPage from "./pages/signInPage";
+import SignUpPage from "./pages/signUpPage";
+import ChorePage from "./pages/chorePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import CalendarPage from "./pages/calendarPage";
 
 function App() {
 	return (
@@ -20,8 +22,14 @@ function App() {
 					<Route path="/signup" element={<SignUpPage />} />
 					<Route path="/homelist/:username" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
-					<Route path="/calendar" element={<h1>Calendar</h1>} />
-					<Route path="/chores" element={<h1>Chores</h1>} />
+					<Route
+						path="/events/:username/:homeCode"
+						element={<CalendarPage />}
+					/>
+					<Route
+						path="/:username/:homeCode/chores"
+						element={<ChorePage />}
+					/>
 					<Route path="/rules/:homeId" element={<RulesPage />} />
 					<Route
 						path="/settings/:username"
