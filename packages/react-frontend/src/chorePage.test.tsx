@@ -2,25 +2,38 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
-import ChorePage from "./chorePage";
+import ChorePage from "./pages/chorePage";
 
 jest.mock("./components/list", () => {
 	return function MockList(props: {
-		items: string[];
+		items: Array<{ _id?: string; title?: string } | string>;
 		handleAddClick: () => void;
-		handleRemoveClick: (item: string) => void;
+		handleRemoveClick: (
+			item: { _id?: string; title?: string } | string
+		) => void;
 	}) {
 		return (
 			<div>
 				<button onClick={props.handleAddClick}>+</button>
-				{props.items.map((item) => (
-					<div key={item}>
-						<span>{item}</span>
-						<button onClick={() => props.handleRemoveClick(item)}>
-							remove {item}
-						</button>
-					</div>
-				))}
+				{props.items.map((item, index) => {
+					const label =
+						typeof item === "string" ? item : (item.title ?? "");
+					const key =
+						typeof item === "string"
+							? item
+							: (item._id ?? `${label}-${index}`);
+
+					return (
+						<div key={key}>
+							<span>{label}</span>
+							<button
+								onClick={() => props.handleRemoveClick(item)}
+							>
+								remove {label}
+							</button>
+						</div>
+					);
+				})}
 			</div>
 		);
 	};
@@ -99,11 +112,13 @@ test("submitting a new chore sends a POST request", async () => {
 		})
 		.mockResolvedValueOnce({
 			ok: true,
-			json: async () => ({
-				_id: "chore-1",
-				title: "Wash dishes",
-				assignedTo: "Robert",
-			}),
+			json: async () => [
+				{
+					_id: "chore-1",
+					title: "Wash dishes",
+					assignedTo: "Robert",
+				},
+			],
 		}) as jest.Mock;
 
 	renderChorePageWithHistory();

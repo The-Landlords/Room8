@@ -15,7 +15,7 @@ export default function HomeList() {
 	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
-	const [homeDelete, setHomeDelete] = useState();
+	const [homeDelete, setHomeDelete] = useState<any | null>(null);
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);

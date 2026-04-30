@@ -7,7 +7,7 @@ import { API_BASE } from "../config";
 
 type RemoveHomeProps = {
 	onRemove: any;
-	homeRemove: string | undefined;
+	homeRemove: any | undefined;
 	onCancel: (data: boolean) => void;
 	username: string | undefined;
 };
@@ -43,7 +43,7 @@ export default function RemoveHomeOverlay({
 	return (
 		<div className="flex flex-col gap-2 animate-floatUp">
 			<h1 className="header-secondary self-center">
-				Are you sure you want to remove {homeRemove}?
+				Are you sure you want to remove {homeRemove.homeName}?
 			</h1>
 			<div className="flex flex-row gap-4 self-center">
 				<button
