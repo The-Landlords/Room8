@@ -50,9 +50,31 @@ body {
 		@apply min-h-screen flex flex-col;
 		background-color: #efe7df;
 	}
+	/* Title of input field */
+	.input-field {
+		@apply w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
+	}
+	/* Underlined text input field */
+	.underlined-input {
+		@apply w-full bg-transparent border-b border-text outline-none;
+	}
+	/* 'Toggle' text */
+	.toggle-text {
+		@apply h-6 w-6 rounded-full border-2 border-text flex items-center justify-center;
+	}
+	/* Bubble background (on most text blocks) */
+	.bubble {
+		@apply bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0;
+	}
+	/* Heading text used inside bubbles */
+	.bubble-header {
+		@apply font-primary text-text text-3xl text-center mb-6 leading-tight;
+	}
+    
 	.header-thirdary {
 		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
 	}
+    
 
 	.input {
 		@apply bg-secondary/70 text-text font-secondary text-sm p-3 rounded-md shadow-sm w-full;
