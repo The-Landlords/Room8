@@ -10,9 +10,9 @@
 		"lint:fix": "eslint \"packages/*/src/**/*.{ts,tsx}\" --fix",
 		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
 		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\"",
-		"test": "jest --runInBand",
-		"coverage": "jest --runInBand --coverage",
-		"test:mock": "jest --runInBand --testPathPatterns=Mock"
+		"test": "npx jest --runInBand",
+		"coverage": "npx jest --runInBand --coverage",
+		"test:mock": "npx jest --runInBand --testPathPatterns=Mock"
 	},
 	"author": "",
 	"license": "ISC",
