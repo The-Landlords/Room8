@@ -18,8 +18,7 @@ const asString = (val: string | string[] | undefined): string => {
   return Array.isArray(val) ? val[0] : val;
 };
 
-
-// GET rules by homeId
+// GET rules by home id
 ruleRouter.get("/homeId/:homeId/rules", async (req: Request, res: Response) => {
   try {
     const homeId = asString(req.params.homeId);
@@ -34,8 +33,19 @@ ruleRouter.get("/homeId/:homeId/rules", async (req: Request, res: Response) => {
   }
 });
 
+// GET rules by home code
+ruleRouter.get("/homes/rules/:homeCode", async (req: Request, res: Response) => {
+  try {
+    const homeCode = asString(req.params.homeCode);
+    const rules = await getRulesByHome(homeCode);
+    return res.status(200).json(rules);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to fetch rules" });
+  }
+});
 
-//Create rule
+// Create rule by home code in path
 ruleRouter.post("/:homeCode/rules", async (req: Request, res: Response) => {
   try {
     const homeCode = asString(req.params.homeCode);
@@ -60,8 +70,26 @@ ruleRouter.post("/:homeCode/rules", async (req: Request, res: Response) => {
   }
 });
 
+// Create rule by home code in body
+ruleRouter.post("/homes/rules", async (req: Request, res: Response) => {
+  try {
+    const rule = await createRule({
+      description: req.body.description,
+      status: req.body.status ?? "PENDING",
+      homeCode: req.body.homeCode,
+      votes: [],
+      deleteVotes: [],
+      deleteStatus: "NONE",
+    });
 
-//Update rule
+    return res.status(201).json(rule);
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ error: "Failed to create rule" });
+  }
+});
+
+// Update rule
 ruleRouter.put("/rules/:ruleId", async (req: Request, res: Response) => {
   try {
     const ruleId = asString(req.params.ruleId);
@@ -81,8 +109,7 @@ ruleRouter.put("/rules/:ruleId", async (req: Request, res: Response) => {
   }
 });
 
-
-//Delete rule
+// Delete rule
 ruleRouter.delete("/rules/:ruleId", async (req: Request, res: Response) => {
   try {
     const ruleId = asString(req.params.ruleId);
@@ -94,8 +121,6 @@ ruleRouter.delete("/rules/:ruleId", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Delete failed" });
   }
 });
-
-
 
 // Voting system
 ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
@@ -135,8 +160,6 @@ ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
   }
 });
 
-
-
 // Delete voting
 ruleRouter.post("/rules/:ruleId/delete-vote", async (req: Request, res: Response) => {
   try {
@@ -146,8 +169,6 @@ ruleRouter.post("/rules/:ruleId/delete-vote", async (req: Request, res: Response
     const rule = await Rule.findById(ruleId);
     if (!rule) return res.status(404).json({ error: "Rule not found" });
 
-
-    // Add or update vote
     const existing = rule.deleteVotes.find((v: any) => v.voteId === voteId);
 
     if (existing) {
@@ -169,7 +190,6 @@ ruleRouter.post("/rules/:ruleId/delete-vote", async (req: Request, res: Response
       return res.status(200).json(rule);
     }
 
-
     if (yes >= TOTAL_RESIDENTS) {
       await removeRuleById(ruleId.toString());
       return res.status(200).json({ deleted: true });
@@ -177,7 +197,6 @@ ruleRouter.post("/rules/:ruleId/delete-vote", async (req: Request, res: Response
 
     rule.deleteStatus = "PENDING";
     await rule.save();
-
 
     return res.status(200).json(rule);
   } catch {
