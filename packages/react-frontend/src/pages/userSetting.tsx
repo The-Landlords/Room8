@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { API_BASE } from "../config";
+import { InputField } from "../components/input";
+import type { FieldsLayout } from "../components/input";
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
