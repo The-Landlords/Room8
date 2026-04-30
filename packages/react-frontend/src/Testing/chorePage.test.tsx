@@ -2,9 +2,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
-import ChorePage from "./pages/chorePage";
+import ChorePage from "../pages/chorePage";
 
-jest.mock("./components/list", () => {
+jest.mock("../components/list", () => {
 	return function MockList(props: {
 		items: Array<{ _id?: string; title?: string } | string>;
 		handleAddClick: () => void;
