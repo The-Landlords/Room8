@@ -5,7 +5,7 @@ import {
 	getUserById,
 	getUserByUsername,
 	getUsersByHomeId,
-	updateUserById,
+	// updateUserById,
 	removeUserById,
 	updateUserByUsername,
 } from "../models/User-Services";
