@@ -6,7 +6,6 @@
 	"type": "module",
 	"scripts": {
 		"start": "tsx watch backend.ts",
-		"build": "tsc",
 		"lint:check": "eslint . --max-warnings=0",
 		"lint:fix": "eslint . --max-warnings=0 --fix --format stylish",
 		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
