@@ -25,15 +25,14 @@
 		"mongoose": "^9.1.5",
 		"jest": "^30.3.0",
 		"jest-environment-jsdom": "^30.3.0",
-		"mockingoose": "^3.0.0",
-		"ts-jest": "^29.4.6",
-		"ts-node": "^10.9.2"
+		"mockingoose": "^3.0.0"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.21.0",
-		"typescript": "^5.9.3"
+		"typescript": "^5.9.3",
+		"ts-jest": "^29.4.6"
 	}
 }
