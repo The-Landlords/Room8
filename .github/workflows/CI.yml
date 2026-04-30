@@ -33,7 +33,7 @@ jobs:
     - name: Run lint
       run: npm run lint:fix # will not change files
     - name: Run format
-      run: npm run format:fix # will not change files
+      run: npm run format # will not change files
     - name: Run tests
       run: npm run test:mock
     - name: Commit changes if any from lint and format fix
