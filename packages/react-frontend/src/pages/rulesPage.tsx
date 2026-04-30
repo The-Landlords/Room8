@@ -22,7 +22,6 @@ interface Rule {
 export default function RulesPage() {
 	const [rules, setRules] = useState<Rule[]>([]);
 	const [homeName, setHomeName] = useState("");
-	const [homeId, setHomeId] = useState<string | null>(null);
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
@@ -53,7 +52,6 @@ export default function RulesPage() {
 		const homeData = await homeRes.json();
 
 		setHomeName(homeData.homeName);
-		setHomeId(homeData._id);
 
 		const rulesRes = await fetch(
 			`http://localhost:8000/homes/rules/${homeCode}`
@@ -71,20 +69,17 @@ export default function RulesPage() {
 		if (!inputRef.current || !inputRef.current.value.trim() || !homeCode)
 			return;
 
-		const res = await fetch(`http://localhost:8000/homes/rules`, {
+		const res = await fetch(`http://localhost:8000/${homeCode}/rules`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				description: inputRef.current.value.trim(),
-				status: "PENDING",
-				homeCode,
 			}),
 		});
 
 		if (!res.ok) throw new Error("Failed to add rule");
 
-		const newRule = await res.json();
-		setRules((prev) => [...prev, newRule]);
+		await fetchRules();
 		inputRef.current.value = "";
 		setOverlayOpen(false);
 	}
