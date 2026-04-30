@@ -11,9 +11,9 @@
 		"lint:fix": "eslint \"packages/*/src/**/*.{ts,tsx}\" --fix",
 		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
 		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\"",
-		"test": "npx jest --config ./jest.config.cjs --runInBand",
-		"coverage": "npx jest --config ./jest.config.cjs --runInBand --coverage",
-		"test:mock": "npx jest --config ./jest.config.cjs --runInBand --testPathPatterns=Mock"
+		"test": "jest --config ./jest.config.cjs --runInBand",
+		"coverage": "jest --config ./jest.config.cjs --runInBand --coverage",
+		"test:mock": "jest --runInBand --testPathPatterns=Mock"
 	},
 	"author": "",
 	"license": "ISC",
