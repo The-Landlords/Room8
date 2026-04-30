@@ -16,9 +16,9 @@ import { Link } from "react-router-dom";
 interface ListProps<T> {
 	item: string;
 	items: T[];
-	handleAddClick: () => void;
-	handleRemoveClick: (item: T) => void;
-	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
+	handleAddClick: () => void | undefined;
+	handleRemoveClick: (item: T) => void | undefined;
+	handleEditClick?: (item: T) => void | undefined; // FIXME can be used for edit house too!
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
@@ -40,6 +40,7 @@ export default function List<T>({
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
+	const isBasic = item === "Basic";
 	const [removeMode, setRemoveMode] = useState(false);
 
 	return (
@@ -144,10 +145,12 @@ export default function List<T>({
 								</div>
 							)}
 
-							{removeMode && (
+							{removeMode && !isBasic && (
 								<button
 									type="button"
-									onClick={() => handleRemoveClick(listItem)}
+									onClick={() =>
+										handleRemoveClick?.(listItem)
+									}
 									className="relative ml-auto flex gap-4 self-end-safe"
 								>
 									<FontAwesomeIcon icon={faTrashCan} />
@@ -157,7 +160,7 @@ export default function List<T>({
 					</li>
 				))}
 			</ul>
-			{!removeMode && (
+			{!removeMode && !isBasic && (
 				<div className="flex flex-row flex-center self-center gap-4">
 					<button
 						onClick={handleAddClick}
