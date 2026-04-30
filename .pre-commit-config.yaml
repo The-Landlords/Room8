@@ -3,12 +3,12 @@ repos:
       hooks:
           - id: lint
             name: npm lint
-            entry: bash -c "npm run lint:fix && git add -A"
+            entry: bash -c "npm run lint:check"
             language: system
             pass_filenames: false
 
           - id: format
             name: npm format
-            entry: bash -c "npm run format && git add -A"
+            entry: bash -c "npm run format"
             language: system
             pass_filenames: false
