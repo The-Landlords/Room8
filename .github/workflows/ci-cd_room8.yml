@@ -29,6 +29,7 @@ jobs:
 
       - name: Run mock tests
         run: npm run test:mock --if-present
+        working-directory: packages/express_backend
 
       - name: Build backend
         run: npm run build --if-present
