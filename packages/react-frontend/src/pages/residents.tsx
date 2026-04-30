@@ -10,7 +10,7 @@ export default function Residents() {
 
 		fetch(`http://localhost:8000/auth/${username}/${homeCode}`)
 			.then((res) => {
-				if (!res.ok) throw new Error("Residents not found");
+				if (!res.ok) throw new Error("Residents not found ");
 				return res.json();
 			})
 			.then((data) => setResidents(data))
@@ -26,10 +26,46 @@ export default function Residents() {
 		<div>
 			<h1>Residents</h1>
 			<List
-				item="resident"
+				item="Residents"
 				items={residents}
 				handleAddClick={() => {}}
 				handleRemoveClick={() => {}}
+				renderItem={(resident) => (
+					<div className="flex flex-row gap-4">
+						<h1 className="header-secondary">
+							{resident.fullName}
+						</h1>
+						<p>
+							Allergens: {resident.allergens.join(", ") || "None"}
+						</p>
+						<p>Pronouns: {resident.pronouns || "N/A"}</p>
+						<p>Date of Birth: {resident.DOB || "N/A"}</p>
+						<p>Likes: {resident.likes.join(", ") || "N/A"}</p>
+						<p>Dislikes: {resident.dislikes.join(", ") || "N/A"}</p>
+						{resident.emergencyContact ? (
+							<div>
+								<p>
+									Emergency Contact Name:{" "}
+									{resident.emergencyContact.name || "N/A"}
+								</p>
+								<p>
+									Emergency Contact Phone:{" "}
+									{resident.emergencyContact.phone || "N/A"}
+								</p>
+								<p>
+									Emergency Contact Relationship:{" "}
+									{resident.emergencyContact.relationship ||
+										"N/A"}
+								</p>
+							</div>
+						) : (
+							<p>Emergency Contact: Hidden</p>
+						)}
+					</div>
+				)}
+				getKey={(resident) => resident._id}
+				username={username}
+				homeCode={homeCode ? [homeCode] : undefined}
 			/>
 		</div>
 	);

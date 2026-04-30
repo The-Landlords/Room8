@@ -12,13 +12,14 @@ import {
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import Residents from "../pages/residents";
 
 interface ListProps<T> {
 	item: string;
 	items: T[];
-	handleAddClick: () => void | undefined;
-	handleRemoveClick: (item: T) => void | undefined;
-	handleEditClick?: (item: T) => void | undefined; // FIXME can be used for edit house too!
+	handleAddClick: () => void;
+	handleRemoveClick: (item: T) => void;
+	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
@@ -40,7 +41,7 @@ export default function List<T>({
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
-	const isBasic = item === "Basic";
+	const isBasic = item !== "Home Spaces" && "Events" && "Chores" && "Rules";
 	const [removeMode, setRemoveMode] = useState(false);
 
 	return (
@@ -66,7 +67,9 @@ export default function List<T>({
 
 							{isHomeSpaces && username && !removeMode && (
 								<div className="relative ml-auto gap-4 flex self-end-safe">
-									<Link to="/roommmates">
+									<Link
+										to={`/residents/${username}/${homeCode?.[index]}`}
+									>
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
@@ -145,9 +148,7 @@ export default function List<T>({
 							{removeMode && !isBasic && (
 								<button
 									type="button"
-									onClick={() =>
-										handleRemoveClick?.(listItem)
-									}
+									onClick={() => handleRemoveClick(listItem)}
 									className="relative ml-auto flex gap-4 self-end-safe"
 								>
 									<FontAwesomeIcon icon={faTrashCan} />
@@ -175,7 +176,7 @@ export default function List<T>({
 				</div>
 			)}
 
-			{removeMode && (
+			{removeMode && !isBasic && (
 				<div className="button self-center">
 					<button onClick={() => setRemoveMode(false)}>Cancel</button>
 				</div>

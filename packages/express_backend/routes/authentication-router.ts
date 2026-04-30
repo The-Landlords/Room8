@@ -65,11 +65,14 @@ authRouter.get(
 		const { usernameOne, homeCode } = req.params;
 		const userOne = await getUserByUsername(usernameOne);
 		const home = await getHomeByCode(homeCode);
-		const residents = await getUsersByHomeAndRelation(home._id, "RESIDENT");
 		if (!userOne || !home) {
+			console.log("User or home not found");
 			return res.status(404).json({ error: "User or home not found" });
 		}
+		const residents = await getUsersByHomeAndRelation(home._id, "RESIDENT");
+		console.log(residents);
 		if (residents.length === 0) {
+			console.log("No residents found for home code: " + homeCode);
 			return res.status(404).json({
 				error: "No residents found for the provided home code",
 			});
@@ -81,6 +84,7 @@ authRouter.get(
 		);
 		const userOneRelation = userOneRelationObject?.homeIds[0].relationship;
 		if (!userOneRelation) {
+			console.log("No shared home found between user and home");
 			return res
 				.status(404)
 				.json({ error: "No shared home found between users" });
