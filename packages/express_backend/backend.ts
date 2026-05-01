@@ -19,8 +19,11 @@ export const port = 8000;
 
 app.use(
 	cors({
-		origin: "https://white-pond-00a466e1e.7.azurestaticapps.net",
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		origin: [
+			"http://localhost:4173",
+			"https://white-pond-00a466e1e.7.azurestaticapps.net",
+		],
+		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
 		allowedHeaders: ["Content-Type", "Authorization"],
 		credentials: true,
 	})
