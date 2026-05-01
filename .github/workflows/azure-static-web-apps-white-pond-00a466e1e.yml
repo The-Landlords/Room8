@@ -23,8 +23,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
-        # change to npm ci
+        run: npm ci
 
       - name: Build frontend workspace
         run: npm run build --workspace react-frontend
