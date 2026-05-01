@@ -6,18 +6,24 @@ import {
 	removeEventById,
 	eventToICSData,
 	updateEvent,
-} from "../models/Event-Services";
+} from "../models/Event-Services.js";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
-import { getHomeByCode } from "../models/Home-Services";
+import { getHomeByCode } from "../models/Home-Services.js";
 
 export const eventRouter = express.Router();
 
 eventRouter.get("/events/ics/:id", async (req: Request, res: Response) => {
 	try {
-		const result = await eventToICSData(
-			new mongoose.Types.ObjectId(req.params.id)
-		);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const result = await eventToICSData(objectId);
 
 		if (!result) {
 			console.log("event not found");
@@ -38,7 +44,13 @@ eventRouter.get("/events/ics/:id", async (req: Request, res: Response) => {
 
 eventRouter.get("/homeId/:home/events", async (req: Request, res: Response) => {
 	try {
-		const homeId = new mongoose.Types.ObjectId(req.params.home);
+		const id = req.params.home;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const homeId = new mongoose.Types.ObjectId(id);
 		const events = await getEventsByHome(homeId);
 		res.status(200).json(events);
 	} catch (error) {
@@ -49,9 +61,15 @@ eventRouter.get("/homeId/:home/events", async (req: Request, res: Response) => {
 
 eventRouter.get("/:home/events/:id", async (req: Request, res: Response) => {
 	try {
-		const event = await getEventById(
-			new mongoose.Types.ObjectId(req.params.id)
-		);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const event = await getEventById(objectId);
 		if (!event) {
 			return res.status(404).json({ error: "Event not found" });
 		}
@@ -90,9 +108,15 @@ eventRouter.post("/:homeCode/events", async (req: Request, res: Response) => {
 
 eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
 	try {
-		const eventId = req.params.eventId;
+		const id = req.params.eventId;
 
-		const deletedEvent = await removeEventById(eventId);
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const deletedEvent = await removeEventById(objectId);
 
 		if (!deletedEvent) {
 			return res.status(404).json({ error: "Event not found" });
@@ -107,11 +131,15 @@ eventRouter.delete("/events/:eventId", async (req: Request, res: Response) => {
 
 eventRouter.patch("/events/:eventId", async (req: Request, res: Response) => {
 	try {
-		const updatedEvent = await updateEvent(
-			req.params.eventId,
-			req.body
-			// { new: true } // return updated doc
-		);
+		const id = req.params.eventId;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const updatedEvent = await updateEvent(objectId, req.body);
 
 		if (!updatedEvent) {
 			return res.status(404).json({ error: "Event not found" });

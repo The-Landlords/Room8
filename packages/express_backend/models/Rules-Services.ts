@@ -1,5 +1,5 @@
-import { Rule } from "./Rule";
-import { Home } from "./Home";
+import { Rule } from "./Rule.js";
+import { Home } from "./Home.js";
 import mongoose from "mongoose";
 
 // create rule

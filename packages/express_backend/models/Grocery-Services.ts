@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Grocery } from "./Grocery";
+import { Grocery } from "./Grocery.js";
 
 /**
  * create a grocery item with POST
@@ -87,7 +87,7 @@ export const calculateTotalCostForHome = async (
 	const items = await Grocery.find({ homeId: homeId });
 	if (!items || items.length === 0) return 0;
 
-	return items.reduce((total, item) => {
+	return items.reduce((total: number, item: any) => {
 		return total + item.price * item.quantity;
 	}, 0);
 };

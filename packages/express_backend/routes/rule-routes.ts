@@ -2,14 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
 
-import { getHomeByCode } from "../models/Home-Services";
+import { getHomeByCode } from "../models/Home-Services.js";
 import {
 	createRule,
 	getRulesByHome,
 	removeRuleById,
 	updateRule,
-} from "../models/Rules-Services";
-import { Rule } from "../models/Rule";
+} from "../models/Rules-Services.js";
+import { Rule } from "../models/Rule.js";
 
 export const ruleRouter = express.Router();
 
@@ -115,7 +115,14 @@ ruleRouter.delete("/rules/:ruleId", async (req: Request, res: Response) => {
 	try {
 		const ruleId = asString(req.params.ruleId);
 
-		await removeRuleById(ruleId);
+		if (
+			typeof ruleId !== "string" ||
+			!mongoose.Types.ObjectId.isValid(ruleId)
+		) {
+			return res.status(400).json({ error: "Invalid rule id" });
+		}
+
+		await removeRuleById(new mongoose.Types.ObjectId(ruleId));
 
 		return res.sendStatus(204);
 	} catch {
@@ -126,13 +133,23 @@ ruleRouter.delete("/rules/:ruleId", async (req: Request, res: Response) => {
 // Voting system
 ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
 	try {
-		const ruleId = new mongoose.Types.ObjectId(req.params.ruleId);
+		const id = req.params.ruleId;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const ruleId = new mongoose.Types.ObjectId(objectId);
 		const { voteId, vote } = req.body;
 
 		const rule = await Rule.findById(ruleId);
 		if (!rule) return res.status(404).json({ error: "Rule not found" });
 
-		const existing = rule.votes.find((v: any) => v.voteId === voteId);
+		const existing = rule.votes.find(
+			(v: { voteId: string }) => v.voteId === voteId
+		);
 
 		if (existing) {
 			existing.vote = vote;
@@ -140,8 +157,12 @@ ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
 			rule.votes.push({ voteId, vote });
 		}
 
-		const yes = rule.votes.filter((v) => v.vote === "YES").length;
-		const no = rule.votes.filter((v) => v.vote === "NO").length;
+		const yes = rule.votes.filter(
+			(v: { vote: string }) => v.vote === "YES"
+		).length;
+		const no = rule.votes.filter(
+			(v: { vote: string }) => v.vote === "NO"
+		).length;
 
 		const TOTAL_RESIDENTS = 4;
 
@@ -166,7 +187,18 @@ ruleRouter.post(
 	"/rules/:ruleId/delete-vote",
 	async (req: Request, res: Response) => {
 		try {
-			const ruleId = new mongoose.Types.ObjectId(req.params.ruleId);
+			const id = req.params.ruleId;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const ruleId = new mongoose.Types.ObjectId(objectId);
 			const { voteId, vote } = req.body;
 
 			const rule = await Rule.findById(ruleId);
@@ -184,8 +216,12 @@ ruleRouter.post(
 
 			await rule.save();
 
-			const yes = rule.deleteVotes.filter((v) => v.vote === "YES").length;
-			const no = rule.deleteVotes.filter((v) => v.vote === "NO").length;
+			const yes = rule.deleteVotes.filter(
+				(v: { vote: string }) => v.vote === "YES"
+			).length;
+			const no = rule.deleteVotes.filter(
+				(v: { vote: string }) => v.vote === "NO"
+			).length;
 
 			const TOTAL_RESIDENTS = 4;
 
@@ -196,7 +232,7 @@ ruleRouter.post(
 			}
 
 			if (yes >= TOTAL_RESIDENTS) {
-				await removeRuleById(ruleId.toString());
+				await removeRuleById(new mongoose.Types.ObjectId(ruleId));
 				return res.status(200).json({ deleted: true });
 			}
 

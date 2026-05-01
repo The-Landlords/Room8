@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Chore } from "./Chore";
+import { Chore } from "./Chore.js";
 
 export function getChoresByHome(homeId: mongoose.Types.ObjectId) {
 	return Chore.find({ homeId: homeId });

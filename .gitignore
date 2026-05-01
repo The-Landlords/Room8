@@ -3,3 +3,6 @@ node_modules
 coverage/*
 .DS_Store
 .idea/*
+packages/express_backend/node_modules
+packages/express_backend/coverage/*
+packages/express_backend/dist/*

@@ -8,7 +8,8 @@ import {
 	getHomeByCode,
 	// addMember,
 	// removeMember,
-} from "../models/Home-Services";
+} from "../models/Home-Services.js";
+import mongoose from "mongoose";
 
 export const homeRouter = express.Router();
 
@@ -24,7 +25,15 @@ homeRouter.post("/homes", async (req: Request, res: Response) => {
 
 homeRouter.patch("/homes/:id", async (req: Request, res: Response) => {
 	try {
-		const updated = await updateHome(req.params.id, req.body);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const updated = await updateHome(objectId, req.body);
 
 		if (!updated) {
 			return res.status(404).json({ error: "Home not found" });
@@ -40,11 +49,19 @@ homeRouter.patch("/homes/:id", async (req: Request, res: Response) => {
 
 homeRouter.get("/homes/id/:id", async (req: Request, res: Response) => {
 	try {
-		const event = await getHomeById(req.params.id);
-		if (!event) {
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const home = await getHomeById(objectId);
+		if (!home) {
 			return res.status(404).json({ error: "Home not found" });
 		}
-		res.status(200).json(event);
+		res.status(200).json(home);
 	} catch (error) {
 		console.error(error);
 
@@ -53,11 +70,18 @@ homeRouter.get("/homes/id/:id", async (req: Request, res: Response) => {
 });
 homeRouter.get("/homes/code/:code", async (req: Request, res: Response) => {
 	try {
-		const event = await getHomeByCode(req.params.code);
-		if (!event) {
+		const code = req.params.code;
+
+		if (typeof code !== "string") {
+			return res.status(400).json({ error: "Invalid code" });
+		}
+
+		const home = await getHomeByCode(code);
+
+		if (!home) {
 			return res.status(404).json({ error: "Home not found" });
 		}
-		res.status(200).json(event);
+		res.status(200).json(home);
 	} catch (error) {
 		console.error(error);
 
@@ -67,11 +91,18 @@ homeRouter.get("/homes/code/:code", async (req: Request, res: Response) => {
 
 homeRouter.delete("/homes/id/:id", async (req: Request, res: Response) => {
 	try {
-		const event = await deleteHome(req.params.id);
-		if (!event) {
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const home = await deleteHome(objectId);
+		if (!home) {
 			return res.status(404).json({ error: "Home not found" });
 		}
-		res.status(204).json(event);
+		res.status(204).json(home);
 	} catch (error) {
 		console.error(error);
 
@@ -79,17 +110,37 @@ homeRouter.delete("/homes/id/:id", async (req: Request, res: Response) => {
 	}
 });
 
+// FIXME ADD ME BACK
 //Add resident to home, creates a relationship of type resident between the user and home
 homeRouter.post(
 	"/homes/id/:id/members",
 	async (req: Request, res: Response) => {
 		try {
-			const relationship = await createRelationship({
-				home: req.params.id,
-				user: req.body.userId,
-				type: "resident",
-			});
-			res.status(201).json(relationship);
+			const id = req.params.id;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid home id" });
+			}
+
+			const userId = req.body.userId;
+
+			if (
+				typeof userId !== "string" ||
+				!mongoose.Types.ObjectId.isValid(userId)
+			) {
+				return res.status(400).json({ error: "Invalid user id" });
+			}
+
+			// const relationship = await createRelationship({
+			// 	home: new mongoose.Types.ObjectId(id),
+			// 	user: new mongoose.Types.ObjectId(userId),
+			// 	type: "resident",
+			// });
+
+			// res.status(201).json(relationship);
 		} catch (error) {
 			console.error(error);
 			res.status(400).json({ error: "Failed to add resident" });
@@ -97,17 +148,36 @@ homeRouter.post(
 	}
 );
 
+// FIXME add me back
 //Add guest to home, creates a relationship of type resident between the user and home
 homeRouter.post(
 	"/homes/id/:id/resident",
 	async (req: Request, res: Response) => {
 		try {
-			const relationship = await createRelationship({
-				home: req.params.id,
-				user: req.body.userId,
-				type: "guest",
-			});
-			res.status(201).json(relationship);
+			const id = req.params.id;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid home id" });
+			}
+
+			const userId = req.body.userId;
+
+			if (
+				typeof userId !== "string" ||
+				!mongoose.Types.ObjectId.isValid(userId)
+			) {
+				return res.status(400).json({ error: "Invalid user id" });
+			}
+
+			// const relationship = await createRelationship({
+			// 	home: req.params.id,
+			// 	user: req.body.userId,
+			// 	type: "guest",
+			// });
+			// res.status(201).json(relationship);
 		} catch (error) {
 			console.error(error);
 			res.status(400).json({ error: "Failed to add guest" });

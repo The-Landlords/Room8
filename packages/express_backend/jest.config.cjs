@@ -1,13 +1,10 @@
 module.exports = {
   testEnvironment: "node",
-  testMatch: ["<rootDir>/**/*.test.ts"],
+  testMatch: ["**/*Mock.test.ts"],
   transform: {
-    "^.+\\.(ts|tsx)$": [
-      "ts-jest",
-      {
-        tsconfig: "<rootDir>/tsconfig.jest.json",
-      },
-    ],
+    "^.+\\.ts$": ["ts-jest", { tsconfig: "tsconfig.jest.json" }],
   },
-  moduleFileExtensions: ["ts", "tsx", "js", "json"],
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
 };

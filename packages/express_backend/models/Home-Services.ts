@@ -1,4 +1,4 @@
-import { Home } from "./Home";
+import { Home } from "./Home.js";
 import mongoose from "mongoose";
 
 export function createHome(data: any) {
