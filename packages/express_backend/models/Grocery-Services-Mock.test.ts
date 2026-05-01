@@ -11,6 +11,7 @@ import {
 	// updateGroceryItemQuantity,
 	calculateTotalCostForHome,
 	calculateTotalCostForItem,
+	updateGroceryItemQuantity,
 } from "./Grocery-Services";
 
 const homeId = new mongoose.Types.ObjectId();
@@ -73,6 +74,21 @@ test("Updating a grocery item", async () => {
 	expect(updated?.quantity).toBe(5);
 });
 
+test("Updating a grocery item", async () => {
+	const grocery = new Grocery(groceryItem);
+	const updatedData = { quantity: 5 };
+	const updatedDoc = new Grocery({ ...groceryItem, ...updatedData });
+	updatedDoc._id = grocery._id;
+	mockingoose(Grocery).toReturn(updatedDoc, "findOneAndUpdate");
+	const updated = await updateGroceryItemQuantity(
+		grocery._id,
+		updatedData.quantity
+	);
+
+	expect(updated).toBeDefined();
+	expect(updated?.quantity).toBe(5);
+});
+
 test("Deleting a grocery item", async () => {
 	const grocery = new Grocery(groceryItem);
 	mockingoose(Grocery).toReturn(grocery, "findOneAndDelete");
@@ -106,4 +122,31 @@ test("Calculating total cost for item", async () => {
 
 	expect(totalCost).toBeDefined();
 	expect(totalCost).toBeCloseTo(4.99 * 2);
+});
+
+test("Calculating total cost for home returns 0 when no items exist", async () => {
+	mockingoose(Grocery).toReturn([], "find");
+
+	const totalCost = await calculateTotalCostForHome(groceryItem.homeId);
+
+	expect(totalCost).toBe(0);
+});
+
+test("Calculating total cost for item", async () => {
+	const grocery = new Grocery(groceryItem);
+	mockingoose(Grocery).toReturn(grocery, "findOne");
+
+	const totalCost = await calculateTotalCostForItem(grocery._id);
+
+	expect(totalCost).toBeDefined();
+	expect(totalCost).toBeCloseTo(4.99 * 2);
+});
+
+test("Calculating total cost for item throws when item is missing", async () => {
+	const missingId = new mongoose.Types.ObjectId();
+	mockingoose(Grocery).toReturn(null, "findOne");
+
+	await expect(calculateTotalCostForItem(missingId)).rejects.toThrow(
+		"Item not found"
+	);
 });
