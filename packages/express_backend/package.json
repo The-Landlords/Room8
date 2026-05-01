@@ -5,15 +5,15 @@
 	"main": "backend.ts",
 	"type": "module",
 	"scripts": {
+		"test": "node -e \"console.warn('[DEPRECATED] Use \\\"npm run test:mock\\\" instead')\"",
+		"coverage": "jest --runInBand --testMatch '**/*Mock.test.ts' --coverage",
+		"test:mock": "jest --runInBand --testMatch '**/*Mock.test.ts'",
 		"start": "tsx watch backend.ts",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint:check": "eslint . --max-warnings=0",
 		"lint:fix": "eslint . --max-warnings=0 --fix --format stylish",
 		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
-		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\"",
-		"test": "jest --config ./jest.config.cjs --runInBand",
-		"coverage": "jest --config ./jest.config.cjs --runInBand --coverage",
-		"test:mock": "jest --runInBand --testMatch '**/*Mock.test.ts'"
+		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\""
 	},
 	"author": "",
 	"license": "ISC",

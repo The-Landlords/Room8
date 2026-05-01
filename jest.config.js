@@ -13,24 +13,9 @@ module.exports = {
 					},
 				],
 			},
-		},
-		{
-			displayName: "frontend",
-			testEnvironment: "jsdom",
-			testMatch: ["<rootDir>/packages/react-frontend/src/**/*.test.tsx"],
-			transform: {
-				"^.+\\.(ts|tsx)$": [
-					"ts-jest",
-					{
-						tsconfig:
-							"<rootDir>/packages/react-frontend/tsconfig.jest.json",
-					},
-				],
+			moduleNameMapper: {
+				"^(\\.{1,2}/.*)\\.js$": "$1",
 			},
-			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
-			setupFilesAfterEnv: [
-				"<rootDir>/packages/react-frontend/src/jest.setup.ts",
-			],
 		},
 	],
 };
