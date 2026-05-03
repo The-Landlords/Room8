@@ -1,4 +1,5 @@
 name: pre-commit
+run-name: "precommit · ${{ github.ref_name }} by @${{ github.actor }}"
 
 on:
     pull_request:
