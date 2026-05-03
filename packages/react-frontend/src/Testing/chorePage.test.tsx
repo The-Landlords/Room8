@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import ChorePage from "../pages/chorePage";
@@ -15,9 +14,11 @@ jest.mock("../components/list", () => {
 		return (
 			<div>
 				<button onClick={props.handleAddClick}>+</button>
+
 				{props.items.map((item, index) => {
 					const label =
 						typeof item === "string" ? item : (item.title ?? "");
+
 					const key =
 						typeof item === "string"
 							? item
@@ -26,11 +27,16 @@ jest.mock("../components/list", () => {
 					return (
 						<div key={key}>
 							<span>{label}</span>
-							<button
-								onClick={() => props.handleRemoveClick(item)}
-							>
-								remove {label}
-							</button>
+
+							{typeof item !== "string" && item._id && (
+								<button
+									onClick={() =>
+										props.handleRemoveClick(item)
+									}
+								>
+									remove {label}
+								</button>
+							)}
 						</div>
 					);
 				})}
@@ -62,11 +68,29 @@ function renderChorePageWithHistory() {
 	);
 }
 
-beforeEach(() => {
-	globalThis.fetch = jest.fn().mockResolvedValue({
+async function flushPromises() {
+	await Promise.resolve();
+	await Promise.resolve();
+	await Promise.resolve();
+}
+
+async function renderLoadedChorePage() {
+	renderChorePageWithHistory();
+
+	await act(async () => {
+		await flushPromises();
+	});
+}
+
+function mockFetchWithChores(chores: any[]) {
+	globalThis.fetch = jest.fn().mockResolvedValueOnce({
 		ok: true,
-		json: async () => [],
+		json: async () => chores,
 	}) as jest.Mock;
+}
+
+beforeEach(() => {
+	mockFetchWithChores([]);
 });
 
 afterEach(() => {
@@ -74,88 +98,73 @@ afterEach(() => {
 });
 
 test("clicking the add button opens the add overlay", async () => {
-	const user = userEvent.setup();
+	await renderLoadedChorePage();
 
-	renderChorePageWithHistory();
+	fireEvent.click(screen.getByRole("button", { name: "+" }));
 
-	const addButton = await screen.findByRole("button", { name: "+" });
-	await user.click(addButton);
-
-	expect(await screen.findByText("Add Chore")).toBeInTheDocument();
-	expect(
-		await screen.findByPlaceholderText("enter text")
-	).toBeInTheDocument();
-	expect(
-		await screen.findByRole("button", { name: "Submit" })
-	).toBeInTheDocument();
+	expect(screen.getByText("Add Chore")).toBeInTheDocument();
+	expect(screen.getByPlaceholderText("enter text")).toBeInTheDocument();
+	expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
 });
 
 test("clicking the back button sends you to the previous page", async () => {
-	const user = userEvent.setup();
+	await renderLoadedChorePage();
 
-	renderChorePageWithHistory();
+	fireEvent.click(screen.getByRole("button", { name: "←" }));
 
-	const backButton = await screen.findByRole("button", { name: "←" });
-	await user.click(backButton);
-
-	expect(await screen.findByText("Home Page")).toBeInTheDocument();
+	expect(screen.getByText("Home Page")).toBeInTheDocument();
 });
 
 test("submitting a new chore sends a POST request", async () => {
-	const user = userEvent.setup();
-
 	globalThis.fetch = jest
 		.fn()
+		// Initial fetch chores
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => [],
 		})
+		// POST chore
 		.mockResolvedValueOnce({
 			ok: true,
-			json: async () => [
-				{
-					_id: "chore-1",
-					title: "Wash dishes",
-					assignedTo: "Robert",
-				},
-			],
+			json: async () => ({
+				_id: "chore-1",
+				title: "Wash dishes",
+				assignedTo: "Robert",
+			}),
 		}) as jest.Mock;
 
-	renderChorePageWithHistory();
+	await renderLoadedChorePage();
 
-	const addButton = await screen.findByRole("button", { name: "+" });
-	await user.click(addButton);
+	fireEvent.click(screen.getByRole("button", { name: "+" }));
 
-	const input = await screen.findByPlaceholderText("enter text");
-	await user.type(input, "Wash dishes");
-
-	const submitButton = await screen.findByRole("button", {
-		name: "Submit",
+	fireEvent.change(screen.getByPlaceholderText("enter text"), {
+		target: { value: "Wash dishes" },
 	});
-	await user.click(submitButton);
 
-	await waitFor(() => {
-		expect(globalThis.fetch).toHaveBeenNthCalledWith(
-			2,
-			"http://localhost:8000/testhome/chores",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title: "Wash dishes",
-				}),
-			}
-		);
+	await act(async () => {
+		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+		await flushPromises();
 	});
+
+	expect(globalThis.fetch).toHaveBeenNthCalledWith(
+		2,
+		"http://localhost:8000/testhome/chores",
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: "Wash dishes",
+			}),
+		}
+	);
 });
 
 test("clicking remove sends a DELETE request", async () => {
-	const user = userEvent.setup();
-
 	globalThis.fetch = jest
 		.fn()
+		// Initial fetch chores
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => [
@@ -165,25 +174,29 @@ test("clicking remove sends a DELETE request", async () => {
 				},
 			],
 		})
+		// DELETE chore
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({}),
 		}) as jest.Mock;
 
-	renderChorePageWithHistory();
+	await renderLoadedChorePage();
 
-	const removeButton = await screen.findByRole("button", {
-		name: "remove Take out trash",
-	});
-	await user.click(removeButton);
+	fireEvent.click(
+		screen.getByRole("button", {
+			name: "remove Take out trash",
+		})
+	);
 
-	await waitFor(() => {
-		expect(globalThis.fetch).toHaveBeenNthCalledWith(
-			2,
-			"http://localhost:8000/testhome/chores/chore-1",
-			{
-				method: "DELETE",
-			}
-		);
+	await act(async () => {
+		await flushPromises();
 	});
+
+	expect(globalThis.fetch).toHaveBeenNthCalledWith(
+		2,
+		"http://localhost:8000/testhome/chores/chore-1",
+		{
+			method: "DELETE",
+		}
+	);
 });
