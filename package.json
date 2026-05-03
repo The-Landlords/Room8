@@ -5,6 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "jest --runInBand",
+		"test:frontend": "jest --selectProjects frontend --runInBand",
+		"test:backend": "jest --selectProjects backend --runInBand",
 		"coverage": "jest --runInBand --coverage",
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
