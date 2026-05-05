@@ -12,9 +12,6 @@ export const authRouter = express.Router();
 
 function filterResidents(residents: any[], userOneRelation: string) {
 	return residents.map((resident) => {
-		console.log("Resdient:" + resident);
-		console.log("UserOneRelation: " + userOneRelation);
-		//console.log("Visible: " + resident visibility"]);
 		return {
 			fullName: resident.fullName,
 			allergens: resident.allergens,

@@ -143,7 +143,16 @@ export default function HomeList() {
 				/>
 			)}
 			{homeNames.length == 0 && (
-				<div className="flex flex-col items-center gap-4"></div>
+				<List<string>
+					item="Home Spaces"
+					items={["No Homes available! Click below to add."]}
+					handleAddClick={handleAddClick}
+					handleRemoveClick={(name) => handleRemoveClick(name)}
+					username={username}
+					homeCode={homeCodes}
+					getKey={(name) => name}
+					renderItem={(name) => <span>{name}</span>}
+				/>
 			)}
 		</div>
 	);

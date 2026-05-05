@@ -38,10 +38,33 @@ export default function Residents() {
 						<p>
 							Allergens: {resident.allergens.join(", ") || "None"}
 						</p>
-						<p>Pronouns: {resident.pronouns || "N/A"}</p>
+						{resident.pronouns ? (
+							<div>
+								<p>Dislikes: {resident.pronouns || "N/A"}</p>
+							</div>
+						) : (
+							<p>Dislikes: Hidden</p>
+						)}
 						<p>Date of Birth: {resident.DOB || "N/A"}</p>
-						<p>Likes: {resident.likes.join(", ") || "N/A"}</p>
-						<p>Dislikes: {resident.dislikes.join(", ") || "N/A"}</p>
+						{resident.likes ? (
+							<div>
+								<p>
+									Likes: {resident.likes?.join(", ") || "N/A"}
+								</p>
+							</div>
+						) : (
+							<p>Likes: Hidden</p>
+						)}
+						{resident.dislikes ? (
+							<div>
+								<p>
+									Dislikes:{" "}
+									{resident.dislikes?.join(", ") || "N/A"}
+								</p>
+							</div>
+						) : (
+							<p>Dislikes: Hidden</p>
+						)}
 						{resident.emergencyContact ? (
 							<div>
 								<p>
