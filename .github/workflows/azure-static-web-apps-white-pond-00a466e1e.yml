@@ -1,6 +1,6 @@
 name: Azure Static Web Apps CI/CD (FRONTEND)
 
-run-name: "Frontend CD · ${{ github.ref_name }} by @${{ github.actor }}"
+run-name: "Frontend CD · ${{ github.ref_name }} by @${{ github.actor }}" 
 
 on:
   push:
