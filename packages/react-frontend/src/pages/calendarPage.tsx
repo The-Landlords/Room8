@@ -9,8 +9,8 @@ import {
 	faCaretRight,
 	faCaretDown,
 } from "@fortawesome/free-solid-svg-icons";
-import AddEventOverlay from "../components/AddEventOverlay";
-import RemoveEventOverlay from "../components/RemoveEventOverlay";
+import AddEventOverlay from "../components/addEventOverlay";
+import RemoveEventOverlay from "../components/removeEventOverlay";
 import EditEventOverlay from "../components/EditEventOverlay";
 
 export default function CalendarPage() {
