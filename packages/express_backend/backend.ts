@@ -21,6 +21,7 @@ app.use(
 	cors({
 		origin: [
 			"http://localhost:4173",
+			"http://localhost:5173",
 			"https://white-pond-00a466e1e.7.azurestaticapps.net",
 		],
 		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
