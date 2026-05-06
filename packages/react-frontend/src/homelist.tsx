@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGear } from "@fortawesome/free-solid-svg-icons";
 import RemoveHomeOverlay from "./components/removeHomeOverlay";
 
+import { API_BASE } from "./config";
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
 	const { username } = useParams();

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { API_BASE } from "./config";
 export default function SignInPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
