@@ -13,6 +13,11 @@ jobs:
   continuous-integration:
 
     runs-on: ubuntu-latest
+    services:
+          mongo:
+            image: mongo:6
+            ports:
+              - 27017:27017
 
     strategy:
       matrix:
@@ -37,8 +42,9 @@ jobs:
       run: npm run format
     - name: Run tests
       env:
-        MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
+        MONGO_URI_TEST: mongodb://localhost:27017/test
       run: npm run test
+      
     - name: Commit changes if any from lint and format fix
       run: |
         git config user.name "github-actions[bot]"

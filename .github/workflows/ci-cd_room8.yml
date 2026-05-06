@@ -14,8 +14,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # env:
-    #   MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
+    services:
+          mongo:
+            image: mongo:6
+            ports:
+              - 27017:27017
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -28,7 +31,7 @@ jobs:
           node-version: '22.x'
       - name: Install deps, run tests and build in packages/express_backend
         env:
-          MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
+          MONGO_URI_TEST: mongodb://localhost:27017/test
         run: | 
           npm ci
           npm run test:backend --if-present
