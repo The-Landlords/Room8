@@ -20,7 +20,7 @@ export default function AddHomeOverlay({
 		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`${API_BASE}//relate/${username}/${homeCode}`,
+			`${API_BASE}/relate/${username}/${homeCode}`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },

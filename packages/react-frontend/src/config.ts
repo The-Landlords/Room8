@@ -1,8 +1,8 @@
-export const API_BASE =
-	"https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net";
+export const API_BASE = (
+	import.meta.env.VITE_API_URL ||
+	"https://room8-bqgagjd0cndffae5.canadacentral-01.azurewebsites.net"
+).replace(/\/$/, "");
 
 if (!API_BASE) {
-	throw new Error("Missing VITE_API_URL");
+	throw new Error("Missing API base URL");
 }
-console.log("VITE_API_URL =", import.meta.env.VITE_API_URL);
-console.log("API_BASE =", API_BASE);

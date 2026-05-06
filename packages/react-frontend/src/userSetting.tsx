@@ -39,7 +39,7 @@ export default function UserSetting() {
 	useEffect(() => {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/users/username/${username}`)
+		fetch(`${API_BASE}/users/username/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();

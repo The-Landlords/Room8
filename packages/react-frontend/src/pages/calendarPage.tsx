@@ -67,7 +67,7 @@ export default function CalendarPage() {
 		handleClose();
 	}
 	async function fetchEvents() {
-		const homeObject = await fetch(`${API_BASE}//homes/code/${homeCode}`);
+		const homeObject = await fetch(`${API_BASE}/homes/code/${homeCode}`);
 		if (!homeObject.ok) throw new Error("Home not found");
 
 		const data = await homeObject.json();
@@ -75,7 +75,7 @@ export default function CalendarPage() {
 
 		setHomeName(data.homeName);
 
-		fetch(`${API_BASE}//homeId/${homeObjectId}/events/`)
+		fetch(`${API_BASE}/homeId/${homeObjectId}/events/`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Events not found");
 				return res.json();

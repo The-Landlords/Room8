@@ -5,7 +5,7 @@
 	"main": "backend.ts",
 	"type": "module",
 	"scripts": {
-		"test": "node -e \"console.warn('[DEPRECATED] Use \\\"npm run test:mock\\\" instead')\"",
+		"test": "jest --runInBand",
 		"coverage": "jest --runInBand --testMatch '**/*Mock.test.ts' --coverage",
 		"test:mock": "jest --runInBand --testMatch '**/*Mock.test.ts'",
 		"start": "tsx watch backend.ts",

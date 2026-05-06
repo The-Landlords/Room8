@@ -17,7 +17,7 @@ export default function RemoveEventOverlay({
 				return;
 			}
 
-			const res = await fetch(`${API_BASE}//events/${eventRemove._id}`, {
+			const res = await fetch(`${API_BASE}/events/${eventRemove._id}`, {
 				method: "DELETE",
 			});
 

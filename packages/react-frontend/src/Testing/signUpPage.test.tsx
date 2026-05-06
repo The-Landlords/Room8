@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import SignUpPage from "../pages/signUpPage";
-
+import { API_BASE } from "../config";
 function renderSignUpPage() {
 	return render(
 		<MemoryRouter initialEntries={["/signup"]}>
@@ -98,20 +98,17 @@ test("sends signup request when form is filled out", async () => {
 		await flushPromises();
 	});
 
-	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/users",
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				username: "testuser",
-				password: "password123",
-				fullName: "Test User",
-			}),
-		}
-	);
+	expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/users`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			username: "testuser",
+			password: "password123",
+			fullName: "Test User",
+		}),
+	});
 });
 
 test("navigates to settings page after successful signup", async () => {

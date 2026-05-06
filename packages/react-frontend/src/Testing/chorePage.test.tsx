@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import ChorePage from "../pages/chorePage";
+import { API_BASE } from "../config";
 
 jest.mock("../components/list", () => {
 	return function MockList(props: {
@@ -148,7 +149,7 @@ test("submitting a new chore sends a POST request", async () => {
 
 	expect(globalThis.fetch).toHaveBeenNthCalledWith(
 		2,
-		"http://localhost:8000/testhome/chores",
+		`${API_BASE}/testhome/chores`,
 		{
 			method: "POST",
 			headers: {
@@ -194,7 +195,7 @@ test("clicking remove sends a DELETE request", async () => {
 
 	expect(globalThis.fetch).toHaveBeenNthCalledWith(
 		2,
-		"http://localhost:8000/testhome/chores/chore-1",
+		`${API_BASE}/testhome/chores/chore-1`,
 		{
 			method: "DELETE",
 		}

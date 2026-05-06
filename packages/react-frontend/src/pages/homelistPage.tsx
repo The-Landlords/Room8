@@ -46,7 +46,7 @@ export default function HomeList() {
 	async function fetchHomes() {
 		if (!username) return;
 
-		fetch(`${API_BASE}//relate/${username}`)
+		fetch(`${API_BASE}/relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();

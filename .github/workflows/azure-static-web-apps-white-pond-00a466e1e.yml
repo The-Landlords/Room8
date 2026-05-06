@@ -32,6 +32,9 @@ jobs:
       - name: Build frontend workspace
         run: npm run build --workspace react-frontend
 
+      - name: Run frontend tests
+        run: npm run test:frontend
+
       - name: Verify output exists
         run: ls -la packages/react-frontend/dist
 

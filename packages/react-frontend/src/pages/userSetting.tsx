@@ -41,7 +41,7 @@ export default function UserSetting() {
 	useEffect(() => {
 		if (!username) return;
 
-		fetch(`${API_BASE}//users/username/${username}`)
+		fetch(`${API_BASE}/users/username/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
@@ -99,7 +99,7 @@ export default function UserSetting() {
 		};
 
 		try {
-			const res = await fetch(`${API_BASE}//users/${user.username}`, {
+			const res = await fetch(`${API_BASE}/users/${user.username}`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),

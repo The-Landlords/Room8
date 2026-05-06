@@ -36,7 +36,9 @@ jobs:
     - name: Run format
       run: npm run format
     - name: Run tests
-      run: npm run test:mock
+      env:
+        MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
+      run: npm run test
     - name: Commit changes if any from lint and format fix
       run: |
         git config user.name "github-actions[bot]"

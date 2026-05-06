@@ -19,7 +19,7 @@ export default function SignInPage() {
 			setError("Please fill in username, password, and full name");
 			return;
 		}
-		fetch(`${API_BASE}//users`, {
+		fetch(`${API_BASE}/users`, {
 			// matches user-routes.ts POST /users
 			method: "POST",
 			headers: {

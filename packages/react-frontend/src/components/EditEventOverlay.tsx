@@ -41,7 +41,7 @@ export default function EditEventOverlay({
 			throw new Error("Missing event id");
 		}
 
-		const res = await fetch(`${API_BASE}//events/${eventEdit._id}`, {
+		const res = await fetch(`${API_BASE}/events/${eventEdit._id}`, {
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({

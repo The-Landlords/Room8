@@ -53,7 +53,7 @@ export default function CreateHomeOverlay({
 		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`${API_BASE}//relate/${username}/${homeCode}`,
+			`${API_BASE}/relate/${username}/${homeCode}`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -65,7 +65,7 @@ export default function CreateHomeOverlay({
 	async function createHome(homeData: any) {
 		if (!username) return;
 
-		const promise = await fetch(`${API_BASE}//homes`, {
+		const promise = await fetch(`${API_BASE}/homes`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(homeData),

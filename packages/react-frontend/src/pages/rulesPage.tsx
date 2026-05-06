@@ -48,17 +48,13 @@ export default function RulesPage() {
 	async function fetchRules() {
 		if (!homeCode) return;
 
-		const homeRes = await fetch(
-			`http://localhost:8000/homes/code/${homeCode}`
-		);
+		const homeRes = await fetch(`${API_BASE}/homes/code/${homeCode}`);
 		if (!homeRes.ok) throw new Error("Failed to fetch home");
 		const homeData = await homeRes.json();
 
 		setHomeName(homeData.homeName);
 
-		const rulesRes = await fetch(
-			`http://localhost:8000/homes/rules/${homeCode}`
-		);
+		const rulesRes = await fetch(`${API_BASE}/homes/rules/${homeCode}`);
 		if (!rulesRes.ok) throw new Error("Failed to fetch rules");
 		const data = await rulesRes.json();
 		setRules(data);
@@ -126,7 +122,7 @@ export default function RulesPage() {
 	// };
 
 	async function handleVote(ruleId: string, vote: "YES" | "NO") {
-		await fetch(`${API_BASE}//rules/${ruleId}/vote`, {
+		await fetch(`${API_BASE}/rules/${ruleId}/vote`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ voteId, vote }),

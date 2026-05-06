@@ -119,7 +119,7 @@ export default function List<T>({
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a
-										href={`${API_BASE}//events/ics/${eventIds[index]}`}
+										href={`${API_BASE}/events/ics/${eventIds[index]}`}
 									>
 										<FontAwesomeIcon
 											className="iconWrapper"
