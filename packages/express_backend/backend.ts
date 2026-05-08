@@ -78,7 +78,7 @@ start().catch((e) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-	res.send("Hello World aksdhasbd!");
+	res.send("Hello World!");
 });
 
 export default connectDB;
