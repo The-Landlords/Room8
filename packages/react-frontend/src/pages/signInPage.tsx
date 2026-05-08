@@ -1,7 +1,7 @@
 // src/signInPage.tsx
 import { API_BASE } from "../config";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignInPage() {
 	const [username, setUsername] = useState("");
@@ -78,9 +78,9 @@ export default function SignInPage() {
 
 					<p className="text-sm text-center mt-2">
 						Don&apos;t have an account?{" "}
-						<a href="/signup" className="text-blue-500">
+						<Link to="/signup" className="text-blue-500">
 							Sign Up
-						</a>
+						</Link>
 					</p>
 
 					{error && (

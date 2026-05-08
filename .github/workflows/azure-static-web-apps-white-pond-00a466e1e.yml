@@ -1,6 +1,6 @@
 name: Azure Static Web Apps CI/CD (FRONTEND)
 
-run-name: "Frontend CD · ${{ github.ref_name }} by @${{ github.actor }}" 
+run-name: "Frontend CD · ${{ github.ref_name }} by @${{ github.actor }}"
 
 on:
   push:
@@ -32,11 +32,23 @@ jobs:
       - name: Build frontend workspace
         run: npm run build --workspace react-frontend
 
+      - name: Add Azure fallback config
+        run: |
+          cat > packages/react-frontend/dist/staticwebapp.config.json << 'EOF'
+          {
+            "navigationFallback": {
+              "rewrite": "/index.html"
+            }
+          }
+          EOF
+
       - name: Run frontend tests
         run: npm run test:frontend
 
       - name: Verify output exists
-        run: ls -la packages/react-frontend/dist
+        run: |
+          ls -la packages/react-frontend/dist
+          cat packages/react-frontend/dist/staticwebapp.config.json
 
       - name: Deploy
         uses: Azure/static-web-apps-deploy@v1
