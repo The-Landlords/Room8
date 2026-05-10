@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
 import { config } from "dotenv";
+config({ path: "../../.env" });
 import { choreRouter } from "./routes/chore-routes.js";
 import { homeRouter } from "./routes/home-routes.js";
 import { eventRouter } from "./routes/event-routes.js";
@@ -16,21 +17,19 @@ export const app = express();
 export const port = 8000;
 
 //default port to listen
+const corsOptions = {
+	origin: [
+		"http://localhost:4173",
+		"http://localhost:5173",
+		"https://white-pond-00a466e1e.7.azurestaticapps.net",
+	],
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	credentials: true,
+};
 
-// const corsOptions = {
-// 	origin: [
-// 		"http://localhost:4173",
-// 		"http://localhost:5173",
-// 		"https://white-pond-00a466e1e.7.azurestaticapps.net",
-// 	],
-// 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-// 	allowedHeaders: ["Content-Type", "Authorization"],
-// 	credentials: true,
-// };
-
-// app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
-app.use(cors());
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
 //TODO FIX clarify this practice with prof & team
@@ -42,8 +41,6 @@ app.use("/", ruleRouter);
 app.use("/", userRouter);
 app.use("/", groceryRouter);
 app.use("/", relationRouter);
-
-config({ path: "../../.env" });
 
 const url = process.env.MONGO_URI;
 let connection: typeof mongoose | null = null;
