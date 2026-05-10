@@ -59,7 +59,15 @@ export default function Residents() {
 							) : (
 								<p>Dislikes: Hidden</p>
 							)}
-							<p>Date of Birth: {resident.DOB || "N/A"}</p>
+							{resident.DOB ? (
+								<div>
+									<p>
+										Date of Birth: {resident.DOB || "N/A"}
+									</p>
+								</div>
+							) : (
+								<p>Date of Birth: Hidden</p>
+							)}
 							{resident.likes ? (
 								<div>
 									<p>
