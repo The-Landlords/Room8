@@ -32,7 +32,6 @@ app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
-//TODO FIX clarify this practice with prof & team
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
