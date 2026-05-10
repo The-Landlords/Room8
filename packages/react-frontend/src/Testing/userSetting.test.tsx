@@ -53,6 +53,16 @@ function makeUser(overrides: any = {}) {
 			colorBlindMode: "off",
 			scheduleVisibility: "roommates",
 		},
+		visibility: {
+			nameVisible: "PUBLIC",
+			phoneVisible: "PRIVATE",
+			dobVisible: "PRIVATE",
+			likesVisible: "PRIVATE",
+			dislikesVisible: "PRIVATE",
+			emergencyContactVisible: "PRIVATE",
+			allergensVisible: "PUBLIC",
+			pronounsVisible: "PRIVATE",
+		},
 		...overrides,
 	};
 }

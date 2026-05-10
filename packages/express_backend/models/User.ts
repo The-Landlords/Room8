@@ -143,7 +143,7 @@ export const UserSchema = new mongoose.Schema(
 			dobVisible: {
 				type: String,
 				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
-				default: "PUBLIC",
+				default: "PRIVATE",
 			},
 			likesVisible: {
 				type: String,

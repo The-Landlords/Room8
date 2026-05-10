@@ -28,7 +28,6 @@ export default function SignInPage() {
 				username,
 				password,
 				fullName,
-				visibility: {},
 			}),
 		})
 			.then((response) => response.json())
