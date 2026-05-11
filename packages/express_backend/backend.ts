@@ -12,6 +12,11 @@ import { loginRouter } from "./routes/login-routes.js";
 import { ruleRouter } from "./routes/rule-routes.js";
 import { groceryRouter } from "./routes/grocery-routes.js";
 import { relationRouter } from "./routes/relation-routes.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger-output.json" with { type: "json" };
+
+
+
 
 export const app = express();
 export const port = 8000;
@@ -42,6 +47,7 @@ app.use("/", userRouter);
 app.use("/", groceryRouter);
 app.use("/", relationRouter);
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req: Request, res: Response) => {
 	res.send("Hello World!");
 });
