@@ -15,9 +15,6 @@ import { relationRouter } from "./routes/relation-routes.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 
-
-
-
 export const app = express();
 export const port = 8000;
 
