@@ -18,16 +18,16 @@ export const port = 8000;
 
 //default port to listen
 const corsOptions = {
-    origin: [
-        "http://localhost:4173",
-        "http://localhost:5173",
-        "https://white-pond-00a466e1e.7.azurestaticapps.net",
-        "https://white-pond-00a466e1e.7.azurestaticapps.net",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-    optionsSuccessStatus: 200 
+	origin: [
+		"http://localhost:4173",
+		"http://localhost:5173",
+		"https://white-pond-00a466e1e.7.azurestaticapps.net",
+		"https://white-pond-00a466e1e.7.azurestaticapps.net",
+	],
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	credentials: true,
+	optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -42,12 +42,14 @@ app.use("/", userRouter);
 app.use("/", groceryRouter);
 app.use("/", relationRouter);
 
-
 app.use((req, res, next) => {
-  res.on("finish", () => {
-    console.log("CORS header:", res.getHeader("Access-Control-Allow-Origin"));
-  });
-  next();
+	res.on("finish", () => {
+		console.log(
+			"CORS header:",
+			res.getHeader("Access-Control-Allow-Origin")
+		);
+	});
+	next();
 });
 
 const url = process.env.MONGO_URI;
@@ -87,6 +89,5 @@ start().catch((e) => {
 app.get("/", (req: Request, res: Response) => {
 	res.send("Hello World!");
 });
-
 
 export default connectDB;
