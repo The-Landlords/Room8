@@ -42,7 +42,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: packages/express_backend
+          path: |
+            packages/express_backend/dist
+            packages/express_backend/package.json
+            packages/express_backend/package-lock.json
+            packages/express_backend/node_modules
 
   deploy:
     runs-on: ubuntu-latest
