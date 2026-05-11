@@ -10,7 +10,7 @@
 		"coverage": "jest --runInBand --coverage",
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
-		"dev": "concurrently --kill-others -c red,blue \"npm -w packages/react-frontend run dev\" \"npm -w packages/express_backend run start\"",
+		"dev": "concurrently --kill-others -c red,blue \"npm -w packages/react-frontend run dev\" \"npm -w packages/express_backend run dev\"",
 		"lint:check": "eslint \"packages/*/src/**/*.{ts,tsx}\"",
 		"lint:fix": "eslint \"packages/*/src/**/*.{ts,tsx}\" --fix",
 		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
