@@ -120,7 +120,8 @@ test("fetches and displays groceries", async () => {
 
 	await renderLoadedGroceryPage();
 
-	expect(screen.getByText("Milk - Qty: 2 - $4")).toBeInTheDocument();
+	expect(screen.getByText("Milk - Qty: 2 - $4.00")).toBeInTheDocument();
+
 	expect(globalThis.fetch).toHaveBeenCalledWith(
 		"http://localhost:8000/testhome/grocery"
 	);
@@ -132,9 +133,15 @@ test("clicking the add button opens the add overlay", async () => {
 	fireEvent.click(screen.getByRole("button", { name: "+" }));
 
 	expect(screen.getByText("Add Grocery")).toBeInTheDocument();
+
 	expect(
 		screen.getByPlaceholderText("enter grocery item")
 	).toBeInTheDocument();
+
+	expect(screen.getByPlaceholderText("Quantity")).toBeInTheDocument();
+
+	expect(screen.getByPlaceholderText("Price, optional")).toBeInTheDocument();
+
 	expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
 });
 
@@ -146,22 +153,20 @@ test("clicking the back button sends you to the previous page", async () => {
 	expect(screen.getByText("Home Page")).toBeInTheDocument();
 });
 
-test("submitting a new grocery sends a POST request", async () => {
+test("submitting a new grocery sends a POST request with quantity and price", async () => {
 	globalThis.fetch = jest
 		.fn()
-		// Initial fetch groceries
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => [],
 		})
-		// POST grocery
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({
 				_id: "grocery-1",
 				title: "Eggs",
-				quantity: 1,
-				price: 0,
+				quantity: 12,
+				price: 3.49,
 				homeId: "home-1",
 				status: "PENDING",
 			}),
@@ -173,6 +178,14 @@ test("submitting a new grocery sends a POST request", async () => {
 
 	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
 		target: { value: "Eggs" },
+	});
+
+	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
+		target: { value: "12" },
+	});
+
+	fireEvent.change(screen.getByPlaceholderText("Price, optional"), {
+		target: { value: "3.49" },
 	});
 
 	await act(async () => {
@@ -190,19 +203,129 @@ test("submitting a new grocery sends a POST request", async () => {
 			},
 			body: JSON.stringify({
 				title: "Eggs",
-				quantity: 1,
+				quantity: 12,
+				price: 3.49,
+			}),
+		}
+	);
+
+	expect(screen.getByText("Eggs - Qty: 12 - $3.49")).toBeInTheDocument();
+});
+
+test("submitting a new grocery without price sends price as 0", async () => {
+	globalThis.fetch = jest
+		.fn()
+		.mockResolvedValueOnce({
+			ok: true,
+			json: async () => [],
+		})
+		.mockResolvedValueOnce({
+			ok: true,
+			json: async () => ({
+				_id: "grocery-1",
+				title: "Bread",
+				quantity: 2,
+				price: 0,
+				homeId: "home-1",
+				status: "PENDING",
+			}),
+		}) as jest.Mock;
+
+	await renderLoadedGroceryPage();
+
+	fireEvent.click(screen.getByRole("button", { name: "+" }));
+
+	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
+		target: { value: "Bread" },
+	});
+
+	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
+		target: { value: "2" },
+	});
+
+	await act(async () => {
+		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+		await flushPromises();
+	});
+
+	expect(globalThis.fetch).toHaveBeenNthCalledWith(
+		2,
+		"http://localhost:8000/testhome/grocery",
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: "Bread",
+				quantity: 2,
 				price: 0,
 			}),
 		}
 	);
 
-	expect(screen.getByText("Eggs - Qty: 1 - $0")).toBeInTheDocument();
+	expect(screen.getByText("Bread - Qty: 2 - $0.00")).toBeInTheDocument();
+});
+
+test("does not submit grocery if quantity is invalid", async () => {
+	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+		ok: true,
+		json: async () => [],
+	}) as jest.Mock;
+
+	await renderLoadedGroceryPage();
+
+	fireEvent.click(screen.getByRole("button", { name: "+" }));
+
+	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
+		target: { value: "Apples" },
+	});
+
+	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
+		target: { value: "0" },
+	});
+
+	await act(async () => {
+		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+		await flushPromises();
+	});
+
+	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+});
+
+test("does not submit grocery if price is negative", async () => {
+	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+		ok: true,
+		json: async () => [],
+	}) as jest.Mock;
+
+	await renderLoadedGroceryPage();
+
+	fireEvent.click(screen.getByRole("button", { name: "+" }));
+
+	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
+		target: { value: "Apples" },
+	});
+
+	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
+		target: { value: "3" },
+	});
+
+	fireEvent.change(screen.getByPlaceholderText("Price, optional"), {
+		target: { value: "-1" },
+	});
+
+	await act(async () => {
+		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+		await flushPromises();
+	});
+
+	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 });
 
 test("clicking remove sends a DELETE request", async () => {
 	globalThis.fetch = jest
 		.fn()
-		// Initial fetch groceries
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => [
@@ -216,7 +339,6 @@ test("clicking remove sends a DELETE request", async () => {
 				},
 			],
 		})
-		// DELETE grocery
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({}),

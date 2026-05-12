@@ -7,7 +7,7 @@ type Grocery = {
 	_id: string;
 	title: string;
 	quantity: number;
-	price: number;
+	price?: number;
 	homeId: string;
 	isShared?: boolean;
 	status: "PENDING" | "PURCHASED" | "CANCELLED";
@@ -18,16 +18,43 @@ type Grocery = {
 export default function GroceryPage() {
 	const [groceries, setGroceries] = useState<Grocery[]>([]);
 	const [showAddOverlay, setShowAddOverlay] = useState(false);
+	const [quantity, setQuantity] = useState("1");
+	const [price, setPrice] = useState("");
+
 	const navigate = useNavigate();
 	const { username = "", homeCode = "" } = useParams();
 
 	function formatGrocery(grocery: Grocery) {
-		return `${grocery.title} - Qty: ${grocery.quantity} - $${grocery.price}`;
+		const priceText =
+			grocery.price === undefined
+				? ""
+				: ` - $${grocery.price.toFixed(2)}`;
+
+		return `${grocery.title} - Qty: ${grocery.quantity}${priceText}`;
 	}
 
-	async function handleAddGrocery(value: string) {
+	function resetGroceryForm() {
+		setQuantity("1");
+		setPrice("");
+	}
+
+	async function handleAddGrocery(title: string) {
 		try {
 			if (!username || !homeCode) return;
+
+			const parsedQuantity = Number(quantity);
+			const parsedPrice = price.trim() === "" ? undefined : Number(price);
+
+			if (!Number.isFinite(parsedQuantity) || parsedQuantity <= 0) {
+				return;
+			}
+
+			if (
+				parsedPrice !== undefined &&
+				(!Number.isFinite(parsedPrice) || parsedPrice < 0)
+			) {
+				return;
+			}
 
 			const res = await fetch(
 				`http://localhost:8000/${homeCode}/grocery`,
@@ -37,9 +64,9 @@ export default function GroceryPage() {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						title: value,
-						quantity: 1,
-						price: 0,
+						title,
+						quantity: parsedQuantity,
+						price: parsedPrice ?? 0,
 					}),
 				}
 			);
@@ -51,6 +78,7 @@ export default function GroceryPage() {
 
 			const newGrocery = await res.json();
 			setGroceries((prev) => [...prev, newGrocery]);
+			resetGroceryForm();
 		} catch (err) {
 			console.error(err);
 		}
@@ -126,8 +154,31 @@ export default function GroceryPage() {
 					title="Add Grocery"
 					placeholder="enter grocery item"
 					onSubmit={handleAddGrocery}
-					onClose={() => setShowAddOverlay(false)}
-				/>
+					onClose={() => {
+						resetGroceryForm();
+						setShowAddOverlay(false);
+					}}
+				>
+					<input
+						type="number"
+						placeholder="Quantity"
+						className="input"
+						value={quantity}
+						min="1"
+						step="1"
+						onChange={(e) => setQuantity(e.target.value)}
+					/>
+
+					<input
+						type="number"
+						placeholder="Price, optional"
+						className="input"
+						value={price}
+						min="0"
+						step="0.01"
+						onChange={(e) => setPrice(e.target.value)}
+					/>
+				</AddOverlay>
 
 				<List
 					item="Grocery"
