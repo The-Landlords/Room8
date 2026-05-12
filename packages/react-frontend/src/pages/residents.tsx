@@ -57,7 +57,7 @@ export default function Residents() {
 									</p>
 								</div>
 							) : (
-								<p>Dislikes: Hidden</p>
+								<p />
 							)}
 							{resident.DOB ? (
 								<div>
@@ -66,7 +66,7 @@ export default function Residents() {
 									</p>
 								</div>
 							) : (
-								<p>Date of Birth: Hidden</p>
+								<p />
 							)}
 							{resident.likes ? (
 								<div>
@@ -76,7 +76,7 @@ export default function Residents() {
 									</p>
 								</div>
 							) : (
-								<p>Likes: Hidden</p>
+								<p />
 							)}
 							{resident.dislikes ? (
 								<div>
@@ -86,7 +86,7 @@ export default function Residents() {
 									</p>
 								</div>
 							) : (
-								<p>Dislikes: Hidden</p>
+								<p />
 							)}
 							{resident.emergencyContact ? (
 								<div>
@@ -107,7 +107,7 @@ export default function Residents() {
 									</p>
 								</div>
 							) : (
-								<p>Emergency Contact: Hidden</p>
+								<p />
 							)}
 						</div>
 					)}
