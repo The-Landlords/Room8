@@ -41,9 +41,15 @@ export default function List<T>({
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
-	const isBasic = item !== "Home Spaces" && "Events" && "Chores" && "Rules";
+	const isChores = item === "Chores";
+	const isBasic =
+		item !== "Home Spaces" &&
+		item !== "Events" &&
+		item !== "Chores" &&
+		item !== "Rules";
 	const [removeMode, setRemoveMode] = useState(false);
-
+	console.log("item:", item);
+	console.log("Chore? : ", isChores);
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">
