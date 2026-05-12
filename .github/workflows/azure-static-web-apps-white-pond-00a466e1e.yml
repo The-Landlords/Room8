@@ -5,10 +5,13 @@ run-name: "Frontend CD · ${{ github.ref_name }} by @${{ github.actor }}"
 on:
   push:
     branches:
-      - CI/CD
+      - CI/CD # FIXME remove this in future
+      - main
+
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
+      - main
       - CI/CD
 
 jobs:

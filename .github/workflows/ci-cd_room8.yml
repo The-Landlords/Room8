@@ -5,7 +5,9 @@ run-name: "Backend CD · ${{ github.ref_name }} by @${{ github.actor }}"
 on:
   push:
     branches:
-      - CI/CD # FIXME change to main for production before merging
+      - CI/CD # FIXME remove this in future
+      - main
+
   workflow_dispatch:
 
 jobs:
