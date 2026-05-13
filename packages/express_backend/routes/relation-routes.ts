@@ -21,7 +21,7 @@ relationRouter.post(
 	"/relate/:username/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
-			const relationship = req.body.relationship;
+			const relationship = req.body.relationship.toUpperCase();
 
 			const h = await getHomeByCode(req.params.homeCode);
 
@@ -123,6 +123,27 @@ relationRouter.patch(
 		} catch (err) {
 			console.error(err);
 			res.status(500).json({ error: "Failed to remove relationship" });
+		}
+	}
+);
+
+relationRouter.get(
+	"/relate/home/:homeId/residents",
+	async (req: Request, res: Response) => {
+		try {
+			const residents = await getUsersByHomeAndRelation(
+				new mongoose.Types.ObjectId(req.params.homeId),
+				"RESIDENT"
+			);
+
+			res.status(200).json({
+				count: residents.length,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				error: "Failed to fetch residents",
+			});
 		}
 	}
 );

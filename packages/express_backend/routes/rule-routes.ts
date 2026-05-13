@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
-import { Home } from "../models/Home";
+import { getUsersByHomeAndRelation } from "../models/User-Services";
 
 
 import { getHomeByCode } from "../models/Home-Services";
@@ -95,14 +95,12 @@ ruleRouter.post("/homes/rules", async (req: Request, res: Response) => {
 
 //get number of residents
 async function getResidentCount(homeId: mongoose.Types.ObjectId) {
-	const home = await Home.findById(homeId);
+	const residents = await getUsersByHomeAndRelation(
+		homeId,
+		"RESIDENT"
+	);
 
-	if (!home) {
-		throw new Error("Home not found");
-	}
-	return home.userIds.filter(
-		(user) => user.relationship === "RESIDENT"
-	).length;
+	return residents.length;
 }
 
 

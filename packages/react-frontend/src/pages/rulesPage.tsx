@@ -54,11 +54,17 @@ export default function RulesPage() {
 
 		setHomeName(homeData.homeName);
 
-		const residentCount = homeData.userIds.filter(
-			(user: any) => user.relationship === "RESIDENT"
-		).length || 0;
+		const residentRes = await fetch(
+			`http://localhost:8000/relate/home/${homeData._id}/residents`
+		);
 
-		setTotalResidents(residentCount);
+		if (!residentRes.ok) {
+			throw new Error("Failed to fetch residents");
+		}
+
+		const residentData = await residentRes.json();
+
+		setTotalResidents(residentData.count);
 
 		const rulesRes = await fetch(
 			`http://localhost:8000/homes/rules/${homeCode}`
