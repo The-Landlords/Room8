@@ -41,6 +41,28 @@ export function deleteHome(homeId: mongoose.Types.ObjectId) {
 	return Home.findByIdAndDelete({ _id: homeId });
 }
 
+//added
+export function addResidentToHome(
+	homeId: mongoose.Types.ObjectId,
+	userId: mongoose.Types.ObjectId
+) {
+	return Home.findByIdAndUpdate(
+		homeId,
+		{
+			$addToSet: {
+				userIds: {
+					userId,
+					relationship: "RESIDENT",
+				},
+			},
+		},
+		{
+			returnDocument: "after",
+			runValidators: true,
+		}
+	);
+}
+
 // commenting for coverage
 // export function addMember(user: string) {
 // 	//FIXME this will be changed to user Schema, users should store Home id's

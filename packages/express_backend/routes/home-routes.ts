@@ -6,6 +6,7 @@ import {
 	updateHome,
 	deleteHome,
 	getHomeByCode,
+	addResidentToHome,
 	// addMember,
 	// removeMember,
 } from "../models/Home-Services";
@@ -84,12 +85,12 @@ homeRouter.post(
 	"/homes/id/:id/members",
 	async (req: Request, res: Response) => {
 		try {
-			const relationship = await createRelationship({
-				home: req.params.id,
-				user: req.body.userId,
-				type: "resident",
-			});
-			res.status(201).json(relationship);
+			const updatedHome = await addResidentToHome(
+				req.params.id as any,
+				req.body.userId as any
+			);
+
+			res.status(201).json(updatedHome);
 		} catch (error) {
 			console.error(error);
 			res.status(400).json({ error: "Failed to add resident" });
