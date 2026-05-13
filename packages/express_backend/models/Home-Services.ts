@@ -41,7 +41,6 @@ export function deleteHome(homeId: mongoose.Types.ObjectId) {
 	return Home.findByIdAndDelete({ _id: homeId });
 }
 
-//added
 export function addResidentToHome(
 	homeId: mongoose.Types.ObjectId,
 	userId: mongoose.Types.ObjectId
