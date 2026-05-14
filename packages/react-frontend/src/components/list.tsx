@@ -44,12 +44,8 @@ export default function List<T>({
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
 	const isChores = item === "Chores";
-	const isBasic =
-		item !== "Home Spaces" &&
-		item !== "Events" &&
-		item !== "Chores" &&
-		item !== "Grocery" &&
-		item !== "Rules";
+	const isGrocery = item === "Grocery";
+	const isBasic = "";
 	const [removeMode, setRemoveMode] = useState(false);
 	console.log("item:", item);
 	console.log("Chore? : ", isChores);
