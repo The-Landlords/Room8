@@ -48,6 +48,7 @@ export default function List<T>({
 		item !== "Home Spaces" &&
 		item !== "Events" &&
 		item !== "Chores" &&
+		item !== "Grocery" &&
 		item !== "Rules";
 	const [removeMode, setRemoveMode] = useState(false);
 	console.log("item:", item);
