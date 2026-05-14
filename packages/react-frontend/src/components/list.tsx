@@ -109,12 +109,16 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-									<Link to="/groceries">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faCartShopping}
-										/>
-									</Link>
+									{homeCode?.[index] && (
+										<Link
+											to={`/grocery/${username}/${homeCode[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faCartShopping}
+											/>
+										</Link>
+									)}
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"

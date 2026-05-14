@@ -9,7 +9,7 @@ export default function Residents() {
 	async function fetchResidents() {
 		if (!username || !homeCode) return;
 
-		fetch(`http://localhost:8000/auth/${username}/${homeCode}`)
+		fetch(`http://localhost:8000/auth/residents/${username}/${homeCode}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Residents not found ");
 				return res.json();

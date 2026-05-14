@@ -44,8 +44,6 @@ function filterResidents(residents: any[], userOneRelation: string) {
 }
 
 function canSee(fieldVisible: string, userOneRelation: string): boolean {
-	console.log("FieldVisible: " + fieldVisible);
-	console.log("UserOneRelation: " + userOneRelation);
 	if (!fieldVisible) {
 		return false;
 	}
@@ -59,9 +57,8 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 }
 
 authRouter.get(
-	"/auth/:usernameOne/:homeCode",
+	"/auth/residents/:usernameOne/:homeCode/",
 	async (req: Request, res: Response) => {
-		console.log("IN AUTH ROUTER");
 		const { usernameOne, homeCode } = req.params;
 		const userOne = await getUserByUsername(usernameOne);
 		const home = await getHomeByCode(homeCode);
@@ -69,9 +66,9 @@ authRouter.get(
 			console.log("User or home not found");
 			return res.status(404).json({ error: "User or home not found" });
 		}
-		console.log("HI!");
+
 		const residents = await getUsersByHomeAndRelation(home._id, "RESIDENT");
-		console.log(residents);
+
 		if (residents.length === 0) {
 			console.log("No residents found for home code: " + homeCode);
 			return res.status(404).json({
@@ -91,7 +88,7 @@ authRouter.get(
 				.json({ error: "No shared home found between users" });
 		}
 		const filteredUsers = filterResidents(residents, userOneRelation);
-		console.log(filteredUsers);
+
 		res.status(200).json(filteredUsers);
 	}
 );
