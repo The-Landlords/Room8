@@ -11,6 +11,8 @@ import SignUpPage from "./pages/signUpPage";
 import ChorePage from "./pages/chorePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CalendarPage from "./pages/calendarPage";
+import Residents from "./pages/residents";
+import GroceryPage from "./pages/groceryPage.tsx";
 
 function App() {
 	return (
@@ -35,7 +37,14 @@ function App() {
 						path="/settings/:username"
 						element={<UserSetting />}
 					/>
-					<Route path="/grocery" element={<h1>Groceries</h1>} />
+					<Route
+						path="/residents/:username/:homeCode"
+						element={<Residents />}
+					/>
+					<Route
+						path="/grocery/:username/:homeCode"
+						element={<GroceryPage />}
+					/>
 				</Routes>
 			</BrowserRouter>
 		</>

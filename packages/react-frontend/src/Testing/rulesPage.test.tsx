@@ -124,11 +124,20 @@ function mockRulesResponse(rules: any[]) {
 		json: async () => rules,
 	};
 }
+function mockResidentsResponse() {
+	return {
+		ok: true,
+		json: async () => ({
+			count: 1,
+		}),
+	};
+}
 
 function mockFetchWithRules(rules: any[]) {
 	globalThis.fetch = jest
 		.fn()
 		.mockResolvedValueOnce(mockHomeResponse())
+		.mockResolvedValueOnce(mockResidentsResponse())
 		.mockResolvedValueOnce(mockRulesResponse(rules));
 }
 
@@ -137,6 +146,8 @@ function mockFetchForAddingRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// Initial page load: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([]))
 		// Add rule POST
@@ -146,6 +157,8 @@ function mockFetchForAddingRule() {
 		})
 		// Refresh after add: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// refresh after add: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Refresh after add: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([makeRule()]));
 }
@@ -155,6 +168,8 @@ function mockFetchForVotingRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// refresh after add: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([makeRule()]))
 		// Vote POST
@@ -164,6 +179,8 @@ function mockFetchForVotingRule() {
 		})
 		// Refresh after vote: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// Refresh after vote: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Refresh after vote: fetch rules
 		.mockResolvedValueOnce(
 			mockRulesResponse([
@@ -180,6 +197,8 @@ function mockFetchForDeletedRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// INitial page load: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([makeRule()]))
 		// Delete vote POST

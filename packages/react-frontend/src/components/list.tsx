@@ -12,6 +12,7 @@ import {
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+// import Residents from "../pages/residents";
 
 import { API_BASE } from "../config";
 
@@ -42,8 +43,15 @@ export default function List<T>({
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
+	const isChores = item === "Chores";
+	const isBasic =
+		item !== "Home Spaces" &&
+		item !== "Events" &&
+		item !== "Chores" &&
+		item !== "Rules";
 	const [removeMode, setRemoveMode] = useState(false);
-
+	console.log("item:", item);
+	console.log("Chore? : ", isChores);
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">
@@ -67,7 +75,9 @@ export default function List<T>({
 
 							{isHomeSpaces && username && !removeMode && (
 								<div className="relative ml-auto gap-4 flex self-end-safe">
-									<Link to="/roommmates">
+									<Link
+										to={`/residents/${username}/${homeCode?.[index]}`}
+									>
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
@@ -101,12 +111,16 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-									<Link to="/groceries">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faCartShopping}
-										/>
-									</Link>
+									{homeCode?.[index] && (
+										<Link
+											to={`/grocery/${username}/${homeCode[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faCartShopping}
+											/>
+										</Link>
+									)}
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -143,7 +157,7 @@ export default function List<T>({
 								</div>
 							)}
 
-							{removeMode && (
+							{removeMode && !isBasic && (
 								<button
 									type="button"
 									onClick={() => handleRemoveClick(listItem)}
@@ -156,7 +170,7 @@ export default function List<T>({
 					</li>
 				))}
 			</ul>
-			{!removeMode && (
+			{!removeMode && !isBasic && (
 				<div className="flex flex-row flex-center self-center gap-4">
 					<button
 						onClick={handleAddClick}
@@ -174,7 +188,7 @@ export default function List<T>({
 				</div>
 			)}
 
-			{removeMode && (
+			{removeMode && !isBasic && (
 				<div className="button self-center">
 					<button onClick={() => setRemoveMode(false)}>Cancel</button>
 				</div>

@@ -16,7 +16,6 @@ export function getUserByUsername(username: string) {
 	return User.findOne({ username });
 }
 
-//ASK is this the correct way to find a user by their relationship to a home?
 export function getUsersByHomeId(homeId: mongoose.Types.ObjectId) {
 	return User.find({ homeIds: { $elemMatch: { homeId: homeId } } });
 }
@@ -33,7 +32,6 @@ export function updateUserById(
 	});
 }
 
-//ASK is this the correct way to list users by their relationship to a home?
 export function getUsersByHomeAndRelation(
 	homeId: mongoose.Types.ObjectId,
 	relationship: string
@@ -56,3 +54,16 @@ export function updateUserByUsername(username: string, data: any) {
 export function removeUserById(userId: mongoose.Types.ObjectId) {
 	return User.findByIdAndDelete(userId);
 }
+
+//get relation status of a user to a home given a userId and homeId
+export function getUserHomeRelation(
+	userId: mongoose.Types.ObjectId,
+	homeId: mongoose.Types.ObjectId
+) {
+	return User.findOne(
+		{ _id: userId, homeIds: { $elemMatch: { homeId: homeId } } },
+		{ "homeIds.$": 1 }
+	);
+}
+
+//

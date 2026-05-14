@@ -27,6 +27,7 @@ export default function RulesPage() {
 	const [, setLoading] = useState(false);
 	const [, setError] = useState("");
 	const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+	const [totalResidents, setTotalResidents] = useState(0);
 
 	const { homeCode = "" } = useParams();
 	const navigate = useNavigate();
@@ -53,6 +54,18 @@ export default function RulesPage() {
 		const homeData = await homeRes.json();
 
 		setHomeName(homeData.homeName);
+
+		const residentRes = await fetch(
+			`${API_BASE}/relate/home/${homeData._id}/residents`
+		);
+
+		if (!residentRes.ok) {
+			throw new Error("Failed to fetch residents");
+		}
+
+		const residentData = await residentRes.json();
+
+		setTotalResidents(residentData.count);
 
 		const rulesRes = await fetch(`${API_BASE}/homes/rules/${homeCode}`);
 		if (!rulesRes.ok) throw new Error("Failed to fetch rules");
@@ -151,7 +164,12 @@ export default function RulesPage() {
 	}
 
 	const renderRule = (rule: Rule) => (
-		<RuleCard rule={rule} voteId={voteId} onVote={handleVote} />
+		<RuleCard
+			rule={rule}
+			voteId={voteId}
+			totalResidents={totalResidents}
+			onVote={handleVote}
+		/>
 	);
 
 	return (
@@ -209,7 +227,7 @@ export default function RulesPage() {
 					voteId={voteId}
 					deleteVotes={selectedRule.deleteVotes || []}
 					deleteStatus={selectedRule.deleteStatus || "NONE"}
-					totalResidents={4}
+					totalResidents={totalResidents}
 					onVote={handleDeleteVote}
 					onCancel={() => setDeleteTarget(null)}
 				/>

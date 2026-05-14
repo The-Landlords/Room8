@@ -12,6 +12,7 @@ import { loginRouter } from "./routes/login-routes.js";
 import { ruleRouter } from "./routes/rule-routes.js";
 import { groceryRouter } from "./routes/grocery-routes.js";
 import { relationRouter } from "./routes/relation-routes.js";
+import { authRouter } from "./routes/authentication-router.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 
@@ -43,6 +44,7 @@ app.use("/", ruleRouter);
 app.use("/", userRouter);
 app.use("/", groceryRouter);
 app.use("/", relationRouter);
+app.use("/", authRouter);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req: Request, res: Response) => {

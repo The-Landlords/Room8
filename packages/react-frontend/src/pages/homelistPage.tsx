@@ -37,6 +37,7 @@ export default function HomeList() {
 	}
 
 	async function handleRemoveClick(data: any) {
+		if (!data) return;
 		console.log("Remove " + data);
 		setHomeDelete(data);
 		setAddState("Remove");
