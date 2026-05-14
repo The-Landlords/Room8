@@ -66,7 +66,14 @@ groceryRouter.get("/:home/grocery/:id", async (req: Request, res: Response) => {
 });
 groceryRouter.post("/:home/grocery", async (req: Request, res: Response) => {
 	try {
-		const homeId = await getHomeIdFromCode(req.params.home);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+		const homeId = await getHomeIdFromCode(objectId.toString());
 
 		if (!homeId) {
 			return res.status(404).json({ error: "Home not found" });
