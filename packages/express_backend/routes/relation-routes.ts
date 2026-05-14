@@ -144,6 +144,9 @@ relationRouter.get(
 		} catch (err) {
 			console.error(err);
 			res.status(500).json({ error: "Failed to fetch users from home" });
+		}
+	}
+);
 relationRouter.get(
 	"/relate/home/:homeId/residents",
 	async (req: Request, res: Response) => {

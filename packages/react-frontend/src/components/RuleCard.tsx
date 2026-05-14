@@ -1,7 +1,6 @@
 import React from "react";
 import VotePanel from "./VotePanel";
 
-
 interface Vote {
 	voteId: string;
 	vote: "YES" | "NO";
@@ -21,7 +20,12 @@ interface RuleCardProps {
 	onVote: (ruleId: string, vote: "YES" | "NO") => void;
 }
 
-export default function RuleCard({ rule, voteId, totalResidents, onVote }: RuleCardProps) {
+export default function RuleCard({
+	rule,
+	voteId,
+	totalResidents,
+	onVote,
+}: RuleCardProps) {
 	const yes = rule.votes?.filter((v) => v.vote === "YES").length || 0;
 	const no = rule.votes?.filter((v) => v.vote === "NO").length || 0;
 
