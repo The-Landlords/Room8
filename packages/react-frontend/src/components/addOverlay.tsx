@@ -1,7 +1,6 @@
 // import React, { FormEvent, useState } from "react";
 import React, { type ReactNode, useState } from "react";
 import Overlay from "./overlay";
-import type { FormEvent } from "react";
 
 type AddOverlayProps = {
 	isOpen: boolean;
