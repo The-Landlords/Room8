@@ -146,7 +146,7 @@ function mockFetchForAddingRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
-		// Initial page load: fetch residents 
+		// Initial page load: fetch residents
 		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([]))
