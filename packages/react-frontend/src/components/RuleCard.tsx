@@ -1,7 +1,6 @@
 import React from "react";
 import VotePanel from "./VotePanel";
 
-const TOTAL_RESIDENTS = 4;
 
 interface Vote {
 	voteId: string;
@@ -18,10 +17,11 @@ interface Rule {
 interface RuleCardProps {
 	rule: Rule;
 	voteId: string;
+	totalResidents: number;
 	onVote: (ruleId: string, vote: "YES" | "NO") => void;
 }
 
-export default function RuleCard({ rule, voteId, onVote }: RuleCardProps) {
+export default function RuleCard({ rule, voteId, totalResidents, onVote }: RuleCardProps) {
 	const yes = rule.votes?.filter((v) => v.vote === "YES").length || 0;
 	const no = rule.votes?.filter((v) => v.vote === "NO").length || 0;
 
@@ -40,7 +40,7 @@ export default function RuleCard({ rule, voteId, onVote }: RuleCardProps) {
 				<p className="text-lg">{rule.description}</p>
 				<p className="text-sm mt-2">{statusText}</p>
 				<p className="text-xs text-text/70 mt-1">
-					YES {yes} | NO {no} | Total Roommates {TOTAL_RESIDENTS}
+					YES {yes} | NO {no} | Total Roommates {totalResidents}
 				</p>
 			</div>
 
