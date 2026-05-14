@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
+import { getUsersByHomeAndRelation } from "../models/User-Services";
+
 
 import { getHomeByCode } from "../models/Home-Services.js";
 import {
@@ -90,6 +92,18 @@ ruleRouter.post("/homes/rules", async (req: Request, res: Response) => {
 	}
 });
 
+
+//get number of residents
+async function getResidentCount(homeId: mongoose.Types.ObjectId) {
+	const residents = await getUsersByHomeAndRelation(
+		homeId,
+		"RESIDENT"
+	);
+
+	return residents.length;
+}
+
+
 // Update rule
 ruleRouter.put("/rules/:ruleId", async (req: Request, res: Response) => {
 	try {
@@ -164,7 +178,14 @@ ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
 			(v: { vote: string }) => v.vote === "NO"
 		).length;
 
-		const TOTAL_RESIDENTS = 4;
+		const TOTAL_RESIDENTS = await getResidentCount(rule.homeId);
+
+		//safety check if no residents
+		if (TOTAL_RESIDENTS === 0) {
+			return res.status(400).json({
+				error: "No residents found for home",
+			});
+		}
 
 		if (no > 0) {
 			rule.status = "REJECTED";
@@ -223,7 +244,14 @@ ruleRouter.post(
 				(v: { vote: string }) => v.vote === "NO"
 			).length;
 
-			const TOTAL_RESIDENTS = 4;
+			const TOTAL_RESIDENTS = await getResidentCount(rule.homeId);
+
+			//safety check if no residents
+			if (TOTAL_RESIDENTS === 0) {
+				return res.status(400).json({
+					error: "No residents found for home",
+				});
+			}
 
 			if (no > 0) {
 				rule.deleteStatus = "REJECTED";

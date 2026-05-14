@@ -11,6 +11,7 @@ import {
 	removeUserById,
 	getUsersByHomeAndRelation,
 	updateUserByUsername,
+	getUserHomeRelation,
 } from "./User-Services";
 
 const homeId = new mongoose.Types.ObjectId();
@@ -169,4 +170,16 @@ test("Creating a user with same username should fail", async () => {
 	} catch (error) {
 		expect(error).toBeDefined();
 	}
+});
+
+test("Getting user relation to home", async () => {
+	const user = new User(dummyUser);
+	mockingoose(User).toReturn(user, "findOne");
+	const relation = await getUserHomeRelation(
+		user._id,
+		user.homeIds[0].homeId
+	);
+
+	expect(relation).toBeDefined();
+	expect(relation?.homeIds[0].relationship).toBe("RESIDENT");
 });

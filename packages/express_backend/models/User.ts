@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-// import { match } from "node:assert";
 
 export const UserSchema = new mongoose.Schema(
 	{
@@ -121,7 +120,7 @@ export const UserSchema = new mongoose.Schema(
 					type: mongoose.Schema.Types.ObjectId,
 					ref: "Home",
 					required: true,
-					unique: true,
+					//unique: true,
 				},
 				relationship: {
 					type: String,
@@ -129,7 +128,50 @@ export const UserSchema = new mongoose.Schema(
 				},
 			},
 		],
+		visibility: {
+			nameVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PUBLIC",
+			},
+			phoneVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PRIVATE",
+			},
+			dobVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PRIVATE",
+			},
+			likesVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PRIVATE",
+			},
+			dislikesVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PRIVATE",
+			},
+			emergencyContactVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PRIVATE",
+			},
+			allergensVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PUBLIC",
+			},
+			pronounsVisible: {
+				type: String,
+				enum: ["PUBLIC", "RESIDENT", "PRIVATE"],
+				default: "PRIVATE",
+			},
+		},
 	},
+
 	{ timestamps: true }
 );
 

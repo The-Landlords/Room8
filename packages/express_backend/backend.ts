@@ -12,6 +12,7 @@ import { loginRouter } from "./routes/login-routes.js";
 import { ruleRouter } from "./routes/rule-routes.js";
 import { groceryRouter } from "./routes/grocery-routes.js";
 import { relationRouter } from "./routes/relation-routes.js";
+import { authRouter } from "./routes/authentication-router.js";
 
 export const app = express();
 export const port = 8000;
@@ -41,6 +42,7 @@ app.use("/", ruleRouter);
 app.use("/", userRouter);
 app.use("/", groceryRouter);
 app.use("/", relationRouter);
+app.use("/", authRouter);
 
 app.get("/", (req: Request, res: Response) => {
 	res.send("Hello World!");

@@ -9,6 +9,7 @@ import {
 } from "../models/Home-Services.js";
 import {
 	getUserByUsername,
+	getUsersByHomeAndRelation,
 	// getUsersByHomeAndRelation,
 	updateUserById,
 } from "../models/User-Services.js";
@@ -27,7 +28,7 @@ relationRouter.post(
 				return res.status(400).json({ error: "Invalid home code" });
 			}
 
-			const relationship = req.body.relationship;
+			const relationship = req.body.relationship.toUpperCase();
 
 			const h = await getHomeByCode(homecode);
 
@@ -153,6 +154,51 @@ relationRouter.patch(
 		} catch (err) {
 			console.error(err);
 			res.status(500).json({ error: "Failed to remove relationship" });
+		}
+	}
+);
+
+//get users based off passed in home and relation
+relationRouter.get(
+	"/relate/:homeCode/:relation",
+	async (req: Request, res: Response) => {
+		try {
+			const h = await getHomeByCode(req.params.homeCode.toString());
+
+			if (!h) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			let users = [];
+			users = await getUsersByHomeAndRelation(
+				h._id,
+				req.params.relation.toString()
+			);
+			res.status(200).json(users);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to fetch users from home" });
+		}
+	}
+);
+
+relationRouter.get(
+	"/relate/home/:homeId/residents",
+	async (req: Request, res: Response) => {
+		try {
+			const residents = await getUsersByHomeAndRelation(
+				new mongoose.Types.ObjectId(req.params.homeId.toString()),
+				"RESIDENT"
+			);
+
+			res.status(200).json({
+				count: residents.length,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				error: "Failed to fetch residents",
+			});
 		}
 	}
 );
