@@ -1,5 +1,4 @@
-import React from "react";
-
+import { API_BASE } from "../config";
 type RemoveEventProps = {
 	onRemove: (data: any) => void;
 	eventRemove: any;
@@ -18,12 +17,9 @@ export default function RemoveEventOverlay({
 				return;
 			}
 
-			const res = await fetch(
-				`http://localhost:8000/events/${eventRemove._id}`,
-				{
-					method: "DELETE",
-				}
-			);
+			const res = await fetch(`${API_BASE}/events/${eventRemove._id}`, {
+				method: "DELETE",
+			});
 
 			console.log("delete status:", res.status);
 

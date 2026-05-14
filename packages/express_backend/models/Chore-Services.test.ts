@@ -1,9 +1,8 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { config } from "dotenv";
 import {
 	expect,
 	test,
-	describe,
 	beforeAll,
 	afterAll,
 	beforeEach,

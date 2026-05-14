@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserSetting from "../pages/userSetting";
-
+import { API_BASE } from "../config";
 function renderUserSetting() {
 	return render(
 		<MemoryRouter initialEntries={["/settings/testuser"]}>
@@ -91,7 +91,7 @@ function mockFetchForSave(user: any) {
 
 function getPatchBody() {
 	const patchCall = (globalThis.fetch as jest.Mock).mock.calls.find(
-		(call) => call[0] === "http://localhost:8000/users/testuser"
+		(call) => call[0] === `${API_BASE}/users/testuser`
 	);
 
 	expect(patchCall).toBeTruthy();
@@ -200,7 +200,7 @@ test("valid edits save profile with PATCH request", async () => {
 	});
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/users/testuser",
+		`${API_BASE}/users/testuser`,
 		expect.objectContaining({
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
@@ -243,7 +243,7 @@ test("changing display settings saves updated settings", async () => {
 	});
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/users/testuser",
+		`${API_BASE}/users/testuser`,
 		expect.objectContaining({
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },

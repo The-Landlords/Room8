@@ -6,9 +6,10 @@ import {
 	updateGroceryItem,
 	deleteGroceryItem,
 	updateGroceryItemQuantity,
-} from "../models/Grocery-Services";
+} from "../models/Grocery-Services.js";
 import type { Request, Response } from "express";
-import { Home } from "../models/Home";
+import mongoose from "mongoose";
+import { Home } from "../models/Home.js";
 
 export const groceryRouter = express.Router();
 
@@ -24,13 +25,15 @@ async function getHomeIdFromCode(homeCode: string) {
 
 groceryRouter.get("/:home/grocery", async (req: Request, res: Response) => {
 	try {
-		const homeId = await getHomeIdFromCode(req.params.home);
+		const id = req.params.home;
 
-		if (!homeId) {
-			return res.status(404).json({ error: "Home not found" });
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
 		}
 
-		const groceries = await getGroceryItemsByHome(homeId.toString());
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const groceries = await getGroceryItemsByHome(objectId);
 		if (!groceries) {
 			return res.status(404).json({ error: "Grocery items not found" });
 		}
@@ -43,7 +46,15 @@ groceryRouter.get("/:home/grocery", async (req: Request, res: Response) => {
 
 groceryRouter.get("/:home/grocery/:id", async (req: Request, res: Response) => {
 	try {
-		const groceries = await getGroceryItemById(req.params.id);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+
+		const groceries = await getGroceryItemById(objectId);
 		if (!groceries) {
 			return res.status(404).json({ error: "Grocery item not found" });
 		}
@@ -55,7 +66,14 @@ groceryRouter.get("/:home/grocery/:id", async (req: Request, res: Response) => {
 });
 groceryRouter.post("/:home/grocery", async (req: Request, res: Response) => {
 	try {
-		const homeId = await getHomeIdFromCode(req.params.home);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+		const homeId = await getHomeIdFromCode(objectId.toString());
 
 		if (!homeId) {
 			return res.status(404).json({ error: "Home not found" });
@@ -77,7 +95,18 @@ groceryRouter.delete(
 	"/:home/grocery/:id",
 	async (req: Request, res: Response) => {
 		try {
-			const grocery = await deleteGroceryItem(req.params.id);
+			const id = req.params.home;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const grocery = await deleteGroceryItem(objectId);
 			if (!grocery) {
 				return res
 					.status(404)
@@ -95,7 +124,18 @@ groceryRouter.patch(
 	"/:home/grocery/:id",
 	async (req: Request, res: Response) => {
 		try {
-			const updated = await updateGroceryItem(req.params.id, req.body);
+			const id = req.params.home;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const updated = await updateGroceryItem(objectId, req.body);
 
 			if (!updated) {
 				return res
@@ -116,9 +156,25 @@ groceryRouter.patch(
 	"/:home/grocery/:id/:newQuantity",
 	async (req: Request, res: Response) => {
 		try {
+			const id = req.params.home;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+			const newQuantity = req.params.newQuantity;
+
+			if (typeof newQuantity !== "number" || isNaN(newQuantity)) {
+				return res.status(400).json({ error: "Invalid quantity" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
 			const updated = await updateGroceryItemQuantity(
-				req.params.id,
-				req.params.newQuantity
+				objectId,
+				newQuantity
 			);
 
 			if (!updated) {

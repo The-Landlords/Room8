@@ -1,0 +1,65 @@
+name: Azure Static Web Apps CI/CD (FRONTEND)
+
+run-name: "Frontend CD · ${{ github.ref_name }} by @${{ github.actor }}"
+
+on:
+  push:
+    branches:
+      - CI/CD # FIXME remove this in future
+      - main
+
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+      - CI/CD
+
+jobs:
+  build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          rm -f package-lock.json
+          npm install
+
+      - name: Build frontend workspace
+        run: npm run build --workspace react-frontend
+
+      - name: Add Azure fallback config
+        run: |
+          cat > packages/react-frontend/dist/staticwebapp.config.json << 'EOF'
+          {
+            "navigationFallback": {
+              "rewrite": "/index.html"
+            }
+          }
+          EOF
+
+      - name: Run frontend tests
+        run: npm run test:frontend
+
+      - name: Verify output exists
+        run: |
+          ls -la packages/react-frontend/dist
+          cat packages/react-frontend/dist/staticwebapp.config.json
+
+      - name: Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WHITE_POND_00A466E1E }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: "packages/react-frontend/dist"
+          output_location: ""
+          skip_app_build: true
+          api_location: ""

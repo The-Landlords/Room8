@@ -1,3 +1,4 @@
+import { API_BASE } from "../config";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import List from "../components/list";
@@ -23,6 +24,8 @@ export default function RulesPage() {
 	const [rules, setRules] = useState<Rule[]>([]);
 	const [homeName, setHomeName] = useState("");
 	const [overlayOpen, setOverlayOpen] = useState(false);
+	const [, setLoading] = useState(false);
+	const [, setError] = useState("");
 	const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 	const [totalResidents, setTotalResidents] = useState(0);
 
@@ -46,16 +49,14 @@ export default function RulesPage() {
 	async function fetchRules() {
 		if (!homeCode) return;
 
-		const homeRes = await fetch(
-			`http://localhost:8000/homes/code/${homeCode}`
-		);
+		const homeRes = await fetch(`${API_BASE}/homes/code/${homeCode}`);
 		if (!homeRes.ok) throw new Error("Failed to fetch home");
 		const homeData = await homeRes.json();
 
 		setHomeName(homeData.homeName);
 
 		const residentRes = await fetch(
-			`http://localhost:8000/relate/home/${homeData._id}/residents`
+			`${API_BASE}/relate/home/${homeData._id}/residents`
 		);
 
 		if (!residentRes.ok) {
@@ -66,9 +67,7 @@ export default function RulesPage() {
 
 		setTotalResidents(residentData.count);
 
-		const rulesRes = await fetch(
-			`http://localhost:8000/homes/rules/${homeCode}`
-		);
+		const rulesRes = await fetch(`${API_BASE}/homes/rules/${homeCode}`);
 		if (!rulesRes.ok) throw new Error("Failed to fetch rules");
 		const data = await rulesRes.json();
 		setRules(data);
@@ -82,23 +81,61 @@ export default function RulesPage() {
 		if (!inputRef.current || !inputRef.current.value.trim() || !homeCode)
 			return;
 
-		const res = await fetch(`http://localhost:8000/${homeCode}/rules`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				description: inputRef.current.value.trim(),
-			}),
-		});
+		setLoading(true);
+		setError("");
 
-		if (!res.ok) throw new Error("Failed to add rule");
+		try {
+			const res = await fetch(`${API_BASE}/homes/rules`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					homeCode,
+					description: inputRef.current.value.trim(),
+				}),
+			});
 
-		await fetchRules();
-		inputRef.current.value = "";
-		setOverlayOpen(false);
+			if (!res.ok) throw new Error("Failed to add rule");
+
+			inputRef.current.value = "";
+			setOverlayOpen(false);
+			await fetchRules();
+		} catch {
+			setError("Failed to add rule");
+		} finally {
+			setLoading(false);
+		}
 	}
+	// const handleAddRule = async (e: React.FormEvent) => {
+	// 	e.preventDefault();
+	// 	if (!inputRef.current || !inputRef.current.value.trim() || !homeCode) return;
+
+	// 	setLoading(true);
+	// 	setError("");
+
+	// 	try {
+	// 		const res = await fetch(`${API_BASE}/homes/rules`, {
+	// 			method: "POST",
+	// 			headers: { "Content-Type": "application/json" },
+	// 			body: JSON.stringify({
+	// 				homeCode,
+	// 				description: inputRef.current.value.trim(),
+	// 			}),
+	// 		});
+
+	// 		if (!res.ok) throw new Error("Failed to add rule");
+
+	// 		inputRef.current.value = "";
+	// 		setOverlayOpen(false);
+	// 		await fetchRules();
+	// 	} catch {
+	// 		setError("Failed to add rule");
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	async function handleVote(ruleId: string, vote: "YES" | "NO") {
-		await fetch(`http://localhost:8000/rules/${ruleId}/vote`, {
+		await fetch(`${API_BASE}/rules/${ruleId}/vote`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ voteId, vote }),
@@ -110,14 +147,11 @@ export default function RulesPage() {
 	async function handleDeleteVote(ruleId: string, vote: "YES" | "NO") {
 		if (!voteId) return;
 
-		const res = await fetch(
-			`http://localhost:8000/rules/${ruleId}/delete-vote`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ voteId, vote }),
-			}
-		);
+		const res = await fetch(`${API_BASE}/rules/${ruleId}/delete-vote`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ voteId, vote }),
+		});
 
 		const data = await res.json();
 

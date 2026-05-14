@@ -12,6 +12,7 @@ import {
 import AddEventOverlay from "../components/addEventOverlay";
 import RemoveEventOverlay from "../components/removeEventOverlay";
 import EditEventOverlay from "../components/EditEventOverlay";
+import { API_BASE } from "../config";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
@@ -66,9 +67,7 @@ export default function CalendarPage() {
 		handleClose();
 	}
 	async function fetchEvents() {
-		const homeObject = await fetch(
-			`http://localhost:8000/homes/code/${homeCode}`
-		);
+		const homeObject = await fetch(`${API_BASE}/homes/code/${homeCode}`);
 		if (!homeObject.ok) throw new Error("Home not found");
 
 		const data = await homeObject.json();
@@ -76,7 +75,7 @@ export default function CalendarPage() {
 
 		setHomeName(data.homeName);
 
-		fetch(`http://localhost:8000/homeId/${homeObjectId}/events/`)
+		fetch(`${API_BASE}/homeId/${homeObjectId}/events/`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Events not found");
 				return res.json();

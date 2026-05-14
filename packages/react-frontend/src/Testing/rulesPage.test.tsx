@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import RulesPage from "../pages/rulesPage";
+import { API_BASE } from "../config";
 
 jest.mock("../components/list", () => {
 	return function MockList(props: any) {
@@ -123,11 +124,20 @@ function mockRulesResponse(rules: any[]) {
 		json: async () => rules,
 	};
 }
+function mockResidentsResponse() {
+	return {
+		ok: true,
+		json: async () => ({
+			count: 1,
+		}),
+	};
+}
 
 function mockFetchWithRules(rules: any[]) {
 	globalThis.fetch = jest
 		.fn()
 		.mockResolvedValueOnce(mockHomeResponse())
+		.mockResolvedValueOnce(mockResidentsResponse())
 		.mockResolvedValueOnce(mockRulesResponse(rules));
 }
 
@@ -136,6 +146,8 @@ function mockFetchForAddingRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// Initial page load: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([]))
 		// Add rule POST
@@ -145,6 +157,8 @@ function mockFetchForAddingRule() {
 		})
 		// Refresh after add: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// refresh after add: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Refresh after add: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([makeRule()]));
 }
@@ -154,6 +168,8 @@ function mockFetchForVotingRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// refresh after add: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([makeRule()]))
 		// Vote POST
@@ -163,6 +179,8 @@ function mockFetchForVotingRule() {
 		})
 		// Refresh after vote: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// Refresh after vote: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Refresh after vote: fetch rules
 		.mockResolvedValueOnce(
 			mockRulesResponse([
@@ -179,6 +197,8 @@ function mockFetchForDeletedRule() {
 		.fn()
 		// Initial page load: fetch home
 		.mockResolvedValueOnce(mockHomeResponse())
+		// INitial page load: fetch residents
+		.mockResolvedValueOnce(mockResidentsResponse())
 		// Initial page load: fetch rules
 		.mockResolvedValueOnce(mockRulesResponse([makeRule()]))
 		// Delete vote POST
@@ -265,18 +285,17 @@ test("adding a rule posts the rule and refreshes rules", async () => {
 		fireEvent.click(screen.getByRole("button", { name: "Add" }));
 		await flushPromises();
 	});
-
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/testhomecode/rules",
+		`${API_BASE}/homes/rules`,
 		expect.objectContaining({
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
+				homeCode: "testhomecode",
 				description: "Quiet hours after 10pm",
 			}),
 		})
 	);
-
 	expect(screen.getByText("Quiet hours after 10pm")).toBeInTheDocument();
 	expect(screen.queryByText("Add Rule")).not.toBeInTheDocument();
 });
@@ -298,7 +317,7 @@ test("clicking yes vote posts vote and refreshes rules", async () => {
 	});
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/rules/rule-1/vote",
+		`${API_BASE}/rules/rule-1/vote`,
 		expect.objectContaining({
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -375,7 +394,7 @@ test("delete vote removes rule when backend says deleted", async () => {
 	});
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/rules/rule-1/delete-vote",
+		`${API_BASE}/rules/rule-1/delete-vote`,
 		expect.objectContaining({
 			method: "POST",
 			headers: { "Content-Type": "application/json" },

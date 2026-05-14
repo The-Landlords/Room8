@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE } from "../config";
 
 interface AddEventOverlayProps {
 	homeCode?: string;
@@ -11,14 +12,12 @@ export default function AddEventOverlay({
 	homeCode,
 	username,
 	onAdd,
-	onCancel,
 }: AddEventOverlayProps) {
 	const [title, setTitle] = useState("");
 	const [start, setStart] = useState("");
 	const [end, setEnd] = useState("");
 	const [location, setLocation] = useState("");
 	const [description, setDescription] = useState("");
-	const [status, setStatus] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 
 	async function handleAddEvent(e: React.FormEvent) {
@@ -36,7 +35,7 @@ export default function AddEventOverlay({
 			return;
 		}
 
-		const res = await fetch(`http://localhost:8000/${homeCode}/events`, {
+		const res = await fetch(`${API_BASE}/${homeCode}/events`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({

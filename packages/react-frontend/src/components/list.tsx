@@ -12,7 +12,9 @@ import {
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import Residents from "../pages/residents";
+// import Residents from "../pages/residents";
+
+import { API_BASE } from "../config";
 
 interface ListProps<T> {
 	item: string;
@@ -131,7 +133,7 @@ export default function List<T>({
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a
-										href={`http://localhost:8000/events/ics/${eventIds[index]}`}
+										href={`${API_BASE}/events/ics/${eventIds[index]}`}
 									>
 										<FontAwesomeIcon
 											className="iconWrapper"

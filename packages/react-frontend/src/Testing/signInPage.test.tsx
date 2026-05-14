@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import SignInPage from "../pages/signInPage";
-
+import { API_BASE } from "../config";
 function renderSignInPage() {
 	return render(
 		<MemoryRouter initialEntries={["/signin"]}>
@@ -93,19 +93,16 @@ test("sends login request when form is filled out", async () => {
 		await flushPromises();
 	});
 
-	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/login",
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				username: "testuser",
-				password: "password123",
-			}),
-		}
-	);
+	expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/login`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			username: "testuser",
+			password: "password123",
+		}),
+	});
 });
 
 test("navigates to home list after successful login", async () => {

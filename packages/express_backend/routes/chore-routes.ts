@@ -6,9 +6,9 @@ import {
 	createChore,
 	removeChoreById,
 	updateChore,
-} from "../models/Chore-Services";
-import { Home } from "../models/Home";
-
+} from "../models/Chore-Services.js";
+import { Home } from "../models/Home.js";
+import mongoose from "mongoose";
 export const choreRouter = express.Router();
 
 // get all chores for an apartment
@@ -34,8 +34,18 @@ choreRouter.get(
 	"/:homeCode/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
-			const { choreId } = req.params;
-			const chore = await getChoreById(choreId);
+			const id = req.params.choreId;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const chore = await getChoreById(objectId);
 			if (!chore) {
 				return res.status(404).json({ error: "Chore not found" });
 			}
@@ -73,7 +83,18 @@ choreRouter.patch(
 	"/:homeCode/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
-			const chore = await updateChore(req.params.choreId, req.body);
+			const id = req.params.choreId;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const chore = await updateChore(objectId, req.body);
 			if (!chore) {
 				return res.status(404).json({ error: "Chore not found" });
 			}
@@ -90,7 +111,18 @@ choreRouter.delete(
 	"/:homeCode/chores/:choreId",
 	async (req: Request, res: Response) => {
 		try {
-			const deleted = await removeChoreById(req.params.choreId);
+			const id = req.params.choreId;
+
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const deleted = await removeChoreById(objectId);
 			if (!deleted) {
 				return res.status(404).json({ error: "Chore not found" });
 			}

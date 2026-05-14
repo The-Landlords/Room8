@@ -5,11 +5,13 @@ import {
 	getUserById,
 	getUserByUsername,
 	getUsersByHomeId,
-	updateUserById,
+	// updateUserById,
 	removeUserById,
 	updateUserByUsername,
 	getUsersByHomeAndRelation,
-} from "../models/User-Services";
+} from "../models/User-Services.js";
+
+import mongoose from "mongoose";
 
 export const userRouter = express.Router();
 
@@ -20,10 +22,16 @@ userRouter.post("/users", async (req: Request, res: Response) => {
 		res.status(201).json(user);
 	} catch (error) {
 		console.error(error);
-		if (error.code === 11000) {
-			// duplicate key error code from MongoDB
+
+		if (
+			typeof error === "object" &&
+			error !== null &&
+			"code" in error &&
+			error.code === 11000
+		) {
 			return res.status(400).json({ error: "Username already exists" });
 		}
+
 		res.status(400).json({ error: "Failed to create User" });
 	}
 });
@@ -31,10 +39,13 @@ userRouter.post("/users", async (req: Request, res: Response) => {
 // UPDATE
 userRouter.patch("/users/:username", async (req: Request, res: Response) => {
 	try {
-		const updated = await updateUserByUsername(
-			req.params.username,
-			req.body
-		);
+		const username = req.params.username;
+
+		if (typeof username !== "string") {
+			return res.status(400).json({ error: "Invalid username" });
+		}
+
+		const updated = await updateUserByUsername(username, req.body);
 
 		if (!updated) {
 			return res.status(404).json({ error: "User not found" });
@@ -50,7 +61,14 @@ userRouter.patch("/users/:username", async (req: Request, res: Response) => {
 // GET BY ID
 userRouter.get("/users/:id", async (req: Request, res: Response) => {
 	try {
-		const user = await getUserById(req.params.id);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+		const user = await getUserById(objectId);
 
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
@@ -68,7 +86,13 @@ userRouter.get(
 	"/users/username/:username",
 	async (req: Request, res: Response) => {
 		try {
-			const user = await getUserByUsername(req.params.username);
+			const name = req.params.username;
+
+			if (typeof name !== "string") {
+				return res.status(400).json({ error: "Invalid username" });
+			}
+
+			const user = await getUserByUsername(name);
 
 			if (!user) {
 				return res.status(404).json({ error: "User not found" });
@@ -85,7 +109,14 @@ userRouter.get(
 // GET USERS BY HOME
 userRouter.get("/users/home/:homeId", async (req: Request, res: Response) => {
 	try {
-		const users = await getUsersByHomeId(req.params.homeId);
+		const id = req.params.homeId;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+		const users = await getUsersByHomeId(objectId);
 		res.status(200).json(users);
 	} catch (error) {
 		console.error(error);
@@ -96,7 +127,14 @@ userRouter.get("/users/home/:homeId", async (req: Request, res: Response) => {
 // DELETE
 userRouter.delete("/users/:id", async (req: Request, res: Response) => {
 	try {
-		const removed = await removeUserById(req.params.id);
+		const id = req.params.id;
+
+		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid id" });
+		}
+
+		const objectId = new mongoose.Types.ObjectId(id);
+		const removed = await removeUserById(objectId);
 
 		if (!removed) {
 			return res.status(404).json({ error: "User not found" });

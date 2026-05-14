@@ -1,6 +1,5 @@
-import React from "react";
-
 import { useState } from "react";
+import { API_BASE } from "../config";
 
 /*component is to add a new home based off a given code*/
 
@@ -21,7 +20,7 @@ export default function AddHomeOverlay({
 		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`http://localhost:8000/relate/${username}/${homeCode}`,
+			`${API_BASE}/relate/${username}/${homeCode}`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },

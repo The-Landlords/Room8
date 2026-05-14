@@ -3,24 +3,37 @@ import cors from "cors";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
 import { config } from "dotenv";
-import { choreRouter } from "./routes/chore-routes";
-import { homeRouter } from "./routes/home-routes";
-import { eventRouter } from "./routes/event-routes";
-import { userRouter } from "./routes/user-routes";
-import { loginRouter } from "./routes/login-routes";
-import { ruleRouter } from "./routes/rule-routes";
-import { groceryRouter } from "./routes/grocery-routes";
-import { relationRouter } from "./routes/relation-routes";
-import { authRouter } from "./routes/authentication-router";
+config({ path: "../../.env" });
+import { choreRouter } from "./routes/chore-routes.js";
+import { homeRouter } from "./routes/home-routes.js";
+import { eventRouter } from "./routes/event-routes.js";
+import { userRouter } from "./routes/user-routes.js";
+import { loginRouter } from "./routes/login-routes.js";
+import { ruleRouter } from "./routes/rule-routes.js";
+import { groceryRouter } from "./routes/grocery-routes.js";
+import { relationRouter } from "./routes/relation-routes.js";
+import { authRouter } from "./routes/authentication-router.js";
 
 export const app = express();
 export const port = 8000;
 
 //default port to listen
-app.use(cors());
+const corsOptions = {
+	origin: [
+		"http://localhost:4173",
+		"http://localhost:5173",
+		"https://white-pond-00a466e1e.7.azurestaticapps.net",
+		"https://white-pond-00a466e1e.7.azurestaticapps.net",
+	],
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	credentials: true,
+	optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-//TODO FIX clarify this practice with prof & team
 app.use("/", choreRouter);
 app.use("/", homeRouter);
 app.use("/", eventRouter);
@@ -31,10 +44,12 @@ app.use("/", groceryRouter);
 app.use("/", relationRouter);
 app.use("/", authRouter);
 
-config({ path: "../../.env" });
+app.get("/", (req: Request, res: Response) => {
+	res.send("Hello World!");
+});
 
 const url = process.env.MONGO_URI;
-let connection: any = null;
+let connection: typeof mongoose | null = null;
 
 //singleton of connection (implemented so if fails it connects to localhost)
 const connectDB = async () => {
@@ -52,10 +67,10 @@ const connectDB = async () => {
 
 const start = async () => {
 	try {
-		connectDB();
+		await connectDB();
 
-		app.listen(port, () => {
-			console.log(`Server running on port ${port}`);
+		app.listen(process.env.PORT || port, () => {
+			console.log(`Server running on port ${process.env.PORT || port}`);
 		});
 	} catch (err) {
 		console.error("Failed to connect to MongoDB", err);
@@ -65,10 +80,6 @@ const start = async () => {
 start().catch((e) => {
 	console.error("Startup failed:", e);
 	process.exit(1);
-});
-
-app.get("/", (req: Request, res: Response) => {
-	res.send("Hello World aksdhasbd!");
 });
 
 export default connectDB;

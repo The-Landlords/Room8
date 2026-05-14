@@ -8,6 +8,7 @@ import CreateHomeOverlay from "../components/createHomeOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import RemoveHomeOverlay from "../components/removeHomeOverlay";
+import { API_BASE } from "../config";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
@@ -46,7 +47,7 @@ export default function HomeList() {
 	async function fetchHomes() {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/relate/${username}`)
+		fetch(`${API_BASE}/relate/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();
@@ -62,7 +63,7 @@ export default function HomeList() {
 	}, [username]);
 
 	const homeNames = homes?.map((h) => h.homeName);
-	const homeLocations = homes?.map((h) => h.address);
+	// const homeLocations = homes?.map((h) => h.address);
 	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
 		<div className="background-house flex flex-col items-center">

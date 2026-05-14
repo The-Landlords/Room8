@@ -1,6 +1,6 @@
 import mockingoose from "mockingoose";
 import mongoose from "mongoose";
-import { expect, test, describe, beforeEach } from "@jest/globals";
+import { expect, test, beforeEach } from "@jest/globals";
 import {
 	createHome,
 	getHomeById,
@@ -27,6 +27,9 @@ const homeData = {
 		},
 	],
 };
+
+const home = new Home(homeData);
+home._id = homeId;
 
 beforeEach(() => {
 	mockingoose.resetAll();

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { API_BASE } from "../config";
+
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
 function isValidPhone(phone: string) {
@@ -34,12 +36,12 @@ export default function UserSetting() {
 	});
 
 	const [user, setUser] = useState<any>(null);
-	const [error, setError] = useState("");
+	const [, setError] = useState("");
 
 	useEffect(() => {
 		if (!username) return;
 
-		fetch(`http://localhost:8000/users/username/${username}`)
+		fetch(`${API_BASE}/users/username/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
@@ -96,16 +98,23 @@ export default function UserSetting() {
 			dislikes: toList(draft.dislikes),
 		};
 
-		console.log("sending:", payload);
-
-		const res = await fetch(
-			`http://localhost:8000/users/${user.username}`,
-			{
+		try {
+			const res = await fetch(`${API_BASE}/users/${user.username}`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
+			});
+
+			if (!res.ok) {
+				throw new Error("Unable to save profile.");
 			}
-		);
+
+			setError("");
+			navigate(`/homelist/${username}`);
+		} catch (err) {
+			console.error(err);
+			setError("Unable to save profile.");
+		}
 	}
 	return (
 		<div className="settings-background">
