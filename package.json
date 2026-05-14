@@ -4,6 +4,8 @@
 	"description": "Roomate organization app",
 	"main": "index.js",
 	"scripts": {
+		"tf": "npm run test:frontend",
+		"tb": "npm run test:backend",
 		"test": "jest --runInBand",
 		"test:frontend": "jest --selectProjects frontend --runInBand",
 		"test:backend": "jest --selectProjects backend --runInBand",

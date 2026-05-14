@@ -1,7 +1,7 @@
 // import React, { FormEvent, useState } from "react";
+import React, { type ReactNode, useState } from "react";
 import Overlay from "./overlay";
 import type { FormEvent } from "react";
-import { useState } from "react";
 
 type AddOverlayProps = {
 	isOpen: boolean;
@@ -10,6 +10,7 @@ type AddOverlayProps = {
 	onSubmit: (value: string) => void | Promise<void>;
 	onClose: () => void;
 	errorMsg?: string;
+	children?: ReactNode;
 };
 
 export default function AddOverlay({
@@ -19,10 +20,13 @@ export default function AddOverlay({
 	onSubmit,
 	onClose,
 	errorMsg,
+	children,
 }: AddOverlayProps) {
 	const [value, setValue] = useState("");
 
-	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+	async function handleSubmit(
+		e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
+	) {
 		e.preventDefault();
 		const trimmedValue = value.trim();
 
@@ -59,8 +63,11 @@ export default function AddOverlay({
 					placeholder={placeholder}
 					className="input"
 					value={value}
+					required
 					onChange={(e) => setValue(e.target.value)}
 				/>
+
+				{children}
 
 				{errorMsg && (
 					<p className="text-red-500 text-sm text-center mt-2">
