@@ -6,6 +6,13 @@ import {
 	getUserHomeRelation,
 	getUsersByHomeAndRelation,
 } from "../models/User-Services.js";
+
+import { getUncompletedChoresByHome } from "../models/Chore-Services.js";
+import { getApprovedRulesByHome } from "../models/Rules-Services.js";
+import { getUpcomingEventsByHome } from "../models/Event-Services.js";
+
+import { getCurrentGroceryItemsByHome } from "../models/Grocery-Services.js";
+
 import { getHomeByCode } from "../models/Home-Services.js";
 
 export const authRouter = express.Router();
@@ -90,5 +97,50 @@ authRouter.get(
 		const filteredUsers = filterResidents(residents, userOneRelation);
 
 		res.status(200).json(filteredUsers);
+	}
+);
+
+authRouter.get(
+	"/auth/homeDisplay/:username/:homeCode/",
+	async (req: Request, res: Response) => {
+		const { homeCode, username } = req.params;
+		const home = await getHomeByCode(homeCode.toString());
+		const user = await getUserByUsername(username.toString());
+		if (!home || !user) {
+			console.log("User or home not found");
+			return res.status(404).json({ error: "User or home not found" });
+		}
+
+		const userRelationObject = await getUserHomeRelation(
+			user._id,
+			home._id
+		);
+		const userRelation = userRelationObject?.homeIds[0].relationship;
+		if (!userRelation) {
+			console.log("No shared home found between user and home");
+			return res
+				.status(404)
+				.json({ error: "No shared home found between users" });
+		}
+
+		if (userRelation === "RESIDENT") {
+			const homeDisplay = {
+				name: home.homeName,
+				homeCode: home.homeCode,
+				groceries: await getCurrentGroceryItemsByHome(home._id),
+				chores: await getUncompletedChoresByHome(home._id),
+				rules: await getApprovedRulesByHome(home._id),
+				events: await getUpcomingEventsByHome(home._id),
+			};
+			res.status(200).json(homeDisplay);
+		} else {
+			const homeDisplay = {
+				name: home.homeName,
+				homeCode: home.homeCode,
+				rules: await getApprovedRulesByHome(home._id),
+				events: await getUpcomingEventsByHome(home._id),
+			};
+			res.status(200).json(homeDisplay);
+		}
 	}
 );
