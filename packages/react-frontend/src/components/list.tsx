@@ -12,7 +12,7 @@ import {
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import Residents from "../pages/residents";
+// import Residents from "../pages/residents";
 
 import { API_BASE } from "../config";
 
