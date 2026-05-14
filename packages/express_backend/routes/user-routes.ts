@@ -8,6 +8,7 @@ import {
 	updateUserById,
 	removeUserById,
 	updateUserByUsername,
+	getUsersByHomeAndRelation,
 } from "../models/User-Services";
 
 export const userRouter = express.Router();
@@ -88,7 +89,7 @@ userRouter.get("/users/home/:homeId", async (req: Request, res: Response) => {
 		res.status(200).json(users);
 	} catch (error) {
 		console.error(error);
-		res.status(400).json({ error: "Invalid apartment ID" });
+		res.status(400).json({ error: "Invalid home ID" });
 	}
 });
 

@@ -127,6 +127,23 @@ relationRouter.patch(
 	}
 );
 
+//get users based off passed in home and relation
+relationRouter.get(
+	"/relate/:homeCode/:relation",
+	async (req: Request, res: Response) => {
+		try {
+			const h = await getHomeByCode(req.params.homeCode);
+
+			if (!h) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			let users = [];
+			users = await getUsersByHomeAndRelation(h._id, req.params.relation);
+			res.status(200).json(users);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to fetch users from home" });
 relationRouter.get(
 	"/relate/home/:homeId/residents",
 	async (req: Request, res: Response) => {

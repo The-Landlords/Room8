@@ -11,6 +11,7 @@ import SignUpPage from "./pages/signUpPage";
 import ChorePage from "./pages/chorePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CalendarPage from "./pages/calendarPage";
+import Residents from "./pages/residents";
 import GroceryPage from "./pages/groceryPage.tsx";
 
 function App() {
@@ -35,6 +36,10 @@ function App() {
 					<Route
 						path="/settings/:username"
 						element={<UserSetting />}
+					/>
+					<Route
+						path="/residents/:username/:homeCode"
+						element={<Residents />}
 					/>
 					<Route
 						path="/grocery/:username/:homeCode"

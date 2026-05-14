@@ -24,7 +24,11 @@ export default function SignInPage() {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ username, password, fullName }),
+			body: JSON.stringify({
+				username,
+				password,
+				fullName,
+			}),
 		})
 			.then((response) => response.json())
 			.then((data) => {
