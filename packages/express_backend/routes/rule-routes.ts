@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import type { Request, Response } from "express";
 import { getUsersByHomeAndRelation } from "../models/User-Services";
 
-
 import { getHomeByCode } from "../models/Home-Services";
 import {
 	createRule,
@@ -92,17 +91,12 @@ ruleRouter.post("/homes/rules", async (req: Request, res: Response) => {
 	}
 });
 
-
 //get number of residents
 async function getResidentCount(homeId: mongoose.Types.ObjectId) {
-	const residents = await getUsersByHomeAndRelation(
-		homeId,
-		"RESIDENT"
-	);
+	const residents = await getUsersByHomeAndRelation(homeId, "RESIDENT");
 
 	return residents.length;
 }
-
 
 // Update rule
 ruleRouter.put("/rules/:ruleId", async (req: Request, res: Response) => {
