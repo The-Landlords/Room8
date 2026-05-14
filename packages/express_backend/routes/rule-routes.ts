@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import type { Request, Response } from "express";
-import { getUsersByHomeAndRelation } from "../models/User-Services";
+import { getUsersByHomeAndRelation } from "../models/User-Services.js";
 
 import { getHomeByCode } from "../models/Home-Services.js";
 import {

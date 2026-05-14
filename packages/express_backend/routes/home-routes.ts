@@ -110,40 +110,40 @@ homeRouter.delete("/homes/id/:id", async (req: Request, res: Response) => {
 	}
 });
 
-//Add resident to home, creates a relationship of type resident between the user and home
-homeRouter.post(
-	"/homes/id/:id/members",
-	async (req: Request, res: Response) => {
-		try {
-			const relationship = await relationship({
-				home: req.params.id,
-				user: req.body.userId,
-				type: "resident",
-			});
-			res.status(201).json(relationship);
-		} catch (error) {
-			console.error(error);
-			res.status(400).json({ error: "Failed to add resident" });
-		}
-	}
-);
+// //Add resident to home, creates a relationship of type resident between the user and home
+// homeRouter.post(
+// 	"/homes/id/:id/members",
+// 	async (req: Request, res: Response) => {
+// 		try {
+// 			const relationship = await relationship({
+// 				home: req.params.id,
+// 				user: req.body.userId,
+// 				type: "resident",
+// 			});
+// 			res.status(201).json(relationship);
+// 		} catch (error) {
+// 			console.error(error);
+// 			res.status(400).json({ error: "Failed to add resident" });
+// 		}
+// 	}
+// );
 
-//Add guest to home, creates a relationship of type resident between the user and home
-homeRouter.post(
-	"/homes/id/:id/resident",
-	async (req: Request, res: Response) => {
-		try {
-			const relationship = await relationship({
-				home: req.params.id,
-				user: req.body.userId,
-				type: "guest",
-			});
-			res.status(201).json(relationship);
-		} catch (error) {
-			console.error(error);
-			res.status(400).json({ error: "Failed to add guest" });
-		}
-	}
-);
+// //Add guest to home, creates a relationship of type resident between the user and home
+// homeRouter.post(
+// 	"/homes/id/:id/resident",
+// 	async (req: Request, res: Response) => {
+// 		try {
+// 			const relationship = await relationship({
+// 				home: req.params.id,
+// 				user: req.body.userId,
+// 				type: "guest",
+// 			});
+// 			res.status(201).json(relationship);
+// 		} catch (error) {
+// 			console.error(error);
+// 			res.status(400).json({ error: "Failed to add guest" });
+// 		}
+// 	}
+// );
 
 //TODO AddMember and RemoveMember routes

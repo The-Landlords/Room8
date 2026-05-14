@@ -5,8 +5,8 @@ import {
 	getUserByUsername,
 	getUserHomeRelation,
 	getUsersByHomeAndRelation,
-} from "../models/User-Services";
-import { getHomeByCode } from "../models/Home-Services";
+} from "../models/User-Services.js";
+import { getHomeByCode } from "../models/Home-Services.js";
 
 export const authRouter = express.Router();
 
@@ -60,8 +60,8 @@ authRouter.get(
 	"/auth/residents/:usernameOne/:homeCode/",
 	async (req: Request, res: Response) => {
 		const { usernameOne, homeCode } = req.params;
-		const userOne = await getUserByUsername(usernameOne);
-		const home = await getHomeByCode(homeCode);
+		const userOne = await getUserByUsername(usernameOne.toString());
+		const home = await getHomeByCode(homeCode.toString());
 		if (!userOne || !home) {
 			console.log("User or home not found");
 			return res.status(404).json({ error: "User or home not found" });
