@@ -19,7 +19,7 @@ Focus on issues that a human reviewer should fix before merging:
 - React state, routing, form validation, loading/error handling, and API integration bugs.
 - Missing or weakened tests when models, services, routes, or user-facing workflows change.
 - Security problems, secret exposure, unsafe dependency changes, or unvalidated input.
-- Check for unused routes, neglected or duplicate code, 
+- Check for unused routes, neglected or duplicate code,
 
 Use existing scripts when useful:
 
