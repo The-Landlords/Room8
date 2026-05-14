@@ -30,7 +30,6 @@ Use existing scripts when useful:
 - `npm run format:check`
 - `npm run dev`
 
-
 Keep the review concise and actionable. Do not mention style-only issues unless they create a real maintenance or behavior risk. Do not comment on unchanged code except where the changed code depends on it.
 
 Format the final response as:
