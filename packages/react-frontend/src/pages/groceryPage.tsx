@@ -148,38 +148,38 @@ export default function GroceryPage() {
 				</div>
 			</div>
 
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] bg-primary/70 p-6">
-				<AddOverlay
-					isOpen={showAddOverlay}
-					title="Add Grocery"
-					placeholder="enter grocery item"
-					onSubmit={handleAddGrocery}
-					onClose={() => {
-						resetGroceryForm();
-						setShowAddOverlay(false);
-					}}
-				>
-					<input
-						type="number"
-						placeholder="Quantity"
-						className="input"
-						value={quantity}
-						min="1"
-						step="1"
-						onChange={(e) => setQuantity(e.target.value)}
-					/>
+			<AddOverlay
+				isOpen={showAddOverlay}
+				title="Add Grocery"
+				placeholder="enter grocery item"
+				onSubmit={handleAddGrocery}
+				onClose={() => {
+					resetGroceryForm();
+					setShowAddOverlay(false);
+				}}
+			>
+				<input
+					type="number"
+					placeholder="Quantity"
+					className="input"
+					value={quantity}
+					min="1"
+					step="1"
+					onChange={(e) => setQuantity(e.target.value)}
+				/>
 
-					<input
-						type="number"
-						placeholder="Price, optional"
-						className="input"
-						value={price}
-						min="0"
-						step="0.01"
-						onChange={(e) => setPrice(e.target.value)}
-					/>
-				</AddOverlay>
+				<input
+					type="number"
+					placeholder="Price, optional"
+					className="input"
+					value={price}
+					min="0"
+					step="0.01"
+					onChange={(e) => setPrice(e.target.value)}
+				/>
+			</AddOverlay>
 
+			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] max-h-[70vh] overflow-y-auto bg-primary/70 p-6">
 				<List
 					item="Grocery"
 					items={groceries}

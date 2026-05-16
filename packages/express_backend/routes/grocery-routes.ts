@@ -25,22 +25,19 @@ async function getHomeIdFromCode(homeCode: string) {
 
 groceryRouter.get("/:home/grocery", async (req: Request, res: Response) => {
 	try {
-		const id = req.params.home;
+		const homeCode = req.params.home;
+		const homeId = await getHomeIdFromCode(homeCode);
 
-		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({ error: "Invalid id" });
+		if (!homeId) {
+			return res.status(404).json({ error: "Home not found" });
 		}
 
-		const objectId = new mongoose.Types.ObjectId(id);
+		const groceries = await getGroceryItemsByHome(homeId);
 
-		const groceries = await getGroceryItemsByHome(objectId);
-		if (!groceries) {
-			return res.status(404).json({ error: "Grocery items not found" });
-		}
 		res.status(200).json(groceries);
 	} catch (error) {
 		console.error(error);
-		res.status(400).json({ error: "Invalid ID" });
+		res.status(400).json({ error: "Failed to fetch grocery items" });
 	}
 });
 
@@ -54,26 +51,23 @@ groceryRouter.get("/:home/grocery/:id", async (req: Request, res: Response) => {
 
 		const objectId = new mongoose.Types.ObjectId(id);
 
-		const groceries = await getGroceryItemById(objectId);
-		if (!groceries) {
+		const grocery = await getGroceryItemById(objectId);
+
+		if (!grocery) {
 			return res.status(404).json({ error: "Grocery item not found" });
 		}
-		res.status(200).json(groceries);
+
+		res.status(200).json(grocery);
 	} catch (error) {
 		console.error(error);
 		res.status(400).json({ error: "Invalid ID" });
 	}
 });
+
 groceryRouter.post("/:home/grocery", async (req: Request, res: Response) => {
 	try {
-		const id = req.params.id;
-
-		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({ error: "Invalid id" });
-		}
-
-		const objectId = new mongoose.Types.ObjectId(id);
-		const homeId = await getHomeIdFromCode(objectId.toString());
+		const homeCode = req.params.home;
+		const homeId = await getHomeIdFromCode(homeCode);
 
 		if (!homeId) {
 			return res.status(404).json({ error: "Home not found" });
@@ -95,7 +89,7 @@ groceryRouter.delete(
 	"/:home/grocery/:id",
 	async (req: Request, res: Response) => {
 		try {
-			const id = req.params.home;
+			const id = req.params.id;
 
 			if (
 				typeof id !== "string" ||
@@ -107,11 +101,13 @@ groceryRouter.delete(
 			const objectId = new mongoose.Types.ObjectId(id);
 
 			const grocery = await deleteGroceryItem(objectId);
+
 			if (!grocery) {
 				return res
 					.status(404)
 					.json({ error: "Grocery item not found" });
 			}
+
 			res.status(204).send();
 		} catch (error) {
 			console.error(error);
@@ -124,7 +120,7 @@ groceryRouter.patch(
 	"/:home/grocery/:id",
 	async (req: Request, res: Response) => {
 		try {
-			const id = req.params.home;
+			const id = req.params.id;
 
 			if (
 				typeof id !== "string" ||
@@ -146,7 +142,6 @@ groceryRouter.patch(
 			res.status(200).json(updated);
 		} catch (error) {
 			console.error(error);
-
 			res.status(400).json({ error: "Invalid ID" });
 		}
 	}
@@ -156,7 +151,7 @@ groceryRouter.patch(
 	"/:home/grocery/:id/:newQuantity",
 	async (req: Request, res: Response) => {
 		try {
-			const id = req.params.home;
+			const id = req.params.id;
 
 			if (
 				typeof id !== "string" ||
@@ -164,9 +159,10 @@ groceryRouter.patch(
 			) {
 				return res.status(400).json({ error: "Invalid id" });
 			}
-			const newQuantity = req.params.newQuantity;
 
-			if (typeof newQuantity !== "number" || isNaN(newQuantity)) {
+			const newQuantity = Number(req.params.newQuantity);
+
+			if (!Number.isFinite(newQuantity) || newQuantity < 0) {
 				return res.status(400).json({ error: "Invalid quantity" });
 			}
 
@@ -186,7 +182,6 @@ groceryRouter.patch(
 			res.status(200).json(updated);
 		} catch (error) {
 			console.error(error);
-
 			res.status(400).json({ error: "Invalid ID" });
 		}
 	}
