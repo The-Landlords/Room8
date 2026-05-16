@@ -45,10 +45,12 @@ export default function List<T>({
 	const isEvents = item === "Events";
 	const isChores = item === "Chores";
 	const isGrocery = item === "Grocery";
-	const isBasic = "";
+	const isRules = item === "Rules";
+
+	const isBasic =
+		!isHomeSpaces && !isEvents && !isChores && !isGrocery && !isRules;
+
 	const [removeMode, setRemoveMode] = useState(false);
-	console.log("item:", item);
-	console.log("Chore? : ", isChores);
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">
