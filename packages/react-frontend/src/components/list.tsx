@@ -83,9 +83,7 @@ export default function List<T>({
 										/>
 									</Link>
 									{homeCode?.[index] && (
-										<Link
-											to={`/rules/${homeCode[index]}`}
-										>
+										<Link to={`/rules/${homeCode[index]}`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faFileContract}
