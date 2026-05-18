@@ -1,5 +1,3 @@
-// import React from "react";
-
 interface Vote {
 	voteId: string;
 	vote: "YES" | "NO";
@@ -37,7 +35,6 @@ export default function DeleteVotePanel({
 			<div className="bg-white p-6 rounded-2xl w-[400px] text-center">
 				<h2 className="text-lg mb-3">Vote to delete this rule</h2>
 
-				{/* STATUS MESSAGES */}
 				{isRejected && (
 					<p className="text-red-600 font-semibold mb-2">
 						Delete request rejected

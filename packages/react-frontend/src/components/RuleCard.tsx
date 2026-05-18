@@ -1,4 +1,3 @@
-// import React from "react";
 import VotePanel from "./VotePanel";
 
 interface Vote {
@@ -18,6 +17,7 @@ interface RuleCardProps {
 	voteId: string;
 	totalResidents: number;
 	onVote: (ruleId: string, vote: "YES" | "NO") => void;
+	showVoting: boolean;
 }
 
 export default function RuleCard({
@@ -25,11 +25,14 @@ export default function RuleCard({
 	voteId,
 	totalResidents,
 	onVote,
+	showVoting,
 }: RuleCardProps) {
-	const yes = rule.votes?.filter((v) => v.vote === "YES").length || 0;
-	const no = rule.votes?.filter((v) => v.vote === "NO").length || 0;
+	const votes = rule.votes ?? [];
 
-	const myVote = rule.votes?.find((v) => v.voteId === voteId)?.vote;
+	const yes = votes.filter((v) => v.vote === "YES").length;
+	const no = votes.filter((v) => v.vote === "NO").length;
+
+	const myVote = votes.find((v) => v.voteId === voteId)?.vote;
 
 	const statusText =
 		rule.status === "CONFIRMED"
@@ -38,23 +41,38 @@ export default function RuleCard({
 				? "Rejected"
 				: "Pending";
 
+	console.log(rule.votes);
+
 	return (
-		<div className="flex justify-between items-start w-full">
-			<div className="flex-1">
-				<p className="text-lg">{rule.description}</p>
-				<p className="text-sm mt-2">{statusText}</p>
-				<p className="text-xs text-text/70 mt-1">
-					YES {yes} | NO {no} | Total Roommates {totalResidents}
+		<div className="relative grid grid-cols-3 items-center w-full gap-4">
+			<div>
+				<p className="text-lg break-words">{rule.description}</p>
+			</div>
+
+			<div className="flex justify-center">
+				<p className="text-sm text-text/70 whitespace-nowrap">
+					{yes}/{totalResidents} Approve
 				</p>
 			</div>
 
-			<VotePanel
-				ruleId={rule._id}
-				myVote={myVote}
-				yesCount={yes}
-				noCount={no}
-				onVote={onVote}
-			/>
+			<div className="flex flex-col items-end">
+				<p className="text-sm whitespace-nowrap">
+					Status: {statusText}
+				</p>
+			</div>
+
+			{showVoting && (
+				<div className="absolute right-40 top-1/2 -translate-y-1/2">
+					<VotePanel
+						ruleId={rule._id}
+						myVote={myVote}
+						yesCount={yes}
+						noCount={no}
+						onVote={onVote}
+						voteId={voteId}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

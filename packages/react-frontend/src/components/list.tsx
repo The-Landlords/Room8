@@ -170,20 +170,28 @@ export default function List<T>({
 				))}
 			</ul>
 			{!removeMode && !isBasic && (
-				<div className="flex flex-row flex-center self-center gap-4">
-					<button
-						onClick={handleAddClick}
-						className="button self-center"
-					>
-						+
-					</button>
+				<div className="relative flex justify-center items-center mt-4">
+					<div className="flex gap-4">
+						<button onClick={handleAddClick} className="button">
+							+
+						</button>
 
-					<button
-						onClick={() => setRemoveMode((prev) => !prev)}
-						className="button self-center"
-					>
-						-
-					</button>
+						<button
+							onClick={() => setRemoveMode((prev) => !prev)}
+							className="button"
+						>
+							-
+						</button>
+					</div>
+
+					{item === "Rules" && (
+						<button
+							onClick={() => (window as any).toggleVoting?.()}
+							className="button absolute right-0"
+						>
+							Vote
+						</button>
+					)}
 				</div>
 			)}
 

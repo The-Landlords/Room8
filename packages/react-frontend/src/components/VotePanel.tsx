@@ -1,11 +1,10 @@
-// import React from "react";
-
 interface VotePanelProps {
 	ruleId: string;
 	myVote?: "YES" | "NO";
 	yesCount: number;
 	noCount: number;
 	onVote: (ruleId: string, vote: "YES" | "NO") => void;
+	voteId?: string;
 }
 
 export default function VotePanel({
@@ -14,28 +13,31 @@ export default function VotePanel({
 	yesCount,
 	noCount,
 	onVote,
+	voteId,
 }: VotePanelProps) {
 	return (
-		<div className="flex flex-col gap-2 items-end">
+		<div className="flex gap-2 items-center">
 			<button
+				disabled={!voteId}
 				onClick={() => onVote(ruleId, "YES")}
 				className={`button px-3 py-1 ${
 					myVote === "YES" ? "vote-yes" : ""
 				}`}
 			>
-				Yes
+				YES
 			</button>
 
 			<button
+				disabled={!voteId}
 				onClick={() => onVote(ruleId, "NO")}
 				className={`button px-3 py-1 ${
 					myVote === "NO" ? "bg-red-500 text-white" : ""
 				}`}
 			>
-				No
+				NO
 			</button>
 
-			<p className="text-sm text-text/70">
+			<p className="text-xs text-text/70 ml-2">
 				YES {yesCount} | NO {noCount}
 			</p>
 		</div>
