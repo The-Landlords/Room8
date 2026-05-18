@@ -12,6 +12,9 @@ import {
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+// import Residents from "../pages/residents";
+
+import { API_BASE } from "../config";
 
 interface ListProps<T> {
 	item: string;
@@ -40,8 +43,14 @@ export default function List<T>({
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
-	const [removeMode, setRemoveMode] = useState(false);
+	const isChores = item === "Chores";
+	const isGrocery = item === "Grocery";
+	const isRules = item === "Rules";
 
+	const isBasic =
+		!isHomeSpaces && !isEvents && !isChores && !isGrocery && !isRules;
+
+	const [removeMode, setRemoveMode] = useState(false);
 	return (
 		<div className="flex flex-col gap-2 panel animate-floatUp">
 			<h1 className="header-secondary">
@@ -65,14 +74,16 @@ export default function List<T>({
 
 							{isHomeSpaces && username && !removeMode && (
 								<div className="relative ml-auto gap-4 flex self-end-safe">
-									<Link to="/roommmates">
+									<Link
+										to={`/residents/${username}/${homeCode?.[index]}`}
+									>
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faPeopleRoof}
 										/>
 									</Link>
 									{homeCode?.[index] && (
-										<Link to={`/rules/${homeCode[index]}`}>
+										<Link to={`/rules/${homeCode[index]}/${username}`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faFileContract}
@@ -99,12 +110,16 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-									<Link to="/groceries">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faCartShopping}
-										/>
-									</Link>
+									{homeCode?.[index] && (
+										<Link
+											to={`/grocery/${username}/${homeCode[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faCartShopping}
+											/>
+										</Link>
+									)}
 									<Link to="/dropdown">
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -117,7 +132,7 @@ export default function List<T>({
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a
-										href={`http://localhost:8000/events/ics/${eventIds[index]}`}
+										href={`${API_BASE}/events/ics/${eventIds[index]}`}
 									>
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -141,7 +156,7 @@ export default function List<T>({
 								</div>
 							)}
 
-							{removeMode && (
+							{removeMode && !isBasic && (
 								<button
 									type="button"
 									onClick={() => handleRemoveClick(listItem)}
@@ -154,25 +169,36 @@ export default function List<T>({
 					</li>
 				))}
 			</ul>
-			{!removeMode && (
-				<div className="flex flex-row flex-center self-center gap-4">
-					<button
-						onClick={handleAddClick}
-						className="button self-center"
-					>
-						+
-					</button>
+			{!removeMode && !isBasic && (
+				<div className="relative flex justify-center items-center mt-4">
+					<div className="flex gap-4">
+						<button
+							onClick={handleAddClick}
+							className="button"
+						>
+							+
+						</button>
 
-					<button
-						onClick={() => setRemoveMode((prev) => !prev)}
-						className="button self-center"
-					>
-						-
-					</button>
+						<button
+							onClick={() => setRemoveMode((prev) => !prev)}
+							className="button"
+						>
+							-
+						</button>
+					</div>
+
+					{item === "Rules" && (
+						<button
+							onClick={() => (window as any).toggleVoting?.()}
+							className="button absolute right-0"
+						>
+							Vote
+						</button>
+					)}
 				</div>
 			)}
 
-			{removeMode && (
+			{removeMode && !isBasic && (
 				<div className="button self-center">
 					<button onClick={() => setRemoveMode(false)}>Cancel</button>
 				</div>

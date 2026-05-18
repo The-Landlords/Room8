@@ -1,13 +1,15 @@
-import React from "react";
+// DeleteVotePanel.tsx
+
+// import React from "react";
 
 interface Vote {
-	voteId: string;
+	userId: string;
 	vote: "YES" | "NO";
 }
 
 interface DeleteVotePanelProps {
 	ruleId: string;
-	voteId: string;
+	userId: string;
 	deleteVotes?: Vote[];
 	totalResidents: number;
 	deleteStatus?: "NONE" | "PENDING" | "REJECTED" | "CONFIRMED";
@@ -17,7 +19,7 @@ interface DeleteVotePanelProps {
 
 export default function DeleteVotePanel({
 	ruleId,
-	voteId,
+	userId,
 	deleteVotes = [],
 	totalResidents,
 	deleteStatus = "NONE",
@@ -25,17 +27,23 @@ export default function DeleteVotePanel({
 	onCancel,
 }: DeleteVotePanelProps) {
 	const yes = deleteVotes.filter((v) => v.vote === "YES").length;
+
 	const no = deleteVotes.filter((v) => v.vote === "NO").length;
 
-	const myVote = deleteVotes.find((v) => v.voteId === voteId)?.vote;
+	const myVote = deleteVotes.find(
+		(v) => String(v.userId) === String(userId)
+	)?.vote;
 
 	const isRejected = deleteStatus === "REJECTED" || no > 0;
+
 	const isPending = deleteStatus === "PENDING";
 
 	return (
 		<div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 			<div className="bg-white p-6 rounded-2xl w-[400px] text-center">
-				<h2 className="text-lg mb-3">Vote to delete this rule</h2>
+				<h2 className="text-lg mb-3">
+					Vote to delete this rule
+				</h2>
 
 				{/* STATUS MESSAGES */}
 				{isRejected && (
@@ -51,24 +59,27 @@ export default function DeleteVotePanel({
 				)}
 
 				<p className="text-sm mb-5 text-text/70">
-					YES {yes} | NO {no} | Total Roommates {totalResidents}
+					YES {yes} | NO {no} | Total Roommates{" "}
+					{totalResidents}
 				</p>
 
 				<div className="flex justify-center gap-4">
 					<button
 						onClick={() => onVote(ruleId, "YES")}
-						className={`button px-4 py-2 ${
-							myVote === "YES" ? "bg-green-500 text-white" : ""
-						}`}
+						className={`button px-4 py-2 ${myVote === "YES"
+							? "bg-green-500 text-white"
+							: ""
+							}`}
 					>
 						Yes
 					</button>
 
 					<button
 						onClick={() => onVote(ruleId, "NO")}
-						className={`button px-4 py-2 ${
-							myVote === "NO" ? "bg-red-500 text-white" : ""
-						}`}
+						className={`button px-4 py-2 ${myVote === "NO"
+							? "bg-red-500 text-white"
+							: ""
+							}`}
 					>
 						No
 					</button>

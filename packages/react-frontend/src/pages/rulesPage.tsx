@@ -1,3 +1,4 @@
+import { API_BASE } from "../config";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import List from "../components/list";
@@ -5,7 +6,7 @@ import RuleCard from "../components/RuleCard";
 import DeleteVotePanel from "../components/DeleteVotePanel";
 
 interface Vote {
-	voteId: string;
+	userId: string;
 	vote: "YES" | "NO";
 }
 
@@ -23,39 +24,58 @@ export default function RulesPage() {
 	const [rules, setRules] = useState<Rule[]>([]);
 	const [homeName, setHomeName] = useState("");
 	const [overlayOpen, setOverlayOpen] = useState(false);
+	const [, setLoading] = useState(false);
+	const [, setError] = useState("");
 	const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 	const [totalResidents, setTotalResidents] = useState(0);
+	const [userId, setUserId] = useState("");
 
-	const { homeCode = "" } = useParams();
+	const { homeCode = "", username = "" } = useParams();
+
 	const navigate = useNavigate();
+
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 
-	const getVoteId = () => {
-		let id = localStorage.getItem("voteId");
-		if (!id) {
-			id = crypto.randomUUID();
-			localStorage.setItem("voteId", id);
-		}
-		return id;
-	};
-
-	const voteId = getVoteId();
+	const [showVoting, setShowVoting] = useState(true);
 
 	const selectedRule = rules.find((r) => r._id === deleteTarget);
+
+	useEffect(() => {
+		async function fetchUser() {
+			if (!username) return;
+
+			const res = await fetch(
+				`${API_BASE}/auth/user/${username}`
+			);
+
+			if (!res.ok) {
+				console.error("Failed to fetch user");
+				return;
+			}
+
+			const data = await res.json();
+
+			setUserId(data._id);
+		}
+
+		fetchUser().catch(console.error);
+	}, [username]);
 
 	async function fetchRules() {
 		if (!homeCode) return;
 
-		const homeRes = await fetch(
-			`http://localhost:8000/homes/code/${homeCode}`
-		);
-		if (!homeRes.ok) throw new Error("Failed to fetch home");
+		const homeRes = await fetch(`${API_BASE}/homes/code/${homeCode}`);
+
+		if (!homeRes.ok) {
+			throw new Error("Failed to fetch home");
+		}
+
 		const homeData = await homeRes.json();
 
 		setHomeName(homeData.homeName);
 
 		const residentRes = await fetch(
-			`http://localhost:8000/relate/home/${homeData._id}/residents`
+			`${API_BASE}/relate/home/${homeData._id}/residents`
 		);
 
 		if (!residentRes.ok) {
@@ -67,10 +87,15 @@ export default function RulesPage() {
 		setTotalResidents(residentData.count);
 
 		const rulesRes = await fetch(
-			`http://localhost:8000/homes/rules/${homeCode}`
+			`${API_BASE}/homes/rules/${homeCode}`
 		);
-		if (!rulesRes.ok) throw new Error("Failed to fetch rules");
+
+		if (!rulesRes.ok) {
+			throw new Error("Failed to fetch rules");
+		}
+
 		const data = await rulesRes.json();
+
 		setRules(data);
 	}
 
@@ -79,73 +104,144 @@ export default function RulesPage() {
 	}, [homeCode]);
 
 	async function handleAdd() {
-		if (!inputRef.current || !inputRef.current.value.trim() || !homeCode)
+		if (!inputRef.current || !inputRef.current.value.trim() || !homeCode) {
 			return;
+		}
 
-		const res = await fetch(`http://localhost:8000/${homeCode}/rules`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				description: inputRef.current.value.trim(),
-			}),
-		});
+		setLoading(true);
+		setError("");
 
-		if (!res.ok) throw new Error("Failed to add rule");
+		try {
+			const res = await fetch(`${API_BASE}/homes/rules`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					homeCode,
+					description: inputRef.current.value.trim(),
+				}),
+			});
 
-		await fetchRules();
-		inputRef.current.value = "";
-		setOverlayOpen(false);
+			if (!res.ok) {
+				throw new Error("Failed to add rule");
+			}
+
+			inputRef.current.value = "";
+
+			setOverlayOpen(false);
+
+			await fetchRules();
+		} catch {
+			setError("Failed to add rule");
+		} finally {
+			setLoading(false);
+		}
 	}
+
+	const votingLock = useRef(false);
 
 	async function handleVote(ruleId: string, vote: "YES" | "NO") {
-		await fetch(`http://localhost:8000/rules/${ruleId}/vote`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ voteId, vote }),
-		});
+		if (votingLock.current || !userId) {
+			return;
+		}
 
-		fetchRules().catch(console.error);
+		votingLock.current = true;
+
+		try {
+			const res = await fetch(
+				`${API_BASE}/rules/${ruleId}/vote`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						userId,
+						vote,
+					}),
+				}
+			);
+
+			if (!res.ok) {
+				console.error(await res.text());
+				return;
+			}
+
+			await fetchRules();
+		} finally {
+			votingLock.current = false;
+		}
 	}
 
-	async function handleDeleteVote(ruleId: string, vote: "YES" | "NO") {
-		if (!voteId) return;
+	async function handleDeleteVote(
+		ruleId: string,
+		vote: "YES" | "NO"
+	) {
+		if (!userId) return;
 
 		const res = await fetch(
-			`http://localhost:8000/rules/${ruleId}/delete-vote`,
+			`${API_BASE}/rules/${ruleId}/delete-vote`,
 			{
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ voteId, vote }),
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					userId,
+					vote,
+				}),
 			}
 		);
+
+		if (!res.ok) {
+			console.error(
+				"Delete vote failed:",
+				await res.text()
+			);
+			return;
+		}
 
 		const data = await res.json();
 
 		if (data.deleted) {
-			setRules((prev) => prev.filter((r) => r._id !== ruleId));
+			setRules((prev) =>
+				prev.filter((r) => r._id !== ruleId)
+			);
+
 			setDeleteTarget(null);
 		} else {
-			fetchRules().catch(console.error);
+			await fetchRules();
 		}
 	}
 
 	const renderRule = (rule: Rule) => (
 		<RuleCard
 			rule={rule}
-			voteId={voteId}
+			userId={userId}
 			totalResidents={totalResidents}
 			onVote={handleVote}
+			showVoting={showVoting}
 		/>
 	);
+
+	(window as any).toggleVoting = () => {
+		setShowVoting((prev) => !prev);
+	};
 
 	return (
 		<div className="background-house min-h-screen">
 			<header className="w-full flex justify-between px-6 pt-8">
-				<button onClick={() => navigate(-1)} className="button">
+				<button
+					onClick={() => navigate(-1)}
+					className="button"
+				>
 					← Back
 				</button>
 
-				<h1 className="header">Rules for {homeName}</h1>
+				<h1 className="header">
+					Rules for {homeName}
+				</h1>
 
 				<div className="w-[80px]" />
 			</header>
@@ -155,8 +251,12 @@ export default function RulesPage() {
 					<List
 						item="Rules"
 						items={rules}
-						handleAddClick={() => setOverlayOpen(true)}
-						handleRemoveClick={(rule) => setDeleteTarget(rule._id)}
+						handleAddClick={() =>
+							setOverlayOpen(true)
+						}
+						handleRemoveClick={(rule) =>
+							setDeleteTarget(rule._id)
+						}
 						getKey={(rule) => rule._id}
 						renderItem={renderRule}
 					/>
@@ -166,7 +266,9 @@ export default function RulesPage() {
 			{overlayOpen && (
 				<div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 					<div className="bg-white p-6 rounded-2xl w-[400px]">
-						<h2 className="text-xl mb-4">Add Rule</h2>
+						<h2 className="text-xl mb-4">
+							Add Rule
+						</h2>
 
 						<textarea
 							ref={inputRef}
@@ -175,10 +277,18 @@ export default function RulesPage() {
 						/>
 
 						<div className="flex justify-end gap-3 mt-4">
-							<button onClick={() => setOverlayOpen(false)}>
+							<button
+								onClick={() =>
+									setOverlayOpen(false)
+								}
+							>
 								Cancel
 							</button>
-							<button onClick={handleAdd} className="button">
+
+							<button
+								onClick={handleAdd}
+								className="button"
+							>
 								Add
 							</button>
 						</div>
@@ -190,12 +300,18 @@ export default function RulesPage() {
 				<DeleteVotePanel
 					key={deleteTarget}
 					ruleId={selectedRule._id}
-					voteId={voteId}
-					deleteVotes={selectedRule.deleteVotes || []}
-					deleteStatus={selectedRule.deleteStatus || "NONE"}
+					userId={userId}
+					deleteVotes={
+						selectedRule.deleteVotes || []
+					}
+					deleteStatus={
+						selectedRule.deleteStatus || "NONE"
+					}
 					totalResidents={totalResidents}
 					onVote={handleDeleteVote}
-					onCancel={() => setDeleteTarget(null)}
+					onCancel={() =>
+						setDeleteTarget(null)
+					}
 				/>
 			)}
 		</div>
