@@ -2,9 +2,8 @@ import mongoose from "mongoose";
 
 const VoteSchema = new mongoose.Schema(
 	{
-		userId: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
+		voteId: {
+			type: String,
 			required: true,
 		},
 		vote: {
@@ -20,7 +19,7 @@ const RuleSchema = new mongoose.Schema({
 	description: {
 		type: String,
 		required: true,
-		maxLength: 300,
+		maxLength: 100,
 		trim: true,
 	},
 
