@@ -1,10 +1,7 @@
-// RuleCard.tsx
-
-// import React from "react";
 import VotePanel from "./VotePanel";
 
 interface Vote {
-	userId: string;
+	voteId: string;
 	vote: "YES" | "NO";
 }
 
@@ -17,7 +14,7 @@ interface Rule {
 
 interface RuleCardProps {
 	rule: Rule;
-	userId: string;
+	voteId: string;
 	totalResidents: number;
 	onVote: (ruleId: string, vote: "YES" | "NO") => void;
 	showVoting: boolean;
@@ -25,18 +22,17 @@ interface RuleCardProps {
 
 export default function RuleCard({
 	rule,
-	userId,
+	voteId,
 	totalResidents,
 	onVote,
 	showVoting,
 }: RuleCardProps) {
-	const yes = rule.votes?.filter((v) => v.vote === "YES").length || 0;
+	const votes = rule.votes ?? [];
 
-	const no = rule.votes?.filter((v) => v.vote === "NO").length || 0;
+	const yes = votes.filter((v) => v.vote === "YES").length;
+	const no = votes.filter((v) => v.vote === "NO").length;
 
-	const myVote = rule.votes?.find(
-		(v) => String(v.userId) === String(userId)
-	)?.vote;
+	const myVote = votes.find((v) => v.voteId === voteId)?.vote;
 
 	const statusText =
 		rule.status === "CONFIRMED"
@@ -45,29 +41,26 @@ export default function RuleCard({
 				? "Rejected"
 				: "Pending";
 
+	console.log(rule.votes);
+
 	return (
 		<div className="relative grid grid-cols-3 items-center w-full gap-4">
-			{/* LEFT */}
 			<div>
 				<p className="text-lg break-words">{rule.description}</p>
 			</div>
 
-			{/* CENTER */}
 			<div className="flex justify-center">
 				<p className="text-sm text-text/70 whitespace-nowrap">
 					{yes}/{totalResidents} Approve
 				</p>
 			</div>
 
-			{/* RIGHT */}
 			<div className="flex flex-col items-end">
 				<p className="text-sm whitespace-nowrap">
 					Status: {statusText}
 				</p>
-
 			</div>
 
-			{/* FLOATING VOTE PANEL */}
 			{showVoting && (
 				<div className="absolute right-40 top-1/2 -translate-y-1/2">
 					<VotePanel
@@ -76,6 +69,7 @@ export default function RuleCard({
 						yesCount={yes}
 						noCount={no}
 						onVote={onVote}
+						voteId={voteId}
 					/>
 				</div>
 			)}

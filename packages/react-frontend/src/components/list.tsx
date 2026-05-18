@@ -83,7 +83,9 @@ export default function List<T>({
 										/>
 									</Link>
 									{homeCode?.[index] && (
-										<Link to={`/rules/${homeCode[index]}/${username}`}>
+										<Link
+											to={`/rules/${homeCode[index]}/${username}`}
+										>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faFileContract}
@@ -172,10 +174,7 @@ export default function List<T>({
 			{!removeMode && !isBasic && (
 				<div className="relative flex justify-center items-center mt-4">
 					<div className="flex gap-4">
-						<button
-							onClick={handleAddClick}
-							className="button"
-						>
+						<button onClick={handleAddClick} className="button">
 							+
 						</button>
 
