@@ -84,7 +84,7 @@ export default function List<T>({
 									</Link>
 									{homeCode?.[index] && (
 										<Link
-											to={`/rules/${homeCode[index]}/${username}`}
+											to={`/rules/${homeCode[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"

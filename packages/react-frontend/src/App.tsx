@@ -33,7 +33,7 @@ function App() {
 						element={<ChorePage />}
 					/>
 					<Route
-						path="/rules/:homeCode/:username"
+						path="/rules/:homeCode"
 						element={<RulesPage />}
 					/>
 					<Route
