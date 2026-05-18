@@ -2,11 +2,22 @@
 	"name": "express_backend",
 	"version": "1.0.0",
 	"description": "",
-	"main": "backend.ts",
+	"main": "dist/backend.js",
 	"type": "module",
 	"scripts": {
-		"start": "tsx watch backend.ts",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "jest --runInBand",
+		"coverage": "jest --runInBand --testMatch '**/*Mock.test.ts' --coverage",
+		"test:mock": "jest --runInBand --testMatch '**/*Mock.test.ts'",
+		"dev": "tsx watch backend.ts",
+		"build": "tsc && npm run swagger",
+		"swagger": "tsx swagger.ts",
+		"start": "node dist/backend.js",
+		"start:dev": "tsx watch backend.ts",
+		"start:prod": "node dist/backend.js",
+		"lint:check": "eslint . --max-warnings=0",
+		"lint:fix": "eslint . --max-warnings=0 --fix --format stylish",
+		"format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+		"format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\""
 	},
 	"author": "",
 	"license": "ISC",
@@ -15,11 +26,17 @@
 		"dotenv": "^17.3.1",
 		"express": "^5.2.1",
 		"ics": "^3.12.0",
+		"jest": "^30.3.0",
+		"jest-environment-jsdom": "^30.3.0",
+		"mockingoose": "^3.0.0",
 		"mongoose": "^9.1.5"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
+		"eslint-formatter-unix": "^9.0.1",
+		"jest": "^30.3.0",
+		"ts-jest": "^29.4.6",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3"

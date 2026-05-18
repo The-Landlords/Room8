@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { API_BASE } from "../config";
 interface EditEventOverlayProps {
 	eventEdit: any;
 	onEdit: (event: any) => void;
@@ -41,21 +41,18 @@ export default function EditEventOverlay({
 			throw new Error("Missing event id");
 		}
 
-		const res = await fetch(
-			`http://localhost:8000/events/${eventEdit._id}`,
-			{
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					title,
-					start,
-					end,
-					location,
-					description,
-					status,
-				}),
-			}
-		);
+		const res = await fetch(`${API_BASE}/events/${eventEdit._id}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				title,
+				start,
+				end,
+				location,
+				description,
+				status,
+			}),
+		});
 
 		const data = await res.json();
 

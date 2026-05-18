@@ -1,6 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { User } from "../models/User";
+import { User } from "../models/User.js";
 
 export const loginRouter = express.Router();
 

@@ -6,12 +6,13 @@ import {
 	getHomeByName,
 	updateHome,
 	getHomesByUserAndRelation,
-} from "../models/Home-Services.ts";
+} from "../models/Home-Services.js";
 import {
 	getUserByUsername,
 	getUsersByHomeAndRelation,
+	// getUsersByHomeAndRelation,
 	updateUserById,
-} from "../models/User-Services.ts";
+} from "../models/User-Services.js";
 import mongoose from "mongoose";
 
 export const relationRouter = express.Router();
@@ -21,15 +22,27 @@ relationRouter.post(
 	"/relate/:username/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
+			const homecode = req.params.homeCode;
+
+			if (typeof homecode !== "string") {
+				return res.status(400).json({ error: "Invalid home code" });
+			}
+
 			const relationship = req.body.relationship.toUpperCase();
 
-			const h = await getHomeByCode(req.params.homeCode);
+			const h = await getHomeByCode(homecode);
 
 			if (!h) {
 				return res.status(404).json({ error: "Home not found" });
 			}
 
-			const u = await getUserByUsername(req.params.username);
+			const username = req.params.username;
+
+			if (typeof username !== "string") {
+				return res.status(400).json({ error: "Invalid username" });
+			}
+
+			const u = await getUserByUsername(username);
 
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
@@ -60,7 +73,13 @@ relationRouter.post(
 //gets homes based off passed in user
 relationRouter.get("/relate/:username", async (req: Request, res: Response) => {
 	try {
-		const u = await getUserByUsername(req.params.username);
+		const username = req.params.username;
+
+		if (typeof username !== "string") {
+			return res.status(400).json({ error: "Invalid username" });
+		}
+
+		const u = await getUserByUsername(username);
 
 		if (!u) {
 			return res.status(404).json({ error: "User not found" });
@@ -82,13 +101,25 @@ relationRouter.patch(
 		try {
 			console.log("Deleting relation!");
 
-			const h = await getHomeByName(req.params.homeName);
+			const homename = req.params.homeName;
+
+			if (typeof homename !== "string") {
+				return res.status(400).json({ error: "Invalid home name" });
+			}
+
+			const h = await getHomeByName(homename);
 
 			if (!h) {
 				return res.status(404).json({ error: "Home not found" });
 			}
 
-			const u = await getUserByUsername(req.params.username);
+			const username = req.params.username;
+
+			if (typeof username !== "string") {
+				return res.status(400).json({ error: "Invalid username" });
+			}
+
+			const u = await getUserByUsername(username);
 
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
@@ -127,12 +158,36 @@ relationRouter.patch(
 	}
 );
 
+//get users based off passed in home and relation
+relationRouter.get(
+	"/relate/:homeCode/:relation",
+	async (req: Request, res: Response) => {
+		try {
+			const h = await getHomeByCode(req.params.homeCode.toString());
+
+			if (!h) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			let users = [];
+			users = await getUsersByHomeAndRelation(
+				h._id,
+				req.params.relation.toString()
+			);
+			res.status(200).json(users);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to fetch users from home" });
+		}
+	}
+);
+
 relationRouter.get(
 	"/relate/home/:homeId/residents",
 	async (req: Request, res: Response) => {
 		try {
 			const residents = await getUsersByHomeAndRelation(
-				new mongoose.Types.ObjectId(req.params.homeId),
+				new mongoose.Types.ObjectId(req.params.homeId.toString()),
 				"RESIDENT"
 			);
 

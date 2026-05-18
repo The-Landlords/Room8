@@ -13,11 +13,23 @@ module.exports = {
 					},
 				],
 			},
+			moduleNameMapper: {
+				"^(\\.{1,2}/.*)\\.js$": "$1",
+			},
 		},
 		{
 			displayName: "frontend",
 			testEnvironment: "jsdom",
 			testMatch: ["<rootDir>/packages/react-frontend/src/**/*.test.tsx"],
+			setupFiles: ["<rootDir>/jest.setup.js"],
+			moduleNameMapper: {
+				"^../config$":
+					"<rootDir>/packages/react-frontend/src/config.jest.ts",
+				"^../../config$":
+					"<rootDir>/packages/react-frontend/src/config.jest.ts",
+				"^src/config$":
+					"<rootDir>/packages/react-frontend/src/config.jest.ts",
+			},
 			transform: {
 				"^.+\\.(ts|tsx)$": [
 					"ts-jest",
@@ -27,10 +39,6 @@ module.exports = {
 					},
 				],
 			},
-			moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
-			setupFilesAfterEnv: [
-				"<rootDir>/packages/react-frontend/src/jest.setup.ts",
-			],
 		},
 	],
 };

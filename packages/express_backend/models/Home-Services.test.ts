@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import {
 	expect,
 	test,
-	describe,
+	// describe,
 	beforeAll,
 	afterAll,
 	beforeEach,
@@ -34,8 +34,8 @@ const basicHomeData = {
 		},
 	],
 };
-let homeId: mongoose.Types.ObjectId;
-let homeCode: string;
+// let homeId: mongoose.Types.ObjectId;
+// let homeCode: string;
 let h: any; // FIXME type this later
 beforeAll(async () => {
 	// FOR WHEN WE SWITCH TO CLOUD MONGO DB
@@ -99,8 +99,8 @@ test("Fetching (getting) a home by name", async () => {
 });
 
 test("Fetching (getting) a home by Code", async () => {
-	homeCode = h.homeCode;
-	const home = await getHomeByCode(homeCode);
+	// homeCode = h.homeCode;
+	const home = await getHomeByCode(h.homeCode);
 	expect(home).toBeDefined();
 });
 

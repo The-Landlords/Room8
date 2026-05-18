@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import List from "../components/list";
 import AddOverlay from "../components/addOverlay";
+import { API_BASE } from "../config";
 
 type Chore = {
 	_id: string;
@@ -25,18 +26,15 @@ export default function ChorePage() {
 		try {
 			if (!username || !homeCode) return;
 
-			const res = await fetch(
-				`http://localhost:8000/${homeCode}/chores`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						title: value,
-					}),
-				}
-			);
+			const res = await fetch(`${API_BASE}/${homeCode}/chores`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					title: value,
+				}),
+			});
 
 			if (!res.ok) throw new Error("Failed to add chore");
 
@@ -52,7 +50,7 @@ export default function ChorePage() {
 			if (!homeCode) return;
 
 			const res = await fetch(
-				`http://localhost:8000/${homeCode}/chores/${choreToRemove._id}`,
+				`${API_BASE}/${homeCode}/chores/${choreToRemove._id}`,
 				{
 					method: "DELETE",
 				}
@@ -73,9 +71,7 @@ export default function ChorePage() {
 			try {
 				if (!username || !homeCode) return;
 
-				const res = await fetch(
-					`http://localhost:8000/${homeCode}/chores`
-				);
+				const res = await fetch(`${API_BASE}/${homeCode}/chores`);
 				if (!res.ok) throw new Error("Failed to fetch chores");
 
 				const data = await res.json();

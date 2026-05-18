@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 import {
 	expect,
 	test,
-	describe,
 	beforeAll,
 	afterAll,
 	beforeEach,
 	afterEach,
+	jest,
 } from "@jest/globals";
 import {
 	getEventsByHome,
@@ -148,7 +148,7 @@ test("Creating an event with end time before start time should fail", async () =
 	);
 });
 test("Converts an event to ICS data", async () => {
-	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+	mockCreateIcsEvent.mockImplementation((_event, cb: any) => {
 		cb(
 			undefined,
 			`BEGIN:VCALENDAR
@@ -172,7 +172,7 @@ END:VCALENDAR`
 });
 
 test("eventToICSData rejects when createIcsEvent returns an error", async () => {
-	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+	mockCreateIcsEvent.mockImplementation((_event, cb: any) => {
 		cb(new Error("ICS creation failed"), undefined);
 	});
 
@@ -180,7 +180,7 @@ test("eventToICSData rejects when createIcsEvent returns an error", async () => 
 });
 
 test("eventToICSData rejects when createIcsEvent returns no data", async () => {
-	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+	mockCreateIcsEvent.mockImplementation((_event, cb: any) => {
 		cb(undefined, undefined);
 	});
 
@@ -198,7 +198,7 @@ test("Converting a missing event to ICS data returns null", async () => {
 });
 
 test("eventToICSData rejects when createIcsEvent returns an error", async () => {
-	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+	mockCreateIcsEvent.mockImplementation((_event, cb: any) => {
 		cb(new Error("ICS creation failed"), undefined);
 	});
 
@@ -206,7 +206,7 @@ test("eventToICSData rejects when createIcsEvent returns an error", async () => 
 });
 
 test("eventToICSData rejects when createIcsEvent returns no data", async () => {
-	mockCreateIcsEvent.mockImplementation((_event, cb) => {
+	mockCreateIcsEvent.mockImplementation((_event, cb: any) => {
 		cb(undefined, undefined);
 	});
 

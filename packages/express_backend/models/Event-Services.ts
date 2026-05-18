@@ -1,5 +1,5 @@
 // event-services.ts
-import { Event } from "./Event";
+import { Event } from "./Event.js";
 import mongoose from "mongoose";
 import { createEvent as createIcsEvent } from "ics";
 /**

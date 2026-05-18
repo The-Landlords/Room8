@@ -44,6 +44,15 @@ However, run both in union by
 npm run dev
 ```
 
+Tests can be run by the following:
+
+```
+npm run test
+npm run test:backend
+npm run test:frontend
+npm run coverage
+```
+
 ### Formatting With ESLint and Prettier
 
 upon every commit we run `prettier` and `eslint` via a _github automated workflow_
@@ -80,10 +89,11 @@ _This table is unfinished as of 10 Mar_
 
 ## Unit Testing For Schemas
 
-As of `28 April 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage with updated with Mockinggoose.
+As of `12 May 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage with updated with Mockinggoose. The front end pages have less coverage, but all pass with 70% or higher!
 | File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
-|---------------------|--------:|---------:|--------:|--------:|-------------------|
-| All files | 100 | 100 | 100 | 100 | |
+|--------------------------------|---------|----------|---------|---------|-----------------------------------------------|
+| All files | 86.62 | 73.46 | 80.66 | 89.96 | |
+| express_backend/models | 100 | 100 | 100 | 100 | |
 | Chore-Services.ts | 100 | 100 | 100 | 100 | |
 | Chore.ts | 100 | 100 | 100 | 100 | |
 | Event-Services.ts | 100 | 100 | 100 | 100 | |
@@ -96,8 +106,27 @@ As of `28 April 2026`, all services have been tested _locally_ with mongodb loca
 | Rules-Services.ts | 100 | 100 | 100 | 100 | |
 | User-Services.ts | 100 | 100 | 100 | 100 | |
 | User.ts | 100 | 100 | 100 | 100 | |
+| react-frontend/src | 100 | 100 | 100 | 100 | |
+| config.jest.ts | 100 | 100 | 100 | 100 | |
+| react-frontend/src/components | 80.95 | 66.66 | 66.66 | 84.21 | |
+| addOverlay.tsx | 80 | 50 | 75 | 85.71 | 37-38 |
+| overlay.tsx | 83.33 | 100 | 50 | 80 | 20 |
+| react-frontend/src/pages | 81.63 | 69.51 | 75.47 | 86.15 | |
+| calendarPage.tsx | 80.43 | 84.61 | 68.29 | 82.14 | 92-93,106,112,150,159-160,172-207,236,249-251 |
+| chorePage.tsx | 73.46 | 50 | 78.57 | 82.92 | 20,44,65,80-81,116-117 |
+| homelistPage.tsx | 81.53 | 87.5 | 72.41 | 83.05 | 56-57,78,90,101,116-117,130,150-153 |
+| rulesPage.tsx | 87.67 | 65.51 | 94.11 | 93.84 | 69,90,149,160 |
+| signInPage.tsx | 100 | 100 | 100 | 100 | |
+| signUpPage.tsx | 100 | 100 | 100 | 100 | |
+| userSetting.tsx | 70.27 | 57.14 | 67.44 | 76.36 | 109,115-116,233-234,341,447-499,551-573 |
 
-Test Suites: 6 passed, 6 total Tests: 50 passed, 50 total Snapshots: 0 total Time: 5.384 s
+**Test Summary**
+
+- Test Suites: 19 passed, 19 total
+- Tests: 176 passed, 176 total
+- Snapshots: 0 total
+- Time: 11.816 s (estimated 435 s)
+- Projects: 2
 
 # Features
 
@@ -158,7 +187,7 @@ Future plans may include
 
 - globalization to all public spaces, rather than a specific niche of a household or apartment
 - text message feature: ability to send reminders, statuses, and other items to users based on household updates
-- ability to export calendar events as `.ics`
+- ability to export calendar events as `.ics` (This is done!)
 
 # User Requirements
 
@@ -168,6 +197,6 @@ To be a user, you may need the following:
 
 - Internet access
 
-- A supported browser (latest Chrome or Firefox)
+- A supported browser (latest Chrome or Firefox or Safari)
 
 - A device capable of running a responsive web app (phone or laptop)

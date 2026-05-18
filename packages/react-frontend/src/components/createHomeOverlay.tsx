@@ -1,17 +1,16 @@
-import React from "react";
 import { useState, useRef, useEffect } from "react";
 import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
 import { Map, View } from "ol";
-import { fromLonLat, toLonLat } from "ol/proj";
+import { fromLonLat } from "ol/proj";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import { Fill, Icon, Stroke, Style, Text } from "ol/style";
+import { Fill, Stroke, Style, Text } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
 import Zoom from "ol/control/Zoom";
-import { set } from "ol/transform";
+import { API_BASE } from "../config";
 
 /*Component is a form field to create a new home object */
 type CreateHomeProps = {
@@ -34,7 +33,7 @@ export default function CreateHomeOverlay({
 	const [state, setState] = useState("");
 	const [postalCode, setPostalCode] = useState("");
 	const [name, setName] = useState("");
-	const [loading, setLoading] = useState(true);
+	const [, setLoading] = useState(true);
 	const [valid, setValid] = useState(false);
 	const [errorMsg, setErrorMsg] = useState("");
 	const [coords, setCoords] = useState<{ lon: number; lat: number }>({
@@ -54,7 +53,7 @@ export default function CreateHomeOverlay({
 		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`http://localhost:8000/relate/${username}/${homeCode}`,
+			`${API_BASE}/relate/${username}/${homeCode}`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -66,7 +65,7 @@ export default function CreateHomeOverlay({
 	async function createHome(homeData: any) {
 		if (!username) return;
 
-		const promise = await fetch(`http://localhost:8000/homes`, {
+		const promise = await fetch(`${API_BASE}/homes`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(homeData),
