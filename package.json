@@ -6,7 +6,7 @@
 	"scripts": {
 		"tf": "npm run test:frontend",
 		"tb": "npm run test:backend",
-		"test": "jest --runInBand",
+		"test": "npm run test:frontend && npm run test:backend",
 		"test:frontend": "vitest run packages/react-frontend/src/Testing --environment jsdom",
 		"test:frontend:watch": "vitest packages/react-frontend/src/Testing --environment jsdom",
 		"test:backend": "jest --selectProjects backend --runInBand",
