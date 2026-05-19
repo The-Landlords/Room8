@@ -67,6 +67,7 @@ authRouter.get(
 	"/auth/residents/:usernameOne/:homeCode/",
 	async (req: Request, res: Response) => {
 		const { usernameOne, homeCode } = req.params;
+		console.log("Received request for residents with params:", req.params);
 		const userOne = await getUserByUsername(usernameOne.toString());
 		const home = await getHomeByCode(homeCode.toString());
 		if (!userOne || !home) {
@@ -103,6 +104,10 @@ authRouter.get(
 authRouter.get(
 	"/auth/homeDisplay/:username/:homeCode/",
 	async (req: Request, res: Response) => {
+		console.log(
+			"Received request for home display with params:",
+			req.params
+		);
 		const { homeCode, username } = req.params;
 		const home = await getHomeByCode(homeCode.toString());
 		const user = await getUserByUsername(username.toString());
@@ -125,6 +130,7 @@ authRouter.get(
 
 		if (userRelation === "RESIDENT") {
 			const homeDisplay = {
+				id: home._id,
 				name: home.homeName,
 				homeCode: home.homeCode,
 				groceries: await getCurrentGroceryItemsByHome(home._id),
@@ -133,6 +139,7 @@ authRouter.get(
 				events: await getUpcomingEventsByHome(home._id),
 			};
 			res.status(200).json(homeDisplay);
+			console.log("Home Display for resident:", homeDisplay);
 		} else {
 			const homeDisplay = {
 				name: home.homeName,
@@ -140,6 +147,7 @@ authRouter.get(
 				rules: await getApprovedRulesByHome(home._id),
 				events: await getUpcomingEventsByHome(home._id),
 			};
+			console.log("Home Display for non-resident:", homeDisplay);
 			res.status(200).json(homeDisplay);
 		}
 	}

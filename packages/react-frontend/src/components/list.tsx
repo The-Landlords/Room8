@@ -121,7 +121,9 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-									<Link to="/dropdown">
+									<Link
+										to={`/homeDisplay/${username}/${homeCode?.[index]}`}
+									>
 										<FontAwesomeIcon
 											className="iconWrapper"
 											icon={faAngleRight}
