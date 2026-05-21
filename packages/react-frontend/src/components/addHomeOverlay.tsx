@@ -8,23 +8,17 @@ type AddHomeProps = {
 	onAdd: any;
 };
 
-export default function AddHomeOverlay({
-	onBack,
-	onAdd,
-}: AddHomeProps) {
+export default function AddHomeOverlay({ onBack, onAdd }: AddHomeProps) {
 	const [homeCode, setHomeCode] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 	async function addHome() {
 		const relationship = { relationship: "RESIDENT" };
-		const promise = await fetch(
-			`${API_BASE}/relate/me/${homeCode}`,
-			{
-				method: "POST",
-				credentials: "include",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(relationship),
-			}
-		);
+		const promise = await fetch(`${API_BASE}/relate/me/${homeCode}`, {
+			method: "POST",
+			credentials: "include",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(relationship),
+		});
 		return promise;
 	}
 	async function handleAddHome() {

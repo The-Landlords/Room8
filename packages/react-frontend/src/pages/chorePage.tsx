@@ -72,7 +72,7 @@ export default function ChorePage() {
 	useEffect(() => {
 		async function fetchChores() {
 			try {
-				if ( !homeCode ) return;
+				if (!homeCode) return;
 
 				const res = await fetch(`${API_BASE}/${homeCode}/chores`, {
 					credentials: "include",

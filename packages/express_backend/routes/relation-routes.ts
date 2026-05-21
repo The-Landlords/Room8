@@ -72,28 +72,32 @@ relationRouter.post(
 );
 
 //gets homes based off passed in user
-relationRouter.get("/relate/me", requireAuth, async (req: Request, res: Response) => {
-	try {
-		const username = req.session.username;
+relationRouter.get(
+	"/relate/me",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const username = req.session.username;
 
-		if (typeof username !== "string") {
-			return res.status(400).json({ error: "Invalid username" });
+			if (typeof username !== "string") {
+				return res.status(400).json({ error: "Invalid username" });
+			}
+
+			const u = await getUserByUsername(username);
+
+			if (!u) {
+				return res.status(404).json({ error: "User not found" });
+			}
+
+			let homes = [];
+			homes = await getHomesByUser(u._id);
+			res.status(200).json(homes);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to fetch homes from user" });
 		}
-
-		const u = await getUserByUsername(username);
-
-		if (!u) {
-			return res.status(404).json({ error: "User not found" });
-		}
-
-		let homes = [];
-		homes = await getHomesByUser(u._id);
-		res.status(200).json(homes);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ error: "Failed to fetch homes from user" });
 	}
-});
+);
 
 //deletes a relation between user and home, used when a user leaves a home
 relationRouter.patch(

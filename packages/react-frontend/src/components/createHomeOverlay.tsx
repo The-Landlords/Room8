@@ -18,10 +18,7 @@ type CreateHomeProps = {
 	onAdd: any;
 };
 
-export default function CreateHomeOverlay({
-	onBack,
-	onAdd,
-}: CreateHomeProps) {
+export default function CreateHomeOverlay({ onBack, onAdd }: CreateHomeProps) {
 	const mapDivRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<Map | null>(null);
 	const sourceRef = useRef<VectorSource | null>(null);
@@ -49,19 +46,15 @@ export default function CreateHomeOverlay({
 	};
 	async function addRelation(homeCode: string) {
 		const relationship = { relationship: "RESIDENT" };
-		const promise = await fetch(
-			`${API_BASE}/relate/me/${homeCode}`,
-			{
-				method: "POST",
-				credentials: "include",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(relationship),
-			}
-		);
+		const promise = await fetch(`${API_BASE}/relate/me/${homeCode}`, {
+			method: "POST",
+			credentials: "include",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(relationship),
+		});
 		return promise;
 	}
 	async function createHome(homeData: any) {
-
 		const promise = await fetch(`${API_BASE}/homes`, {
 			credentials: "include",
 			method: "POST",

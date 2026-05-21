@@ -100,7 +100,7 @@ export default function CalendarPage() {
 
 	useEffect(() => {
 		fetchEvents().catch(console.error);
-	}, [ homeCode]);
+	}, [homeCode]);
 
 	const now = new Date();
 
