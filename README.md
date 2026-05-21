@@ -1,6 +1,6 @@
 # Room8
 
-Hello! This is the project for our CSC 308 & 309 classes with Chris Zielke for Software Engineering I & II.
+Hello! This is the project for our CSC 308 & 309 classes with Professor Chris Zielke for Software Engineering I & II.
 
 Room8 is a housing app designed to help roommates organize chores, events, groceries, settings, and rules.
 
