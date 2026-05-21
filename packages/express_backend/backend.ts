@@ -15,9 +15,40 @@ import { relationRouter } from "./routes/relation-routes.js";
 import { authRouter } from "./routes/authentication-router.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
+import session from "express-session";
+import MongoStore from "connect-mongo";
+
+declare module "express-session" {
+	interface SessionData {
+		page_views: number;
+		userId?: string;
+		username?: string;
+	}
+}
+
+// future needed:
+// import {} from "cookie-parser";
+// app.use(cookieParser());
 
 export const app = express();
 export const port = 8000;
+
+app.use(
+	session({
+		secret: "sample-secret",
+		resave: false,
+		saveUninitialized: false,
+		store: MongoStore.create({
+			mongoUrl: process.env.MONGO_URI,
+		}),
+		cookie: {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 1000 * 60 * 30, // resets session every 30 minutes
+		},
+	})
+);
 
 //default port to listen
 const corsOptions = {
@@ -47,8 +78,18 @@ app.use("/", relationRouter);
 app.use("/", authRouter);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.get("/", (req: Request, res: Response) => {
-	res.send("Hello World!");
+	const username = req.session.username || "User not logged in";
+	if (req.session.page_views) {
+		req.session.page_views++;
+		res.send(
+			`${username} visited this page ${req.session.page_views} times`
+		);
+	} else {
+		req.session.page_views = 1;
+		res.send(`${username}, Welcome to this page for the first time!`);
+	}
 });
 
 const url = process.env.MONGO_URI;

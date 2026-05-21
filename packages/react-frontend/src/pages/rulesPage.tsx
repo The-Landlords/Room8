@@ -49,14 +49,17 @@ export default function RulesPage() {
 	async function fetchRules() {
 		if (!homeCode) return;
 
-		const homeRes = await fetch(`${API_BASE}/homes/code/${homeCode}`);
+		const homeRes = await fetch(`${API_BASE}/homes/code/${homeCode}`, {
+			credentials: "include",
+		});
 		if (!homeRes.ok) throw new Error("Failed to fetch home");
 		const homeData = await homeRes.json();
 
 		setHomeName(homeData.homeName);
 
 		const residentRes = await fetch(
-			`${API_BASE}/relate/home/${homeData._id}/residents`
+			`${API_BASE}/relate/home/${homeData._id}/residents`,
+			{ credentials: "include" }
 		);
 
 		if (!residentRes.ok) {
@@ -67,7 +70,9 @@ export default function RulesPage() {
 
 		setTotalResidents(residentData.count);
 
-		const rulesRes = await fetch(`${API_BASE}/homes/rules/${homeCode}`);
+		const rulesRes = await fetch(`${API_BASE}/homes/rules/${homeCode}`, {
+			credentials: "include",
+		});
 		if (!rulesRes.ok) throw new Error("Failed to fetch rules");
 		const data = await rulesRes.json();
 		setRules(data);
@@ -87,6 +92,7 @@ export default function RulesPage() {
 		try {
 			const res = await fetch(`${API_BASE}/homes/rules`, {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					homeCode,
@@ -136,6 +142,7 @@ export default function RulesPage() {
 
 	async function handleVote(ruleId: string, vote: "YES" | "NO") {
 		await fetch(`${API_BASE}/rules/${ruleId}/vote`, {
+			credentials: "include",
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ voteId, vote }),
@@ -149,6 +156,7 @@ export default function RulesPage() {
 
 		const res = await fetch(`${API_BASE}/rules/${ruleId}/delete-vote`, {
 			method: "POST",
+			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ voteId, vote }),
 		});

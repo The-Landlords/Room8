@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { API_BASE } from "../config";
 import List from "../components/list";
 import AddOverlay from "../components/addOverlay";
 
@@ -56,20 +57,18 @@ export default function GroceryPage() {
 				return;
 			}
 
-			const res = await fetch(
-				`http://localhost:8000/${homeCode}/grocery`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						title,
-						quantity: parsedQuantity,
-						price: parsedPrice ?? 0,
-					}),
-				}
-			);
+			const res = await fetch(`${API_BASE}/${homeCode}/grocery`, {
+				credentials: "include",
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					title,
+					quantity: parsedQuantity,
+					price: parsedPrice ?? 0,
+				}),
+			});
 
 			if (!res.ok) {
 				const message = await res.text();
@@ -89,9 +88,10 @@ export default function GroceryPage() {
 			if (!homeCode) return;
 
 			const res = await fetch(
-				`http://localhost:8000/${homeCode}/grocery/${groceryToRemove._id}`,
+				`${API_BASE}/${homeCode}/grocery/${groceryToRemove._id}`,
 				{
 					method: "DELETE",
+					credentials: "include",
 				}
 			);
 
@@ -113,9 +113,9 @@ export default function GroceryPage() {
 			try {
 				if (!username || !homeCode) return;
 
-				const res = await fetch(
-					`http://localhost:8000/${homeCode}/grocery`
-				);
+				const res = await fetch(`${API_BASE}/${homeCode}/grocery`, {
+					credentials: "include",
+				});
 
 				if (!res.ok) {
 					const message = await res.text();

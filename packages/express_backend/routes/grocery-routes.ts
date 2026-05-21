@@ -26,6 +26,11 @@ async function getHomeIdFromCode(homeCode: string) {
 groceryRouter.get("/:home/grocery", async (req: Request, res: Response) => {
 	try {
 		const homeCode = req.params.home;
+
+		if (typeof homeCode !== "string") {
+			return res.status(400).json({ error: "Invalid home code" });
+		}
+
 		const homeId = await getHomeIdFromCode(homeCode);
 
 		if (!homeId) {
@@ -67,6 +72,11 @@ groceryRouter.get("/:home/grocery/:id", async (req: Request, res: Response) => {
 groceryRouter.post("/:home/grocery", async (req: Request, res: Response) => {
 	try {
 		const homeCode = req.params.home;
+
+		if (typeof homeCode !== "string") {
+			return res.status(400).json({ error: "Invalid home code" });
+		}
+
 		const homeId = await getHomeIdFromCode(homeCode);
 
 		if (!homeId) {

@@ -72,10 +72,10 @@ export default function List<T>({
 						<span className="flex w-full items-center">
 							{renderItem(listItem)}
 
-							{isHomeSpaces && username && !removeMode && (
+							{isHomeSpaces && !removeMode && (
 								<div className="relative ml-auto gap-4 flex self-end-safe">
 									<Link
-										to={`/residents/${username}/${homeCode?.[index]}`}
+										to={`/residents/${homeCode?.[index]}`}
 									>
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -92,7 +92,7 @@ export default function List<T>({
 									)}
 									{homeCode?.[index] && (
 										<Link
-											to={`/events/${username}/${homeCode[index]}`}
+											to={`/events/${homeCode[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
@@ -102,7 +102,7 @@ export default function List<T>({
 									)}
 									{homeCode?.[index] && (
 										<Link
-											to={`/${username}/${homeCode[index]}/chores`}
+											to={`/${homeCode[index]}/chores`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
@@ -112,7 +112,7 @@ export default function List<T>({
 									)}
 									{homeCode?.[index] && (
 										<Link
-											to={`/grocery/${username}/${homeCode[index]}`}
+											to={`/grocery/${homeCode[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"

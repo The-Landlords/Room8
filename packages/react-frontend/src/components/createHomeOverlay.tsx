@@ -15,13 +15,11 @@ import { API_BASE } from "../config";
 /*Component is a form field to create a new home object */
 type CreateHomeProps = {
 	onBack: (data: string) => void;
-	username: string | undefined;
 	onAdd: any;
 };
 
 export default function CreateHomeOverlay({
 	onBack,
-	username,
 	onAdd,
 }: CreateHomeProps) {
 	const mapDivRef = useRef<HTMLDivElement | null>(null);
@@ -50,12 +48,12 @@ export default function CreateHomeOverlay({
 		return result;
 	};
 	async function addRelation(homeCode: string) {
-		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
 		const promise = await fetch(
-			`${API_BASE}/relate/${username}/${homeCode}`,
+			`${API_BASE}/relate/me/${homeCode}`,
 			{
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(relationship),
 			}
@@ -63,9 +61,9 @@ export default function CreateHomeOverlay({
 		return promise;
 	}
 	async function createHome(homeData: any) {
-		if (!username) return;
 
 		const promise = await fetch(`${API_BASE}/homes`, {
+			credentials: "include",
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(homeData),

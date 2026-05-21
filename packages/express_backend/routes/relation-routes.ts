@@ -14,12 +14,13 @@ import {
 	updateUserById,
 } from "../models/User-Services.js";
 import mongoose from "mongoose";
+import { requireAuth } from "./userSessionAuth.js";
 
 export const relationRouter = express.Router();
 
 //creates a relation between user and home
 relationRouter.post(
-	"/relate/:username/:homeCode",
+	"/relate/me/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
 			const homecode = req.params.homeCode;
@@ -71,9 +72,9 @@ relationRouter.post(
 );
 
 //gets homes based off passed in user
-relationRouter.get("/relate/:username", async (req: Request, res: Response) => {
+relationRouter.get("/relate/me", requireAuth, async (req: Request, res: Response) => {
 	try {
-		const username = req.params.username;
+		const username = req.session.username;
 
 		if (typeof username !== "string") {
 			return res.status(400).json({ error: "Invalid username" });
@@ -96,7 +97,7 @@ relationRouter.get("/relate/:username", async (req: Request, res: Response) => {
 
 //deletes a relation between user and home, used when a user leaves a home
 relationRouter.patch(
-	"/relate/:username/:homeName",
+	"/relate/me/:homeName",
 	async (req: Request, res: Response) => {
 		try {
 			console.log("Deleting relation!");

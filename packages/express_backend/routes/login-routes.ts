@@ -28,6 +28,9 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 				.json({ error: "Invalid Username or Password" });
 		}
 
+		req.session.userId = user._id.toString();
+		req.session.username = user.username;
+
 		res.status(200).json({
 			message: "Login successful",
 			userId: user._id,
