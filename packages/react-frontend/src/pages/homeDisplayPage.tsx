@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { API_BASE } from "../config";
 import List from "../components/list";
-import { set } from "ol/transform";
 
 export default function HomeDisplayPage() {
 	const { homeCode } = useParams();
