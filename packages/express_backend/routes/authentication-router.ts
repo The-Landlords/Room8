@@ -8,6 +8,7 @@ import {
 } from "../models/User-Services.js";
 import { getHomeByCode } from "../models/Home-Services.js";
 import mongoose from "mongoose";
+import { requireAuth } from "./userSessionAuth.js";
 
 export const authRouter = express.Router();
 
@@ -59,6 +60,7 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 
 authRouter.get(
 	"/auth/residents/:homeCode/",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		const { homeCode } = req.params;
 		// uses session cookies

@@ -8,7 +8,7 @@ import {
 	getHomesByUserAndRelation,
 } from "../models/Home-Services.js";
 import {
-	getUserByUsername,
+	getUserById,
 	getUsersByHomeAndRelation,
 	// getUsersByHomeAndRelation,
 	updateUserById,
@@ -18,9 +18,23 @@ import { requireAuth } from "./userSessionAuth.js";
 
 export const relationRouter = express.Router();
 
+function getSessionUserId(req: Request) {
+	const sessionUserId = req.session.userId;
+
+	if (
+		typeof sessionUserId !== "string" ||
+		!mongoose.Types.ObjectId.isValid(sessionUserId)
+	) {
+		return null;
+	}
+
+	return new mongoose.Types.ObjectId(sessionUserId);
+}
+
 //creates a relation between user and home
 relationRouter.post(
 	"/relate/me/:homeCode",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const homecode = req.params.homeCode;
@@ -37,13 +51,14 @@ relationRouter.post(
 				return res.status(404).json({ error: "Home not found" });
 			}
 
-			const username = req.params.username;
-
-			if (typeof username !== "string") {
-				return res.status(400).json({ error: "Invalid username" });
+			const userId = getSessionUserId(req);
+			if (!userId) {
+				return res
+					.status(400)
+					.json({ error: "Invalid user id in session" });
 			}
 
-			const u = await getUserByUsername(username);
+			const u = await getUserById(userId);
 
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
@@ -77,13 +92,14 @@ relationRouter.get(
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
-			const username = req.session.username;
-
-			if (typeof username !== "string") {
-				return res.status(400).json({ error: "Invalid username" });
+			const userId = getSessionUserId(req);
+			if (!userId) {
+				return res
+					.status(400)
+					.json({ error: "Invalid user id in session" });
 			}
 
-			const u = await getUserByUsername(username);
+			const u = await getUserById(userId);
 
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
@@ -102,6 +118,7 @@ relationRouter.get(
 //deletes a relation between user and home, used when a user leaves a home
 relationRouter.patch(
 	"/relate/me/:homeName",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			console.log("Deleting relation!");
@@ -118,13 +135,14 @@ relationRouter.patch(
 				return res.status(404).json({ error: "Home not found" });
 			}
 
-			const username = req.params.username;
-
-			if (typeof username !== "string") {
-				return res.status(400).json({ error: "Invalid username" });
+			const userId = getSessionUserId(req);
+			if (!userId) {
+				return res
+					.status(400)
+					.json({ error: "Invalid user id in session" });
 			}
 
-			const u = await getUserByUsername(username);
+			const u = await getUserById(userId);
 
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
@@ -166,6 +184,7 @@ relationRouter.patch(
 //get users based off passed in home and relation
 relationRouter.get(
 	"/relate/:homeCode/:relation",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const h = await getHomeByCode(req.params.homeCode.toString());
@@ -189,6 +208,7 @@ relationRouter.get(
 
 relationRouter.get(
 	"/relate/home/:homeId/residents",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const residents = await getUsersByHomeAndRelation(

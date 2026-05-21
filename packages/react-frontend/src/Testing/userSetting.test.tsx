@@ -186,9 +186,16 @@ test("clicking back navigates to home list page", async () => {
 test("clicking sign out navigates to sign in page", async () => {
 	await renderLoadedUserSetting();
 
-	fireEvent.click(screen.getByRole("button", { name: "Sign Out" }));
+	await act(async () => {
+		fireEvent.click(screen.getByRole("button", { name: "Sign Out" }));
+		await flushPromises();
+	});
 
 	expect(screen.getByText("Sign In Page")).toBeInTheDocument();
+	expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/logout`, {
+		method: "POST",
+		credentials: "include",
+	});
 });
 
 test("invalid phone shows warning and disables save profile", async () => {

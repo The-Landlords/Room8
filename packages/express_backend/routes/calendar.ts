@@ -2,10 +2,13 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import { Event } from "../models/Event.js";
 import mongoose from "mongoose";
+import { requireAuth } from "./userSessionAuth.js";
+
 export const calendarRouter = Router();
 
 calendarRouter.get(
 	"/apartments/:apartmentId/calendar",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		const id = req.params.apartmentId;
 

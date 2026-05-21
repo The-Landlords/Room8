@@ -118,6 +118,20 @@ export default function UserSetting() {
 			setError("Unable to save profile.");
 		}
 	}
+
+	async function handleSignOut() {
+		try {
+			await fetch(`${API_BASE}/logout`, {
+				method: "POST",
+				credentials: "include",
+			});
+		} catch (err) {
+			console.error(err);
+		} finally {
+			navigate("/", { replace: true });
+		}
+	}
+
 	return (
 		<div className="settings-background">
 			{/* HEADER */}
@@ -166,8 +180,7 @@ export default function UserSetting() {
 					<div className="flex justify-end">
 						<button
 							type="button"
-							//FIX ME Change button nag. to correct page
-							onClick={() => navigate("/")}
+							onClick={handleSignOut}
 							className="button h-14 px-6 rounded-xl"
 						>
 							Sign Out
@@ -346,17 +359,16 @@ export default function UserSetting() {
 													...d.settings,
 													theme:
 														d.settings.theme ===
-														"light"
+															"light"
 															? "dark"
 															: "light",
 												},
 											}))
 										}
-										className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
-											draft.settings.theme === "light"
+										className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${draft.settings.theme === "light"
 												? "bg-yellow-400 justify-end" // light mode (right)
 												: "bg-gray-800 justify-start" // dark mode (left)
-										}`}
+											}`}
 									>
 										<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
 									</button>
@@ -469,16 +481,16 @@ export default function UserSetting() {
 												const cleaned =
 													raw[0] === "+"
 														? "+" +
-															raw
-																.slice(1)
-																.replace(
-																	/\+/g,
-																	""
-																)
-														: raw.replace(
+														raw
+															.slice(1)
+															.replace(
 																/\+/g,
 																""
-															);
+															)
+														: raw.replace(
+															/\+/g,
+															""
+														);
 
 												setDraft((d) => ({
 													...d,
@@ -542,8 +554,8 @@ export default function UserSetting() {
 									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
 										{draft.settings.scheduleVisibility ===
 											"everyone" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
+												<span className="h-3 w-3 rounded-full bg-text" />
+											)}
 									</span>
 								</button>
 
@@ -564,8 +576,8 @@ export default function UserSetting() {
 									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
 										{draft.settings.scheduleVisibility ===
 											"roommates" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
+												<span className="h-3 w-3 rounded-full bg-text" />
+											)}
 									</span>
 								</button>
 
@@ -586,8 +598,8 @@ export default function UserSetting() {
 									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
 										{draft.settings.scheduleVisibility ===
 											"private" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
+												<span className="h-3 w-3 rounded-full bg-text" />
+											)}
 									</span>
 								</button>
 							</div>

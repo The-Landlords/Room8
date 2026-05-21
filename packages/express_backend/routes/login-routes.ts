@@ -41,3 +41,13 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 		res.status(500).json({ error: "Login failed" });
 	}
 });
+loginRouter.post("/logout", (req: Request, res: Response) => {
+	req.session.destroy((err) => {
+		if (err) {
+			return res.status(500).json({ error: "Logout failed" });
+		}
+
+		res.clearCookie("connect.sid");
+		res.status(200).json({ message: "Logged out" });
+	});
+});

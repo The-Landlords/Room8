@@ -9,29 +9,36 @@ import {
 } from "../models/Chore-Services.js";
 import { Home } from "../models/Home.js";
 import mongoose from "mongoose";
+import { requireAuth } from "./userSessionAuth.js";
+
 export const choreRouter = express.Router();
 
 // get all chores for an apartment
-choreRouter.get("/:homeCode/chores", async (req: Request, res: Response) => {
-	try {
-		const { homeCode } = req.params;
-		const home = await Home.findOne({ homeCode }).select("_id");
+choreRouter.get(
+	"/:homeCode/chores",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const { homeCode } = req.params;
+			const home = await Home.findOne({ homeCode }).select("_id");
 
-		if (!home) {
-			return res.status(404).json({ error: "Home not found" });
+			if (!home) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const chores = await getChoresByHome(home._id);
+			res.json(chores);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to fetch chores" });
 		}
-
-		const chores = await getChoresByHome(home._id);
-		res.json(chores);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ error: "Failed to fetch chores" });
 	}
-});
+);
 
 // get a chore by its id
 choreRouter.get(
 	"/:homeCode/chores/:choreId",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.choreId;
@@ -58,29 +65,34 @@ choreRouter.get(
 );
 
 // create chore
-choreRouter.post("/:homeCode/chores", async (req: Request, res: Response) => {
-	try {
-		const { homeCode } = req.params;
-		const home = await Home.findOne({ homeCode }).select("_id");
+choreRouter.post(
+	"/:homeCode/chores",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const { homeCode } = req.params;
+			const home = await Home.findOne({ homeCode }).select("_id");
 
-		if (!home) {
-			return res.status(404).json({ error: "Home not found" });
+			if (!home) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const chore = await createChore({
+				...req.body,
+				homeId: home._id,
+			});
+			res.status(201).json(chore);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Failed to create chore" });
 		}
-
-		const chore = await createChore({
-			...req.body,
-			homeId: home._id,
-		});
-		res.status(201).json(chore);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Failed to create chore" });
 	}
-});
+);
 
 // update chore by id
 choreRouter.patch(
 	"/:homeCode/chores/:choreId",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.choreId;
@@ -109,6 +121,7 @@ choreRouter.patch(
 // delete chore by id
 choreRouter.delete(
 	"/:homeCode/chores/:choreId",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.choreId;
