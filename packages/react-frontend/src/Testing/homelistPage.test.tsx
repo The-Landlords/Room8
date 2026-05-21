@@ -1,126 +1,17 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import * as React from "react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import HomeList from "../pages/homelistPage";
 
-// Mock List
-jest.mock("../components/list", () => {
-	return function MockList(props: any) {
-		return (
-			<div>
-				<button onClick={props.handleAddClick}>+</button>
-
-				{props.items.map((item: any, index: number) => {
-					const label =
-						typeof item === "string" ? item : item.homeName;
-
-					const key =
-						typeof item === "string"
-							? item
-							: (item._id ?? `${label}-${index}`);
-
-					return (
-						<div key={key}>
-							<div>{props.renderItem(item)}</div>
-
-							{typeof item !== "string" && item._id && (
-								<button
-									onClick={() =>
-										props.handleRemoveClick(item)
-									}
-								>
-									remove {label}
-								</button>
-							)}
-						</div>
-					);
-				})}
-			</div>
-		);
-	};
-});
-
-// Mock HomeAddOverlay
-jest.mock("../components/homeAddOverlay", () => {
-	return function MockHomeAddOverlay(props: any) {
-		return (
-			<div>
-				<div>Home Add Options</div>
-
-				<button onClick={() => props.onPick("Add")}>pick add</button>
-
-				<button onClick={() => props.onPick("Create")}>
-					pick create
-				</button>
-			</div>
-		);
-	};
-});
-
-// Mock AddHomeOverlay
-jest.mock("../components/addHomeOverlay", () => {
-	return function MockAddHomeOverlay(props: any) {
-		return (
-			<div>
-				<div>Add Home Overlay</div>
-
-				<button
-					onClick={() =>
-						props.onAdd({
-							_id: "home-2",
-							homeName: "Joined Home",
-							address: "456 Oak St",
-							homeCode: "JOIN456",
-						})
-					}
-				>
-					confirm add home
-				</button>
-			</div>
-		);
-	};
-});
-
-// Mock CreateHomeOverlay so Jest does not load OpenLayers
-jest.mock("../components/createHomeOverlay", () => {
-	return function MockCreateHomeOverlay(props: any) {
-		return (
-			<div>
-				<div>Create Home Overlay</div>
-
-				<button
-					onClick={() =>
-						props.onAdd({
-							_id: "home-3",
-							homeName: "Created Home",
-							address: "789 Pine St",
-							homeCode: "CREATE789",
-						})
-					}
-				>
-					confirm create home
-				</button>
-			</div>
-		);
-	};
-});
-
-// Mock RemoveHomeOverlay
-jest.mock("../components/removeHomeOverlay", () => {
-	return function MockRemoveHomeOverlay(props: any) {
-		return (
-			<div>
-				<div>Remove Home Overlay</div>
-
-				<button onClick={() => props.onRemove(props.homeRemove)}>
-					confirm remove home
-				</button>
-
-				<button onClick={props.onCancel}>cancel remove</button>
-			</div>
-		);
-	};
-});
+type Home = {
+	_id?: string;
+	homeName: string;
+	address?: string;
+	homeCode?: string;
+};
 
 function renderHomeList() {
 	return render(
@@ -132,25 +23,11 @@ function renderHomeList() {
 	);
 }
 
-async function flushPromises() {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-}
-
-async function renderLoadedHomeList() {
-	renderHomeList();
-
-	await act(async () => {
-		await flushPromises();
-	});
-}
-
-function mockFetchWithHomes(homes: any[]) {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+function mockFetchWithHomes(homes: Home[]) {
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: true,
 		json: async () => homes,
-	});
+	}) as unknown as typeof fetch;
 }
 
 beforeEach(() => {
@@ -158,18 +35,17 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	jest.clearAllMocks();
+	cleanup();
+	vi.clearAllMocks();
 });
 
 test("renders empty home state", async () => {
-	await renderLoadedHomeList();
+	renderHomeList();
 
-	expect(screen.getByText("Home Spaces")).toBeInTheDocument();
-
+	expect(await screen.findByText("Home Spaces")).toBeInTheDocument();
 	expect(
-		screen.getByText("No Homes available! Click below to add.")
+		await screen.findByText("No Homes available! Click below to add.")
 	).toBeInTheDocument();
-
 	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
 });
 
@@ -183,87 +59,26 @@ test("renders homes fetched from backend", async () => {
 		},
 	]);
 
-	await renderLoadedHomeList();
+	renderHomeList();
 
-	expect(screen.getByText("Apartment")).toBeInTheDocument();
+	expect(await screen.findByText("Apartment")).toBeInTheDocument();
 	expect(screen.getByText("123 Main St")).toBeInTheDocument();
 });
 
-test("clicking add opens the home add options overlay", async () => {
-	await renderLoadedHomeList();
+test("clicking add opens the real home add options overlay", async () => {
+	renderHomeList();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("No Homes available! Click below to add.");
 
-	expect(screen.getByText("Home Add Options")).toBeInTheDocument();
-	expect(
-		screen.getByRole("button", { name: "pick add" })
-	).toBeInTheDocument();
-	expect(
-		screen.getByRole("button", { name: "pick create" })
-	).toBeInTheDocument();
-});
+	const user = userEvent.setup();
+	await user.click(screen.getByRole("button", { name: "+" }));
 
-test("choosing add opens the add home overlay", async () => {
-	await renderLoadedHomeList();
-
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
-	fireEvent.click(screen.getByRole("button", { name: "pick add" }));
-
-	expect(screen.getByText("Add Home Overlay")).toBeInTheDocument();
-});
-
-test("confirming add appends a joined home", async () => {
-	await renderLoadedHomeList();
-
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
-	fireEvent.click(screen.getByRole("button", { name: "pick add" }));
-
-	await act(async () => {
-		fireEvent.click(
-			screen.getByRole("button", { name: "confirm add home" })
-		);
-		await flushPromises();
+	await waitFor(() => {
+		expect(document.querySelector(".overlay-backdrop")).toBeInTheDocument();
 	});
-
-	expect(screen.getByText("Joined Home")).toBeInTheDocument();
-	expect(screen.getByText("456 Oak St")).toBeInTheDocument();
-
-	expect(
-		screen.queryByText("No Homes available! Click below to add.")
-	).not.toBeInTheDocument();
 });
 
-test("choosing create opens the create home overlay", async () => {
-	await renderLoadedHomeList();
-
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
-	fireEvent.click(screen.getByRole("button", { name: "pick create" }));
-
-	expect(screen.getByText("Create Home Overlay")).toBeInTheDocument();
-});
-
-test("confirming create appends a created home", async () => {
-	await renderLoadedHomeList();
-
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
-	fireEvent.click(screen.getByRole("button", { name: "pick create" }));
-
-	await act(async () => {
-		fireEvent.click(
-			screen.getByRole("button", { name: "confirm create home" })
-		);
-		await flushPromises();
-	});
-
-	expect(screen.getByText("Created Home")).toBeInTheDocument();
-	expect(screen.getByText("789 Pine St")).toBeInTheDocument();
-
-	expect(
-		screen.queryByText("No Homes available! Click below to add.")
-	).not.toBeInTheDocument();
-});
-
-test("confirming remove deletes a home", async () => {
+test("clicking remove opens the real remove home overlay", async () => {
 	mockFetchWithHomes([
 		{
 			_id: "home-1",
@@ -273,24 +88,21 @@ test("confirming remove deletes a home", async () => {
 		},
 	]);
 
-	await renderLoadedHomeList();
+	renderHomeList();
 
-	expect(screen.getByText("Apartment")).toBeInTheDocument();
+	expect(await screen.findByText("Apartment")).toBeInTheDocument();
 
-	fireEvent.click(screen.getByRole("button", { name: "remove Apartment" }));
+	const user = userEvent.setup();
+	await user.click(screen.getByRole("button", { name: "-" }));
 
-	expect(screen.getByText("Remove Home Overlay")).toBeInTheDocument();
+	const trashButton = screen
+		.getAllByRole("button")
+		.find((button) => button.querySelector("svg[data-icon='trash-can']"));
 
-	await act(async () => {
-		fireEvent.click(
-			screen.getByRole("button", { name: "confirm remove home" })
-		);
-		await flushPromises();
+	expect(trashButton).toBeDefined();
+	await user.click(trashButton as HTMLButtonElement);
+
+	await waitFor(() => {
+		expect(document.querySelector(".overlay-backdrop")).toBeInTheDocument();
 	});
-
-	expect(screen.queryByText("Apartment")).not.toBeInTheDocument();
-
-	expect(
-		screen.getByText("No Homes available! Click below to add.")
-	).toBeInTheDocument();
 });

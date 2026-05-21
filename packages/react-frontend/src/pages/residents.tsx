@@ -37,7 +37,7 @@ export default function Residents() {
 			<div className="flex flex-col items-center">
 				<h1 className="header ">Residents</h1>
 				<List
-					item="Residents"
+					item=""
 					items={residents}
 					handleAddClick={() => {}}
 					handleRemoveClick={() => {}}

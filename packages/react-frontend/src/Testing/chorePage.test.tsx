@@ -1,57 +1,18 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import * as React from "react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import ChorePage from "../pages/chorePage";
 import { API_BASE } from "../config";
-
-jest.mock("../components/list", () => {
-	return function MockList(props: {
-		items: Array<{ _id?: string; title?: string } | string>;
-		handleAddClick: () => void;
-		handleRemoveClick: (
-			item: { _id?: string; title?: string } | string
-		) => void;
-	}) {
-		return (
-			<div>
-				<button onClick={props.handleAddClick}>+</button>
-
-				{props.items.map((item, index) => {
-					const label =
-						typeof item === "string" ? item : (item.title ?? "");
-
-					const key =
-						typeof item === "string"
-							? item
-							: (item._id ?? `${label}-${index}`);
-
-					return (
-						<div key={key}>
-							<span>{label}</span>
-
-							{typeof item !== "string" && item._id && (
-								<button
-									onClick={() =>
-										props.handleRemoveClick(item)
-									}
-								>
-									remove {label}
-								</button>
-							)}
-						</div>
-					);
-				})}
-			</div>
-		);
-	};
-});
 
 function renderChorePageWithHistory() {
 	return render(
 		<MemoryRouter
 			initialEntries={[
 				"/home/testuser/testhome",
-				"/chores/testuser/testhome",
+				"/testuser/testhome/chores",
 			]}
 			initialIndex={1}
 		>
@@ -61,7 +22,7 @@ function renderChorePageWithHistory() {
 					element={<div>Home Page</div>}
 				/>
 				<Route
-					path="/chores/:username/:homeCode"
+					path="/:username/:homeCode/chores"
 					element={<ChorePage />}
 				/>
 			</Routes>
@@ -69,25 +30,11 @@ function renderChorePageWithHistory() {
 	);
 }
 
-async function flushPromises() {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-}
-
-async function renderLoadedChorePage() {
-	renderChorePageWithHistory();
-
-	await act(async () => {
-		await flushPromises();
-	});
-}
-
 function mockFetchWithChores(chores: any[]) {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: true,
 		json: async () => chores,
-	}) as jest.Mock;
+	}) as unknown as typeof fetch;
 }
 
 beforeEach(() => {
@@ -95,109 +42,177 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	jest.clearAllMocks();
+	cleanup();
+	vi.clearAllMocks();
+});
+
+test("fetches and displays chores", async () => {
+	mockFetchWithChores([
+		{
+			_id: "chore-1",
+			title: "Take out trash",
+			homeId: "home-1",
+		},
+	]);
+
+	renderChorePageWithHistory();
+
+	expect(await screen.findByText("Take out trash")).toBeInTheDocument();
+
+	expect(globalThis.fetch).toHaveBeenCalledWith(
+		`${API_BASE}/testhome/chores`
+	);
+});
+
+test("displays the empty chore state on the real page", async () => {
+	mockFetchWithChores([]);
+
+	renderChorePageWithHistory();
+
+	expect(await screen.findByText("No Chores")).toBeInTheDocument();
+});
+
+test("renders the real add chore button", async () => {
+	mockFetchWithChores([]);
+
+	renderChorePageWithHistory();
+
+	await screen.findByText("No Chores");
+
+	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
 });
 
 test("clicking the add button opens the add overlay", async () => {
-	await renderLoadedChorePage();
+	mockFetchWithChores([]);
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	renderChorePageWithHistory();
 
-	expect(screen.getByText("Add Chore")).toBeInTheDocument();
+	await screen.findByText("No Chores");
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+
+	expect(
+		screen.getByRole("heading", { name: "Add Chore" })
+	).toBeInTheDocument();
 	expect(screen.getByPlaceholderText("enter text")).toBeInTheDocument();
 	expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
 });
 
 test("clicking the back button sends you to the previous page", async () => {
-	await renderLoadedChorePage();
+	mockFetchWithChores([]);
 
-	fireEvent.click(screen.getByRole("button", { name: "←" }));
+	renderChorePageWithHistory();
+
+	await screen.findByText("No Chores");
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "←" }));
 
 	expect(screen.getByText("Home Page")).toBeInTheDocument();
 });
 
 test("submitting a new chore sends a POST request", async () => {
-	globalThis.fetch = jest
+	globalThis.fetch = vi
 		.fn()
-		// Initial fetch chores
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => [],
 		})
-		// POST chore
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({
 				_id: "chore-1",
 				title: "Wash dishes",
-				assignedTo: "Robert",
+				homeId: "home-1",
 			}),
-		}) as jest.Mock;
+		}) as unknown as typeof fetch;
 
-	await renderLoadedChorePage();
+	renderChorePageWithHistory();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("No Chores");
+	const user = userEvent.setup();
 
-	fireEvent.change(screen.getByPlaceholderText("enter text"), {
-		target: { value: "Wash dishes" },
+	await user.click(screen.getByRole("button", { name: "+" }));
+	await user.type(screen.getByPlaceholderText("enter text"), "Wash dishes");
+	await user.click(screen.getByRole("button", { name: "Submit" }));
+
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenNthCalledWith(
+			2,
+			`${API_BASE}/testhome/chores`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					title: "Wash dishes",
+				}),
+			}
+		);
 	});
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-		await flushPromises();
-	});
+	expect(await screen.findByText("Wash dishes")).toBeInTheDocument();
+});
 
-	expect(globalThis.fetch).toHaveBeenNthCalledWith(
-		2,
-		`${API_BASE}/testhome/chores`,
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				title: "Wash dishes",
-			}),
-		}
-	);
+test("does not submit chore if the input is blank", async () => {
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
+		ok: true,
+		json: async () => [],
+	}) as unknown as typeof fetch;
+
+	renderChorePageWithHistory();
+
+	await screen.findByText("No Chores");
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+	await user.click(screen.getByRole("button", { name: "Submit" }));
+
+	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 });
 
 test("clicking remove sends a DELETE request", async () => {
-	globalThis.fetch = jest
+	globalThis.fetch = vi
 		.fn()
-		// Initial fetch chores
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => [
 				{
 					_id: "chore-1",
 					title: "Take out trash",
+					homeId: "home-1",
 				},
 			],
 		})
-		// DELETE chore
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({}),
-		}) as jest.Mock;
+		}) as unknown as typeof fetch;
 
-	await renderLoadedChorePage();
+	renderChorePageWithHistory();
 
-	fireEvent.click(
-		screen.getByRole("button", {
-			name: "remove Take out trash",
-		})
-	);
+	expect(await screen.findByText("Take out trash")).toBeInTheDocument();
+	const user = userEvent.setup();
 
-	await act(async () => {
-		await flushPromises();
+	await user.click(screen.getByRole("button", { name: "-" }));
+
+	const trashButton = screen
+		.getAllByRole("button")
+		.find((button) => button.querySelector("svg[data-icon='trash-can']"));
+
+	expect(trashButton).toBeDefined();
+
+	await user.click(trashButton as HTMLButtonElement);
+
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenNthCalledWith(
+			2,
+			`${API_BASE}/testhome/chores/chore-1`,
+			{
+				method: "DELETE",
+			}
+		);
 	});
-
-	expect(globalThis.fetch).toHaveBeenNthCalledWith(
-		2,
-		`${API_BASE}/testhome/chores/chore-1`,
-		{
-			method: "DELETE",
-		}
-	);
 });
