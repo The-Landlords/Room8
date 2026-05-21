@@ -38,32 +38,38 @@ userRouter.post("/users", async (req: Request, res: Response) => {
 	}
 });
 
-
 // called by user setting
-userRouter.patch("/users/me", requireAuth, async (req: Request, res: Response) => {
-	try {
+userRouter.patch(
+	"/users/me",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const sessionUserId = req.session.userId;
 
-		const sessionUserId = req.session.userId;
+			if (
+				typeof sessionUserId !== "string" ||
+				!mongoose.Types.ObjectId.isValid(sessionUserId)
+			) {
+				return res
+					.status(400)
+					.json({ error: "Invalid user id in session" });
+			}
 
-		if (typeof sessionUserId !== "string" || !mongoose.Types.ObjectId.isValid(sessionUserId)) {
-			return res.status(400).json({ error: "Invalid user id in session" });
+			const userId = new mongoose.Types.ObjectId(sessionUserId);
+
+			const updated = await updateUserById(userId, req.body);
+
+			if (!updated) {
+				return res.status(404).json({ error: "User not found" });
+			}
+
+			res.status(200).json(updated);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Invalid username" });
 		}
-
-		const userId = new mongoose.Types.ObjectId(sessionUserId);
-
-		const updated = await updateUserById(userId, req.body);
-
-		if (!updated) {
-			return res.status(404).json({ error: "User not found" });
-		}
-
-		res.status(200).json(updated);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Invalid username" });
 	}
-});
-
+);
 
 // UPDATE
 userRouter.patch("/users/:username", async (req: Request, res: Response) => {
@@ -95,8 +101,13 @@ userRouter.get(
 		try {
 			const sessionUserId = req.session.userId;
 
-			if (typeof sessionUserId !== "string" || !mongoose.Types.ObjectId.isValid(sessionUserId)) {
-				return res.status(400).json({ error: "Invalid user id in session" });
+			if (
+				typeof sessionUserId !== "string" ||
+				!mongoose.Types.ObjectId.isValid(sessionUserId)
+			) {
+				return res
+					.status(400)
+					.json({ error: "Invalid user id in session" });
 			}
 
 			const userId = new mongoose.Types.ObjectId(sessionUserId);
@@ -104,7 +115,9 @@ userRouter.get(
 			const user = await getUserById(userId);
 
 			if (!user) {
-				return res.status(404).json({ error: "User not found: Session Error" });
+				return res
+					.status(404)
+					.json({ error: "User not found: Session Error" });
 			}
 
 			res.status(200).json(user);
@@ -139,7 +152,6 @@ userRouter.get("/users/:id", async (req: Request, res: Response) => {
 });
 
 // GET BY USERNAME
-
 
 // REDUNDANT I THINK
 userRouter.get(

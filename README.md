@@ -137,6 +137,7 @@ As of `12 May 2026`, all services have been tested _locally_ with mongodb local 
 - Projects: 2
 
 ### API TESTING
+
 API testing via **[swagger](https://swagger.io/)** is available at [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
 
 ### Features

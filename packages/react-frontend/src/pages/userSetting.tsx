@@ -38,7 +38,6 @@ export default function UserSetting() {
 	const [, setError] = useState("");
 
 	useEffect(() => {
-
 		// GET
 		fetch(`${API_BASE}/users/me`, {
 			credentials: "include",

@@ -32,7 +32,6 @@ interface ListProps<T> {
 export default function List<T>({
 	item,
 	items,
-	username,
 	handleAddClick,
 	handleRemoveClick,
 	handleEditClick,
@@ -91,9 +90,7 @@ export default function List<T>({
 										</Link>
 									)}
 									{homeCode?.[index] && (
-										<Link
-											to={`/events/${homeCode[index]}`}
-										>
+										<Link to={`/events/${homeCode[index]}`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faCalendar}
@@ -101,9 +98,7 @@ export default function List<T>({
 										</Link>
 									)}
 									{homeCode?.[index] && (
-										<Link
-											to={`/${homeCode[index]}/chores`}
-										>
+										<Link to={`/${homeCode[index]}/chores`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faClipboardCheck}

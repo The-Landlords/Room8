@@ -25,7 +25,7 @@ export default function Residents() {
 	}
 	useEffect(() => {
 		fetchResidents().catch(console.error);
-	}, [ homeCode]);
+	}, [homeCode]);
 	return (
 		<div className="flex flex-col">
 			<div className="flex justify-start">

@@ -44,7 +44,6 @@ export default function HomeList() {
 	}
 
 	async function fetchHomes() {
-
 		fetch(`${API_BASE}/relate/me`, {
 			credentials: "include",
 		})

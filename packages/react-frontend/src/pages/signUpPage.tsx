@@ -39,7 +39,7 @@ export default function SignInPage() {
 				} else {
 					console.log("Account created!", data);
 
-					// automatically navigate to user settings 
+					// automatically navigate to user settings
 					// assumes auto login
 					navigate(`/settings/`, { replace: true });
 				}
