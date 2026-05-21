@@ -2,11 +2,12 @@ import express from "express";
 import type { Request, Response } from "express";
 
 import {
-	getUserByUsername,
 	getUserHomeRelation,
 	getUsersByHomeAndRelation,
+	getUserById
 } from "../models/User-Services.js";
 import { getHomeByCode } from "../models/Home-Services.js";
+import mongoose from "mongoose";
 
 export const authRouter = express.Router();
 
@@ -57,10 +58,13 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 }
 
 authRouter.get(
-	"/auth/residents/:usernameOne/:homeCode/",
+	"/auth/residents/:homeCode/",
 	async (req: Request, res: Response) => {
-		const { usernameOne, homeCode } = req.params;
-		const userOne = await getUserByUsername(usernameOne.toString());
+		const { homeCode } = req.params;
+		// uses session cookies
+		const userOne = await getUserById(
+			new mongoose.Types.ObjectId(req.session.userId)
+		);
 		const home = await getHomeByCode(homeCode.toString());
 		if (!userOne || !home) {
 			console.log("User or home not found");

@@ -60,7 +60,10 @@ test("fetches and displays chores", async () => {
 	expect(await screen.findByText("Take out trash")).toBeInTheDocument();
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		`${API_BASE}/testhome/chores`
+		`${API_BASE}/testhome/chores`,
+		{
+			credentials: "include",
+		}
 	);
 });
 
@@ -143,6 +146,7 @@ test("submitting a new chore sends a POST request", async () => {
 			`${API_BASE}/testhome/chores`,
 			{
 				method: "POST",
+				credentials: "include",
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -212,6 +216,7 @@ test("clicking remove sends a DELETE request", async () => {
 			`${API_BASE}/testhome/chores/chore-1`,
 			{
 				method: "DELETE",
+				"credentials": "include",
 			}
 		);
 	});

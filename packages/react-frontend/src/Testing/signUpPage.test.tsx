@@ -93,6 +93,7 @@ test("sends signup request when form is filled out", async () => {
 	await waitFor(() => {
 		expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/users`, {
 			method: "POST",
+			credentials: "include",
 			headers: {
 				"Content-Type": "application/json",
 			},

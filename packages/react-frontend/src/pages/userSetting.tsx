@@ -111,6 +111,7 @@ export default function UserSetting() {
 			}
 
 			setError("");
+			alert("User settings saved successfully!");
 			navigate(`/homelist/`);
 		} catch (err) {
 			console.error(err);

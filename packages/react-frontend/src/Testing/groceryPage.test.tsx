@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom/vitest";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import GroceryPage from "../pages/groceryPage";
-
+import { API_BASE } from "../config";
 type TestGrocery = {
 	_id: string;
 	title: string;
@@ -73,7 +73,10 @@ test("fetches and displays groceries", async () => {
 	).toBeInTheDocument();
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/testhome/grocery"
+		`${API_BASE}/testhome/grocery`,
+		{
+			credentials: "include",
+		}
 	);
 });
 
@@ -172,9 +175,10 @@ test("submitting a new grocery sends a POST request with quantity and price", as
 	await waitFor(() => {
 		expect(globalThis.fetch).toHaveBeenNthCalledWith(
 			2,
-			"http://localhost:8000/testhome/grocery",
+			`${API_BASE}/testhome/grocery`,
 			{
 				method: "POST",
+				credentials: "include",
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -229,9 +233,10 @@ test("submitting a new grocery without price sends price as 0", async () => {
 	await waitFor(() => {
 		expect(globalThis.fetch).toHaveBeenNthCalledWith(
 			2,
-			"http://localhost:8000/testhome/grocery",
+			`${API_BASE}/testhome/grocery`,
 			{
 				method: "POST",
+				credentials: "include",
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -346,9 +351,10 @@ test("clicking remove sends a DELETE request", async () => {
 	await waitFor(() => {
 		expect(globalThis.fetch).toHaveBeenNthCalledWith(
 			2,
-			"http://localhost:8000/testhome/grocery/grocery-1",
+			`${API_BASE}/testhome/grocery/grocery-1`,
 			{
 				method: "DELETE",
+				credentials: "include",
 			}
 		);
 	});

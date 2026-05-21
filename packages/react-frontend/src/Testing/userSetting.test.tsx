@@ -14,13 +14,11 @@ import { API_BASE } from "../config";
 
 function renderUserSetting() {
 	return render(
-		<MemoryRouter initialEntries={["/settings/testuser"]}>
+		<MemoryRouter initialEntries={["/settings/"]}>
 			<Routes>
-				<Route path="/settings/:username" element={<UserSetting />} />
-				<Route
-					path="/homelist/:username"
-					element={<div>Home List Page</div>}
-				/>
+				<Route path="/settings/" element={<UserSetting />} />
+				<Route path="/homelist" element={<div>Home List Page</div>} />
+				<Route path="/homelist/" element={<div>Home List Page</div>} />
 				<Route path="/" element={<div>Sign In Page</div>} />
 			</Routes>
 		</MemoryRouter>
@@ -137,7 +135,9 @@ function getFetchCalls() {
 
 function getPatchBody() {
 	const patchCall = getFetchCalls().find(
-		(call) => call[0] === `${API_BASE}/users/testuser`
+		(call) =>
+			call[0] === `${API_BASE}/users/me` &&
+			(call[1] as { method?: string } | undefined)?.method === "PATCH"
 	);
 
 	expect(patchCall).toBeTruthy();
@@ -148,11 +148,13 @@ function getPatchBody() {
 
 beforeEach(() => {
 	mockFetchWithUser(makeUser());
+	vi.stubGlobal("alert", vi.fn());
 });
 
 afterEach(() => {
 	cleanup();
 	vi.clearAllMocks();
+	vi.unstubAllGlobals();
 });
 
 test("renders user settings page and loads user data", async () => {
@@ -248,9 +250,10 @@ test("valid edits save profile with PATCH request", async () => {
 	});
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		`${API_BASE}/users/testuser`,
+		`${API_BASE}/users/me`,
 		expect.objectContaining({
 			method: "PATCH",
+			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 		})
 	);
@@ -291,9 +294,10 @@ test("changing display settings saves updated settings", async () => {
 	});
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		`${API_BASE}/users/testuser`,
+		`${API_BASE}/users/me`,
 		expect.objectContaining({
 			method: "PATCH",
+			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 		})
 	);
@@ -309,7 +313,7 @@ test("changing display settings saves updated settings", async () => {
 	);
 });
 
-test("fetch failure still shows fallback welcome with route username", async () => {
+test("fetch failure still shows generic fallback welcome", async () => {
 	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: false,
 		json: async () => ({}),
@@ -321,7 +325,7 @@ test("fetch failure still shows fallback welcome with route username", async () 
 
 	await renderLoadedUserSetting();
 
-	expect(screen.getByText(/Welcome\s+testuser/)).toBeInTheDocument();
+	expect(screen.getByText(/Welcome\s+User/)).toBeInTheDocument();
 
 	consoleErrorSpy.mockRestore();
 });

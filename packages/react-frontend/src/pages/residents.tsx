@@ -10,7 +10,7 @@ export default function Residents() {
 	async function fetchResidents() {
 		if (!homeCode) return;
 
-		fetch(`${API_BASE}/auth/residents/me/${homeCode}`, {
+		fetch(`${API_BASE}/auth/residents/${homeCode}`, {
 			credentials: "include",
 		})
 			.then((res) => {
