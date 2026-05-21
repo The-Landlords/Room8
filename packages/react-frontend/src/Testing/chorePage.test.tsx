@@ -216,7 +216,7 @@ test("clicking remove sends a DELETE request", async () => {
 			`${API_BASE}/testhome/chores/chore-1`,
 			{
 				method: "DELETE",
-				"credentials": "include",
+				credentials: "include",
 			}
 		);
 	});

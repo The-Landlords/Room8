@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 import {
 	getUserHomeRelation,
 	getUsersByHomeAndRelation,
-	getUserById
+	getUserById,
 } from "../models/User-Services.js";
 import { getHomeByCode } from "../models/Home-Services.js";
 import mongoose from "mongoose";
