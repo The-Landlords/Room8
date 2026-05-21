@@ -25,6 +25,9 @@ body {
 	.panel-secondary {
 		@apply bg-primary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
 	}
+	.list-container {
+		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-20 min-h-100 max-h-150 relative overflow-auto;
+	}
 	.iconWrapper {
 		@apply opacity-70 self-end-safe hover:opacity-90 transition duration-200;
 	}

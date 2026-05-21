@@ -53,7 +53,7 @@ export default function List<T>({
 	console.log("item:", item);
 	console.log("Chore? : ", isChores);
 	return (
-		<div className="flex flex-col gap-2 panel animate-floatUp">
+		<div className="flex flex-col gap-2 list-container animate-floatUp">
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
@@ -172,7 +172,7 @@ export default function List<T>({
 					</li>
 				))}
 			</ul>
-			{!removeMode && !isBasic && (
+			{!removeMode && !isBasic && items.length != 0 && (
 				<div className="flex flex-row flex-center self-center gap-4">
 					<button
 						onClick={handleAddClick}
