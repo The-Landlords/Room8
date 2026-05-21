@@ -1,8 +1,17 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import * as React from "react";
+import {
+	act,
+	cleanup,
+	fireEvent,
+	render,
+	screen,
+} from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import UserSetting from "../pages/userSetting";
 import { API_BASE } from "../config";
+
 function renderUserSetting() {
 	return render(
 		<MemoryRouter initialEntries={["/settings/testuser"]}>
@@ -32,7 +41,39 @@ async function renderLoadedUserSetting() {
 	});
 }
 
-function makeUser(overrides: any = {}) {
+type User = {
+	username: string;
+	pronouns: string;
+	fullName: string;
+	DOB: string;
+	allergens: string[];
+	likes: string[];
+	dislikes: string[];
+	phone: string;
+	emergencyContact: {
+		name: string;
+		phone: string;
+		relationship: string;
+	};
+	settings: {
+		textSize: string;
+		theme: string;
+		colorBlindMode: string;
+		scheduleVisibility: string;
+	};
+	visibility: {
+		nameVisible: string;
+		phoneVisible: string;
+		dobVisible: string;
+		likesVisible: string;
+		dislikesVisible: string;
+		emergencyContactVisible: string;
+		allergensVisible: string;
+		pronounsVisible: string;
+	};
+};
+
+function makeUser(overrides: Partial<User> = {}): User {
 	return {
 		username: "testuser",
 		pronouns: "he/him",
@@ -67,15 +108,15 @@ function makeUser(overrides: any = {}) {
 	};
 }
 
-function mockFetchWithUser(user: any) {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+function mockFetchWithUser(user: User) {
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: true,
 		json: async () => user,
-	});
+	}) as unknown as typeof fetch;
 }
 
-function mockFetchForSave(user: any) {
-	globalThis.fetch = jest
+function mockFetchForSave(user: User) {
+	globalThis.fetch = vi
 		.fn()
 		.mockResolvedValueOnce({
 			ok: true,
@@ -86,17 +127,23 @@ function mockFetchForSave(user: any) {
 			json: async () => ({
 				success: true,
 			}),
-		});
+		}) as unknown as typeof fetch;
+}
+
+function getFetchCalls() {
+	return (globalThis.fetch as unknown as { mock: { calls: unknown[][] } })
+		.mock.calls;
 }
 
 function getPatchBody() {
-	const patchCall = (globalThis.fetch as jest.Mock).mock.calls.find(
+	const patchCall = getFetchCalls().find(
 		(call) => call[0] === `${API_BASE}/users/testuser`
 	);
 
 	expect(patchCall).toBeTruthy();
 
-	return JSON.parse(patchCall[1].body);
+	const requestOptions = patchCall?.[1] as { body: string };
+	return JSON.parse(requestOptions.body);
 }
 
 beforeEach(() => {
@@ -104,7 +151,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	jest.clearAllMocks();
+	cleanup();
+	vi.clearAllMocks();
 });
 
 test("renders user settings page and loads user data", async () => {
@@ -262,12 +310,12 @@ test("changing display settings saves updated settings", async () => {
 });
 
 test("fetch failure still shows fallback welcome with route username", async () => {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: false,
 		json: async () => ({}),
-	});
+	}) as unknown as typeof fetch;
 
-	const consoleErrorSpy = jest
+	const consoleErrorSpy = vi
 		.spyOn(console, "error")
 		.mockImplementation(() => {});
 
