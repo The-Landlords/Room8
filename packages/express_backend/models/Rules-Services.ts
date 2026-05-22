@@ -53,3 +53,7 @@ export function updateRule(ruleId: mongoose.Types.ObjectId, data: any) {
 export function removeRuleById(ruleId: mongoose.Types.ObjectId) {
 	return Rule.findByIdAndDelete({ _id: ruleId });
 }
+
+export function getApprovedRulesByHome(homeId: mongoose.Types.ObjectId) {
+	return Rule.find({ homeId: homeId, status: "CONFIRMED" });
+}

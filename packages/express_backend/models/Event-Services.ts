@@ -79,3 +79,8 @@ export const eventToICSData = async (
 		);
 	});
 };
+
+export function getUpcomingEventsByHome(homeId: mongoose.Types.ObjectId) {
+	const now = new Date();
+	return Event.find({ homeId, start: { $gte: now } }).sort({ start: 1 });
+}

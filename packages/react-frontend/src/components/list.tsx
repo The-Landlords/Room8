@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	faCalendar,
 	faCartShopping,
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
 	faDownload,
 	faTrashCan,
-	faClipboardCheck,
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -51,7 +49,7 @@ export default function List<T>({
 
 	const [removeMode, setRemoveMode] = useState(false);
 	return (
-		<div className="flex flex-col gap-2 panel animate-floatUp">
+		<div className="flex flex-col gap-2 list-container animate-floatUp">
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
@@ -93,18 +91,20 @@ export default function List<T>({
 										<Link to={`/events/${homeCode[index]}`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faCalendar}
+												icon={faPeopleRoof}
 											/>
 										</Link>
 									)}
+
 									{homeCode?.[index] && (
 										<Link to={`/${homeCode[index]}/chores`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faClipboardCheck}
+												icon={faAngleRight}
 											/>
 										</Link>
 									)}
+
 									{homeCode?.[index] && (
 										<Link
 											to={`/grocery/${homeCode[index]}`}
@@ -115,15 +115,19 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-									<Link to="/dropdown">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faAngleRight}
-										/>
-									</Link>
+
+									{homeCode?.[index] && (
+										<Link
+											to={`/homeDisplay/me/${homeCode?.[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faAngleRight}
+											/>
+										</Link>
+									)}
 								</div>
 							)}
-
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a

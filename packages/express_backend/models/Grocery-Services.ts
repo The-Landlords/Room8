@@ -104,3 +104,12 @@ export const calculateTotalCostForItem = async (
 	if (!item) throw new Error("Item not found");
 	return item.price * item.quantity;
 };
+
+export const getCurrentGroceryItemsByHome = async (
+	homeId: mongoose.Types.ObjectId
+) => {
+	return await Grocery.find({
+		homeId: homeId,
+		status: "PENDING",
+	});
+};

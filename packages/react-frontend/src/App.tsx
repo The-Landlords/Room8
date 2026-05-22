@@ -13,6 +13,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CalendarPage from "./pages/calendarPage";
 import Residents from "./pages/residents";
 import GroceryPage from "./pages/groceryPage.tsx";
+import HomeDisplayPage from "./pages/homeDisplayPage.tsx";
 
 function App() {
 	return (
@@ -38,6 +39,10 @@ function App() {
 					<Route
 						path="/grocery/:homeCode"
 						element={<GroceryPage />}
+					/>
+					<Route
+						path="/homeDisplay/:username/:homeCode"
+						element={<HomeDisplayPage />}
 					/>
 				</Routes>
 			</BrowserRouter>

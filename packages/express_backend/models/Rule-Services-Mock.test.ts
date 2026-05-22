@@ -9,6 +9,7 @@ import {
 	getRulesByHome,
 	updateRule,
 	removeRuleById,
+	getApprovedRulesByHome,
 } from "./Rules-Services";
 import { Home } from "./Home";
 
@@ -147,4 +148,19 @@ test("Removing a rule by ID", async () => {
 
 	expect(deleted).toBeDefined();
 	expect(deleted?._id.toString()).toBe(rule._id.toString());
+});
+
+test("Fetching approved rules for a home", async () => {
+	const approvedRule = new Rule({
+		...ruleData,
+		status: "CONFIRMED",
+		description: "Approved rule",
+	});
+
+	mockingoose(Rule).toReturn([approvedRule], "find");
+	const approvedRules = await getApprovedRulesByHome(ruleData.homeId);
+
+	expect(approvedRules).toBeDefined();
+	expect(approvedRules.length).toBe(1);
+	expect(approvedRules[0].description).toBe("Approved rule");
 });
