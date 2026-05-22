@@ -9,6 +9,7 @@ import {
 	removeEventById,
 	updateEvent,
 	eventToICSData,
+	getUpcomingEventsByHome,
 } from "./Event-Services";
 import { createEvent as createIcsEvent } from "ics";
 const homeId = new mongoose.Types.ObjectId();
@@ -249,4 +250,35 @@ test("passes validation when end is after start", async () => {
 	});
 
 	await expect(event.validate()).resolves.toBeUndefined();
+});
+
+test("Getting upcoming events by home ID", async () => {
+	const now = new Date();
+	const pastEvent = new Event({
+		...basicEventData,
+		title: "Past Event",
+		start: new Date(now.getTime() - 3600000), // 1 hour ago
+		end: new Date(now.getTime() - 1800000), // 30 minutes ago
+	});
+	const futureEvent1 = new Event({
+		...basicEventData,
+		title: "Future Event 1",
+		start: new Date(now.getTime() + 1800000), // 30 minutes from now
+		end: new Date(now.getTime() + 3600000), // 1 hour from now
+	});
+	const futureEvent2 = new Event({
+		...basicEventData,
+		title: "Future Event 2",
+		start: new Date(now.getTime() + 7200000), // 2 hours from now
+		end: new Date(now.getTime() + 9000000), // 2.5 hours from now
+	});
+
+	mockingoose(Event).toReturn([futureEvent1, futureEvent2], "find");
+
+	const events = await getUpcomingEventsByHome(basicEventData.homeId);
+
+	expect(events).toBeDefined();
+	expect(events.length).toBe(2);
+	expect(events[0].title).toBe("Future Event 1");
+	expect(events[1].title).toBe("Future Event 2");
 });

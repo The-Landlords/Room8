@@ -52,7 +52,7 @@ export default function List<T>({
 
 	const [removeMode, setRemoveMode] = useState(false);
 	return (
-		<div className="flex flex-col gap-2 panel animate-floatUp">
+		<div className="flex flex-col gap-2 list-container animate-floatUp">
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
@@ -72,62 +72,69 @@ export default function List<T>({
 						<span className="flex w-full items-center">
 							{renderItem(listItem)}
 
-							{isHomeSpaces && username && !removeMode && (
-								<div className="relative ml-auto gap-4 flex self-end-safe">
-									<Link
-										to={`/residents/${username}/${homeCode?.[index]}`}
-									>
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faPeopleRoof}
-										/>
-									</Link>
-									{homeCode?.[index] && (
-										<Link to={`/rules/${homeCode[index]}`}>
-											<FontAwesomeIcon
-												className="iconWrapper"
-												icon={faFileContract}
-											/>
-										</Link>
-									)}
-									{homeCode?.[index] && (
+							{isHomeSpaces &&
+								username &&
+								!removeMode &&
+								items.length != 0 && (
+									<div className="relative ml-auto gap-4 flex self-end-safe">
 										<Link
-											to={`/events/${username}/${homeCode[index]}`}
+											to={`/residents/${username}/${homeCode?.[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faCalendar}
+												icon={faPeopleRoof}
 											/>
 										</Link>
-									)}
-									{homeCode?.[index] && (
+										{homeCode?.[index] && (
+											<Link
+												to={`/rules/${homeCode[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faFileContract}
+												/>
+											</Link>
+										)}
+										{homeCode?.[index] && (
+											<Link
+												to={`/events/${username}/${homeCode[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faCalendar}
+												/>
+											</Link>
+										)}
+										{homeCode?.[index] && (
+											<Link
+												to={`/${username}/${homeCode[index]}/chores`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faClipboardCheck}
+												/>
+											</Link>
+										)}
+										{homeCode?.[index] && (
+											<Link
+												to={`/grocery/${username}/${homeCode[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faCartShopping}
+												/>
+											</Link>
+										)}
 										<Link
-											to={`/${username}/${homeCode[index]}/chores`}
+											to={`/homeDisplay/${username}/${homeCode?.[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faClipboardCheck}
+												icon={faAngleRight}
 											/>
 										</Link>
-									)}
-									{homeCode?.[index] && (
-										<Link
-											to={`/grocery/${username}/${homeCode[index]}`}
-										>
-											<FontAwesomeIcon
-												className="iconWrapper"
-												icon={faCartShopping}
-											/>
-										</Link>
-									)}
-									<Link to="/dropdown">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faAngleRight}
-										/>
-									</Link>
-								</div>
-							)}
+									</div>
+								)}
 
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
