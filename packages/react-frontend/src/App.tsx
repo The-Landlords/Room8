@@ -41,7 +41,7 @@ function App() {
 						element={<GroceryPage />}
 					/>
 					<Route
-						path="/homeDisplay/:username/:homeCode"
+						path="/homeDisplay/me/:homeCode"
 						element={<HomeDisplayPage />}
 					/>
 				</Routes>
