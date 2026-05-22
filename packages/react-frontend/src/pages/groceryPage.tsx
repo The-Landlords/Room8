@@ -41,7 +41,7 @@ export default function GroceryPage() {
 
 	async function handleAddGrocery(title: string) {
 		try {
-			if (!username || !homeCode) return;
+			if (!homeCode) return;
 
 			const parsedQuantity = Number(quantity);
 			const parsedPrice = price.trim() === "" ? undefined : Number(price);
@@ -111,7 +111,7 @@ export default function GroceryPage() {
 	useEffect(() => {
 		async function fetchGroceries() {
 			try {
-				if (!username || !homeCode) return;
+				if (!homeCode) return;
 
 				const res = await fetch(`${API_BASE}/${homeCode}/grocery`, {
 					credentials: "include",

@@ -33,9 +33,18 @@ declare module "express-session" {
 export const app = express();
 export const port = 8000;
 
+const sessionSecret =
+	process.env.EXPRESS_SESSION_SECRET || process.env.SESSION_SECRET;
+
+if (!sessionSecret) {
+	throw new Error(
+		"Missing session secret. Set EXPRESS_SESSION_SECRET or SESSION_SECRET in your .env file."
+	);
+}
+
 app.use(
 	session({
-		secret: "sample-secret",
+		secret: sessionSecret,
 		resave: false,
 		saveUninitialized: false,
 		store: MongoStore.create({

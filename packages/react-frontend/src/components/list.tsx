@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faCartShopping,
+	faCalendar,
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
 	faDownload,
+	faClipboardCheck,
 	faTrashCan,
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
@@ -91,7 +93,7 @@ export default function List<T>({
 										<Link to={`/events/${homeCode[index]}`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faPeopleRoof}
+												icon={faCalendar}
 											/>
 										</Link>
 									)}
@@ -100,7 +102,7 @@ export default function List<T>({
 										<Link to={`/${homeCode[index]}/chores`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faAngleRight}
+												icon={faClipboardCheck}
 											/>
 										</Link>
 									)}
