@@ -10,6 +10,7 @@ import {
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { Home } from "../models/Home.js";
+import { requireAuth } from "./userSessionAuth.js";
 
 export const groceryRouter = express.Router();
 
@@ -23,70 +24,98 @@ async function getHomeIdFromCode(homeCode: string) {
 	return home._id;
 }
 
-groceryRouter.get("/:home/grocery", async (req: Request, res: Response) => {
-	try {
-		const homeCode = req.params.home;
-		const homeId = await getHomeIdFromCode(homeCode);
+groceryRouter.get(
+	"/:home/grocery",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const homeCode = req.params.home;
 
-		if (!homeId) {
-			return res.status(404).json({ error: "Home not found" });
+			if (typeof homeCode !== "string") {
+				return res.status(400).json({ error: "Invalid home code" });
+			}
+
+			const homeId = await getHomeIdFromCode(homeCode);
+
+			if (!homeId) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const groceries = await getGroceryItemsByHome(homeId);
+
+			res.status(200).json(groceries);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Failed to fetch grocery items" });
 		}
-
-		const groceries = await getGroceryItemsByHome(homeId);
-
-		res.status(200).json(groceries);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Failed to fetch grocery items" });
 	}
-});
+);
 
-groceryRouter.get("/:home/grocery/:id", async (req: Request, res: Response) => {
-	try {
-		const id = req.params.id;
+groceryRouter.get(
+	"/:home/grocery/:id",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const id = req.params.id;
 
-		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({ error: "Invalid id" });
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const grocery = await getGroceryItemById(objectId);
+
+			if (!grocery) {
+				return res
+					.status(404)
+					.json({ error: "Grocery item not found" });
+			}
+
+			res.status(200).json(grocery);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Invalid ID" });
 		}
-
-		const objectId = new mongoose.Types.ObjectId(id);
-
-		const grocery = await getGroceryItemById(objectId);
-
-		if (!grocery) {
-			return res.status(404).json({ error: "Grocery item not found" });
-		}
-
-		res.status(200).json(grocery);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Invalid ID" });
 	}
-});
+);
 
-groceryRouter.post("/:home/grocery", async (req: Request, res: Response) => {
-	try {
-		const homeCode = req.params.home;
-		const homeId = await getHomeIdFromCode(homeCode);
+groceryRouter.post(
+	"/:home/grocery",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const homeCode = req.params.home;
 
-		if (!homeId) {
-			return res.status(404).json({ error: "Home not found" });
+			if (typeof homeCode !== "string") {
+				return res.status(400).json({ error: "Invalid home code" });
+			}
+
+			const homeId = await getHomeIdFromCode(homeCode);
+
+			if (!homeId) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const grocery = await createGroceryItem({
+				...req.body,
+				homeId,
+			});
+
+			res.status(201).json(grocery);
+		} catch (error) {
+			console.error(error);
+			res.status(400).json({ error: "Failed to create grocery item" });
 		}
-
-		const grocery = await createGroceryItem({
-			...req.body,
-			homeId,
-		});
-
-		res.status(201).json(grocery);
-	} catch (error) {
-		console.error(error);
-		res.status(400).json({ error: "Failed to create grocery item" });
 	}
-});
+);
 
 groceryRouter.delete(
 	"/:home/grocery/:id",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.id;
@@ -118,6 +147,7 @@ groceryRouter.delete(
 
 groceryRouter.patch(
 	"/:home/grocery/:id",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.id;
@@ -149,6 +179,7 @@ groceryRouter.patch(
 
 groceryRouter.patch(
 	"/:home/grocery/:id/:newQuantity",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.id;

@@ -13,7 +13,7 @@ function renderSignUpPage() {
 			<Routes>
 				<Route path="/signup" element={<SignUpPage />} />
 				<Route
-					path="/settings/:username"
+					path="/settings/"
 					element={<div>User Settings Page</div>}
 				/>
 				<Route path="/" element={<div>Sign In Page</div>} />
@@ -93,6 +93,7 @@ test("sends signup request when form is filled out", async () => {
 	await waitFor(() => {
 		expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/users`, {
 			method: "POST",
+			credentials: "include",
 			headers: {
 				"Content-Type": "application/json",
 			},

@@ -13,7 +13,7 @@ type Chore = {
 export default function ChorePage() {
 	const [chores, setChores] = useState<Chore[]>([]);
 	const [showAddOverlay, setShowAddOverlay] = useState(false);
-	const { username = "", homeCode = "" } = useParams();
+	const { homeCode = "" } = useParams();
 	const navigate = useNavigate();
 
 	function formatChore(chore: Chore) {
@@ -24,10 +24,12 @@ export default function ChorePage() {
 
 	async function handleAddChore(value: string) {
 		try {
-			if (!username || !homeCode) return;
+			if (!homeCode) return;
 
 			const res = await fetch(`${API_BASE}/${homeCode}/chores`, {
 				method: "POST",
+				credentials: "include",
+
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -53,6 +55,7 @@ export default function ChorePage() {
 				`${API_BASE}/${homeCode}/chores/${choreToRemove._id}`,
 				{
 					method: "DELETE",
+					credentials: "include",
 				}
 			);
 
@@ -69,9 +72,11 @@ export default function ChorePage() {
 	useEffect(() => {
 		async function fetchChores() {
 			try {
-				if (!username || !homeCode) return;
+				if (!homeCode) return;
 
-				const res = await fetch(`${API_BASE}/${homeCode}/chores`);
+				const res = await fetch(`${API_BASE}/${homeCode}/chores`, {
+					credentials: "include",
+				});
 				if (!res.ok) throw new Error("Failed to fetch chores");
 
 				const data = await res.json();
@@ -83,7 +88,7 @@ export default function ChorePage() {
 		}
 
 		fetchChores();
-	}, [username, homeCode]);
+	}, [homeCode]);
 
 	return (
 		<div>

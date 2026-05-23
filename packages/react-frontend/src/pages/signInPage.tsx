@@ -23,6 +23,7 @@ export default function SignInPage() {
 		//send login request
 		fetch(`${API_BASE}/login`, {
 			method: "POST",
+			credentials: "include",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -36,7 +37,8 @@ export default function SignInPage() {
 					console.log("Logged in!", data);
 
 					// navigate to homelist
-					navigate(`/homelist/${data.username}`, { replace: true });
+					// FIXME chance to /homelist for bugfix
+					navigate(`/homelist/`, { replace: true });
 				}
 			})
 			.catch(() => {

@@ -11,6 +11,7 @@ import {
 	updateRule,
 } from "../models/Rules-Services.js";
 import { Rule } from "../models/Rule.js";
+import { requireAuth } from "./userSessionAuth.js";
 
 export const ruleRouter = express.Router();
 
@@ -20,21 +21,28 @@ const asString = (val: string | string[] | undefined): string => {
 };
 
 // GET rules by home id
-ruleRouter.get("/homeId/:homeId/rules", async (req: Request, res: Response) => {
-	try {
-		const homeId = asString(req.params.homeId);
+ruleRouter.get(
+	"/homeId/:homeId/rules",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const homeId = asString(req.params.homeId);
 
-		const rules = await getRulesByHome(new mongoose.Types.ObjectId(homeId));
+			const rules = await getRulesByHome(
+				new mongoose.Types.ObjectId(homeId)
+			);
 
-		return res.status(200).json(rules);
-	} catch {
-		return res.status(400).json({ error: "Invalid homeId" });
+			return res.status(200).json(rules);
+		} catch {
+			return res.status(400).json({ error: "Invalid homeId" });
+		}
 	}
-});
+);
 
 // GET rules by home code
 ruleRouter.get(
 	"/homes/rules/:homeCode",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const homeCode = asString(req.params.homeCode);
@@ -48,48 +56,56 @@ ruleRouter.get(
 );
 
 // Create rule by home code in path
-ruleRouter.post("/:homeCode/rules", async (req: Request, res: Response) => {
-	try {
-		const homeCode = asString(req.params.homeCode);
+ruleRouter.post(
+	"/:homeCode/rules",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const homeCode = asString(req.params.homeCode);
 
-		const home = await getHomeByCode(homeCode);
-		if (!home) {
-			return res.status(404).json({ error: "Home not found" });
+			const home = await getHomeByCode(homeCode);
+			if (!home) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const rule = await createRule({
+				description: req.body.description,
+				homeId: home._id,
+				status: "PENDING",
+				votes: [],
+				deleteVotes: [],
+				deleteStatus: "NONE",
+			});
+
+			return res.status(201).json(rule);
+		} catch {
+			return res.status(400).json({ error: "Failed to create rule" });
 		}
-
-		const rule = await createRule({
-			description: req.body.description,
-			homeId: home._id,
-			status: "PENDING",
-			votes: [],
-			deleteVotes: [],
-			deleteStatus: "NONE",
-		});
-
-		return res.status(201).json(rule);
-	} catch {
-		return res.status(400).json({ error: "Failed to create rule" });
 	}
-});
+);
 
 // Create rule by home code in body
-ruleRouter.post("/homes/rules", async (req: Request, res: Response) => {
-	try {
-		const rule = await createRule({
-			description: req.body.description,
-			status: req.body.status ?? "PENDING",
-			homeCode: req.body.homeCode,
-			votes: [],
-			deleteVotes: [],
-			deleteStatus: "NONE",
-		});
+ruleRouter.post(
+	"/homes/rules",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const rule = await createRule({
+				description: req.body.description,
+				status: req.body.status ?? "PENDING",
+				homeCode: req.body.homeCode,
+				votes: [],
+				deleteVotes: [],
+				deleteStatus: "NONE",
+			});
 
-		return res.status(201).json(rule);
-	} catch (error) {
-		console.error(error);
-		return res.status(400).json({ error: "Failed to create rule" });
+			return res.status(201).json(rule);
+		} catch (error) {
+			console.error(error);
+			return res.status(400).json({ error: "Failed to create rule" });
+		}
 	}
-});
+);
 
 //get number of residents
 async function getResidentCount(homeId: mongoose.Types.ObjectId) {
@@ -99,107 +115,123 @@ async function getResidentCount(homeId: mongoose.Types.ObjectId) {
 }
 
 // Update rule
-ruleRouter.put("/rules/:ruleId", async (req: Request, res: Response) => {
-	try {
-		const ruleId = asString(req.params.ruleId);
+ruleRouter.put(
+	"/rules/:ruleId",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const ruleId = asString(req.params.ruleId);
 
-		const updated = await updateRule(
-			new mongoose.Types.ObjectId(ruleId),
-			req.body
-		);
+			const updated = await updateRule(
+				new mongoose.Types.ObjectId(ruleId),
+				req.body
+			);
 
-		if (!updated) {
-			return res.status(404).json({ error: "Rule not found" });
+			if (!updated) {
+				return res.status(404).json({ error: "Rule not found" });
+			}
+
+			return res.status(200).json(updated);
+		} catch {
+			return res.status(400).json({ error: "Update failed" });
 		}
-
-		return res.status(200).json(updated);
-	} catch {
-		return res.status(400).json({ error: "Update failed" });
 	}
-});
+);
 
 // Delete rule
-ruleRouter.delete("/rules/:ruleId", async (req: Request, res: Response) => {
-	try {
-		const ruleId = asString(req.params.ruleId);
+ruleRouter.delete(
+	"/rules/:ruleId",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const ruleId = asString(req.params.ruleId);
 
-		if (
-			typeof ruleId !== "string" ||
-			!mongoose.Types.ObjectId.isValid(ruleId)
-		) {
-			return res.status(400).json({ error: "Invalid rule id" });
+			if (
+				typeof ruleId !== "string" ||
+				!mongoose.Types.ObjectId.isValid(ruleId)
+			) {
+				return res.status(400).json({ error: "Invalid rule id" });
+			}
+
+			await removeRuleById(new mongoose.Types.ObjectId(ruleId));
+
+			return res.sendStatus(204);
+		} catch {
+			return res.status(400).json({ error: "Delete failed" });
 		}
-
-		await removeRuleById(new mongoose.Types.ObjectId(ruleId));
-
-		return res.sendStatus(204);
-	} catch {
-		return res.status(400).json({ error: "Delete failed" });
 	}
-});
+);
 
 // Voting system
-ruleRouter.post("/rules/:ruleId/vote", async (req: Request, res: Response) => {
-	try {
-		const id = req.params.ruleId;
+ruleRouter.post(
+	"/rules/:ruleId/vote",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			const id = req.params.ruleId;
 
-		if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({ error: "Invalid id" });
+			if (
+				typeof id !== "string" ||
+				!mongoose.Types.ObjectId.isValid(id)
+			) {
+				return res.status(400).json({ error: "Invalid id" });
+			}
+
+			const objectId = new mongoose.Types.ObjectId(id);
+
+			const ruleId = new mongoose.Types.ObjectId(objectId);
+			const { voteId, vote } = req.body;
+
+			const rule = await Rule.findById(ruleId);
+			if (!rule) return res.status(404).json({ error: "Rule not found" });
+
+			const existing = rule.votes.find(
+				(v: { voteId: string }) => v.voteId === voteId
+			);
+
+			if (existing) {
+				existing.vote = vote;
+			} else {
+				rule.votes.push({ voteId, vote });
+			}
+
+			const yes = rule.votes.filter(
+				(v: { vote: string }) => v.vote === "YES"
+			).length;
+			const no = rule.votes.filter(
+				(v: { vote: string }) => v.vote === "NO"
+			).length;
+
+			const TOTAL_RESIDENTS = await getResidentCount(rule.homeId);
+
+			//safety check if no residents
+			if (TOTAL_RESIDENTS === 0) {
+				return res.status(400).json({
+					error: "No residents found for home",
+				});
+			}
+
+			if (no > 0) {
+				rule.status = "REJECTED";
+			} else if (yes >= TOTAL_RESIDENTS) {
+				rule.status = "CONFIRMED";
+			} else {
+				rule.status = "PENDING";
+			}
+
+			await rule.save();
+
+			return res.status(200).json(rule);
+		} catch {
+			return res.status(400).json({ error: "Voting failed" });
 		}
-
-		const objectId = new mongoose.Types.ObjectId(id);
-
-		const ruleId = new mongoose.Types.ObjectId(objectId);
-		const { voteId, vote } = req.body;
-
-		const rule = await Rule.findById(ruleId);
-		if (!rule) return res.status(404).json({ error: "Rule not found" });
-
-		const existing = rule.votes.find(
-			(v: { voteId: string }) => v.voteId === voteId
-		);
-
-		if (existing) {
-			existing.vote = vote;
-		} else {
-			rule.votes.push({ voteId, vote });
-		}
-
-		const yes = rule.votes.filter(
-			(v: { vote: string }) => v.vote === "YES"
-		).length;
-		const no = rule.votes.filter(
-			(v: { vote: string }) => v.vote === "NO"
-		).length;
-
-		const TOTAL_RESIDENTS = await getResidentCount(rule.homeId);
-
-		//safety check if no residents
-		if (TOTAL_RESIDENTS === 0) {
-			return res.status(400).json({
-				error: "No residents found for home",
-			});
-		}
-
-		if (no > 0) {
-			rule.status = "REJECTED";
-		} else if (yes >= TOTAL_RESIDENTS) {
-			rule.status = "CONFIRMED";
-		} else {
-			rule.status = "PENDING";
-		}
-
-		await rule.save();
-
-		return res.status(200).json(rule);
-	} catch {
-		return res.status(400).json({ error: "Voting failed" });
 	}
-});
+);
 
 // Delete voting
 ruleRouter.post(
 	"/rules/:ruleId/delete-vote",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
 			const id = req.params.ruleId;

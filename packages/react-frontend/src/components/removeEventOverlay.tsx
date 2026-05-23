@@ -19,6 +19,7 @@ export default function RemoveEventOverlay({
 
 			const res = await fetch(`${API_BASE}/events/${eventRemove._id}`, {
 				method: "DELETE",
+				credentials: "include",
 			});
 
 			console.log("delete status:", res.status);

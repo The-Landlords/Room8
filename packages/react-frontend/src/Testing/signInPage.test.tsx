@@ -12,10 +12,7 @@ function renderSignInPage() {
 		<MemoryRouter initialEntries={["/signin"]}>
 			<Routes>
 				<Route path="/signin" element={<SignInPage />} />
-				<Route
-					path="/homelist/:username"
-					element={<div>Home List Page</div>}
-				/>
+				<Route path="/homelist/" element={<div>Home List Page</div>} />
 				<Route path="/signup" element={<div>Sign Up Page</div>} />
 			</Routes>
 		</MemoryRouter>
@@ -91,6 +88,7 @@ test("sends login request when form is filled out", async () => {
 	await waitFor(() => {
 		expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/login`, {
 			method: "POST",
+			credentials: "include",
 			headers: {
 				"Content-Type": "application/json",
 			},

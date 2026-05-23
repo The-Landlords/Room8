@@ -2,9 +2,9 @@ import express from "express";
 import type { Request, Response } from "express";
 
 import {
-	getUserByUsername,
 	getUserHomeRelation,
 	getUsersByHomeAndRelation,
+	getUserById,
 } from "../models/User-Services.js";
 
 import { getUncompletedChoresByHome } from "../models/Chore-Services.js";
@@ -14,12 +14,15 @@ import { getUpcomingEventsByHome } from "../models/Event-Services.js";
 import { getCurrentGroceryItemsByHome } from "../models/Grocery-Services.js";
 
 import { getHomeByCode } from "../models/Home-Services.js";
+import mongoose from "mongoose";
+import { requireAuth } from "./userSessionAuth.js";
 
 export const authRouter = express.Router();
 
 function filterResidents(residents: any[], userOneRelation: string) {
 	return residents.map((resident) => {
 		return {
+			_id: resident._id,
 			fullName: resident.fullName,
 			allergens: resident.allergens,
 			pronouns: canSee(
@@ -64,11 +67,15 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 }
 
 authRouter.get(
-	"/auth/residents/:usernameOne/:homeCode/",
+	"/auth/residents/:homeCode/",
+	requireAuth,
 	async (req: Request, res: Response) => {
-		const { usernameOne, homeCode } = req.params;
+		const { homeCode } = req.params;
 		console.log("Received request for residents with params:", req.params);
-		const userOne = await getUserByUsername(usernameOne.toString());
+		// uses session cookies
+		const userOne = await getUserById(
+			new mongoose.Types.ObjectId(req.session.userId)
+		);
 		const home = await getHomeByCode(homeCode.toString());
 		if (!userOne || !home) {
 			console.log("User or home not found");
@@ -102,22 +109,21 @@ authRouter.get(
 );
 
 authRouter.get(
-	"/auth/homeDisplay/:username/:homeCode/",
+	"/auth/homeDisplay/me/:homeCode/",
+	requireAuth,
 	async (req: Request, res: Response) => {
 		console.log(
 			"Received request for home display with params:",
 			req.params
 		);
-		const { homeCode, username } = req.params;
+		const { homeCode } = req.params;
 		const home = await getHomeByCode(homeCode.toString());
-		const user = await getUserByUsername(username.toString());
-		if (!home || !user) {
-			console.log("User or home not found");
+		if (!home) {
 			return res.status(404).json({ error: "User or home not found" });
 		}
 
 		const userRelationObject = await getUserHomeRelation(
-			user._id,
+			new mongoose.Types.ObjectId(req.session.userId),
 			home._id
 		);
 		const userRelation = userRelationObject?.homeIds[0].relationship;

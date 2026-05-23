@@ -23,31 +23,25 @@ function App() {
 					{/* routes are in the form path and page element (a .tsx file) */}
 					<Route path="/" element={<SignInPage />} />
 					<Route path="/signup" element={<SignUpPage />} />
-					<Route path="/homelist/:username" element={<HomeList />} />
+					<Route path="/homelist/" element={<HomeList />} />
 					<Route path="/home" element={<h1>Contact</h1>} />
 					<Route
-						path="/events/:username/:homeCode"
+						path="/events/:homeCode"
 						element={<CalendarPage />}
 					/>
-					<Route
-						path="/:username/:homeCode/chores"
-						element={<ChorePage />}
-					/>
+					<Route path="/:homeCode/chores" element={<ChorePage />} />
 					<Route path="/rules/:homeCode" element={<RulesPage />} />
+					<Route path="/settings/" element={<UserSetting />} />
 					<Route
-						path="/settings/:username"
-						element={<UserSetting />}
-					/>
-					<Route
-						path="/residents/:username/:homeCode"
+						path="/residents/:homeCode"
 						element={<Residents />}
 					/>
 					<Route
-						path="/grocery/:username/:homeCode"
+						path="/grocery/:homeCode"
 						element={<GroceryPage />}
 					/>
 					<Route
-						path="/homeDisplay/:username/:homeCode"
+						path="/homeDisplay/me/:homeCode"
 						element={<HomeDisplayPage />}
 					/>
 				</Routes>

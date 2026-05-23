@@ -20,7 +20,7 @@ export default function CalendarPage() {
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [eventDelete, setEventDelete] = useState<any>();
-	const { homeCode, username } = useParams();
+	const { homeCode } = useParams();
 	const [eventEdit, setEventEdit] = useState<any>(null);
 	const [showUpcoming, setShowUpcoming] = useState(true);
 	const [showPast, setShowPast] = useState(false);
@@ -67,7 +67,9 @@ export default function CalendarPage() {
 		handleClose();
 	}
 	async function fetchEvents() {
-		const homeObject = await fetch(`${API_BASE}/homes/code/${homeCode}`);
+		const homeObject = await fetch(`${API_BASE}/homes/code/${homeCode}`, {
+			credentials: "include",
+		});
 		if (!homeObject.ok) throw new Error("Home not found");
 
 		const data = await homeObject.json();
@@ -75,7 +77,9 @@ export default function CalendarPage() {
 
 		setHomeName(data.homeName);
 
-		fetch(`${API_BASE}/homeId/${homeObjectId}/events/`)
+		fetch(`${API_BASE}/homeId/${homeObjectId}/events/`, {
+			credentials: "include",
+		})
 			.then((res) => {
 				if (!res.ok) throw new Error("Events not found");
 				return res.json();
@@ -96,7 +100,7 @@ export default function CalendarPage() {
 
 	useEffect(() => {
 		fetchEvents().catch(console.error);
-	}, [username, homeCode]);
+	}, [homeCode]);
 
 	const now = new Date();
 
@@ -151,7 +155,6 @@ export default function CalendarPage() {
 				{addState === "Add" && (
 					<AddEventOverlay
 						homeCode={homeCode}
-						username={username}
 						onAdd={(data: any) => {
 							handleAdd(data);
 						}}

@@ -44,6 +44,7 @@
 		"@testing-library/react": "^16.3.2",
 		"@testing-library/user-event": "^14.6.1",
 		"@types/cors": "^2.8.19",
+		"@types/express-session": "^1.19.0",
 		"@types/jest": "^30.0.0",
 		"@types/node": "^25.2.0",
 		"@types/swagger-jsdoc": "^6.0.4",
@@ -67,8 +68,10 @@
 	},
 	"dependencies": {
 		"@maptiler/geocoding-control": "^3.0.0",
+		"connect-mongo": "^6.0.0",
 		"cors": "^2.8.6",
 		"dotenv": "^17.3.1",
+		"express-session": "^1.19.0",
 		"ics": "^3.11.0",
 		"lint": "^1.2.2",
 		"ol": "^10.9.0",

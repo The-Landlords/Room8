@@ -1,10 +1,18 @@
 # Room8
 
-Hello! This is the project for our CSC 308 & 309 classes with Chris Zielke for Software Engineering I & II.
+Hello! This is the project for our CSC 308 & 309 classes with Professor Chris Zielke for Software Engineering I & II.
 
 Room8 is a housing app designed to help roommates organize chores, events, groceries, settings, and rules.
 
-# Installation
+### CI/CD Status
+
+[![Frontend Deploy](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/azure-static-web-apps-white-pond-00a466e1e.yml?style=for-the-badge&label=Frontend+Deploy&logo=microsoft-azure)](https://github.com/The-Landlords/Room8/actions/workflows/azure-static-web-apps-white-pond-00a466e1e.yml)
+
+[![Backend Deploy](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/ci-cd_room8.yml?style=for-the-badge&label=Backend+Deploy&logo=microsoft-azure)](https://github.com/The-Landlords/Room8/actions/workflows/ci-cd_room8.yml)
+
+[![CI Testing](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/CI.yml?style=for-the-badge&label=CI+Testing&logo=github)](https://github.com/The-Landlords/Room8/actions/workflows/CI.yml)
+
+### Installation
 
 Clone the repo, ensure node is installed, and run the following:
 
@@ -29,7 +37,7 @@ MONGO_URI_TEST=mongodb://localhost:27017/room8_test
 
 where `MONGO_URI` is a secret for a shared mongodb account.
 
-## How to Run
+### How to Run
 
 `npm` has the ability to run the frontend and backend indvidually via the following commands
 
@@ -53,7 +61,7 @@ npm run test:frontend
 npm run coverage
 ```
 
-### Formatting With ESLint and Prettier
+#### Formatting With ESLint and Prettier
 
 upon every commit we run `prettier` and `eslint` via a _github automated workflow_
 
@@ -67,7 +75,7 @@ as well as installed eslint and prettier
 
 We have the following formatting syntax applied via prettier in addition to defaults: - `"tabWidth": 4,` - `"useTabs": true`
 
-# Backend Formatting
+### Backend Formatting
 
 Our backend uses mongoose and mongoDB, and is tested with POSTMAN.
 In the backend, we use the following format:
@@ -87,7 +95,7 @@ The backend routes are defined by the following:
 
 _This table is unfinished as of 10 Mar_
 
-## Unit Testing For Schemas
+### Unit Testing For Schemas
 
 As of `12 May 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage with updated with Mockinggoose. The front end pages have less coverage, but all pass with 70% or higher!
 | File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
@@ -128,7 +136,25 @@ As of `12 May 2026`, all services have been tested _locally_ with mongodb local 
 - Time: 11.816 s (estimated 435 s)
 - Projects: 2
 
-# Features
+### API TESTING
+
+API testing via **[swagger](https://swagger.io/)** is available at [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
+
+### Features
+
+#### User Requirements
+
+To be a user, you may need the following:
+
+- A registered account (username and password)
+
+- Internet access
+
+- A supported browser (latest Chrome or Firefox or Safari)
+
+- A device capable of running a responsive web app (phone or laptop)
+
+#### App Features
 
 This project is planned to encompass a roommate housing and agreement app with the following features:
 
@@ -181,22 +207,9 @@ This project is planned to encompass a roommate housing and agreement app with t
 
 - Create, view, and request household rules
 
-# Future Plans
+### Future Plans
 
 Future plans may include
 
 - globalization to all public spaces, rather than a specific niche of a household or apartment
 - text message feature: ability to send reminders, statuses, and other items to users based on household updates
-- ability to export calendar events as `.ics` (This is done!)
-
-# User Requirements
-
-To be a user, you may need the following:
-
-- A registered account (username and password)
-
-- Internet access
-
-- A supported browser (latest Chrome or Firefox or Safari)
-
-- A device capable of running a responsive web app (phone or laptop)

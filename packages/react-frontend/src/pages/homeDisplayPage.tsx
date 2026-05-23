@@ -6,7 +6,6 @@ import List from "../components/list";
 
 export default function HomeDisplayPage() {
 	const { homeCode } = useParams();
-	const { username } = useParams();
 	const navigate = useNavigate();
 	const [home, setHome] = useState("");
 	const [groceries, setGroceries] = useState<any[]>([]);
@@ -17,11 +16,11 @@ export default function HomeDisplayPage() {
 
 	useEffect(() => {
 		async function fetchResidents() {
-			if (!username || !homeCode) return;
+			if (!homeCode) return;
 
-			fetch(
-				`http://localhost:8000/auth/residents/${username}/${homeCode}`
-			)
+			fetch(`${API_BASE}/auth/residents/${homeCode}`, {
+				credentials: "include",
+			})
 				.then((res) => {
 					if (!res.ok) throw new Error("Residents not found ");
 					return res.json();
@@ -33,9 +32,14 @@ export default function HomeDisplayPage() {
 				});
 		}
 		async function fetchHomeName() {
+			if (!homeCode) return;
+
 			try {
 				const res = await fetch(
-					`${API_BASE}/auth/homeDisplay/${username}/${homeCode}`
+					`${API_BASE}/auth/homeDisplay/me/${homeCode}`,
+					{
+						credentials: "include",
+					}
 				);
 				const data = await res.json();
 				if (res.ok) {
@@ -54,14 +58,14 @@ export default function HomeDisplayPage() {
 		}
 		fetchHomeName().catch(console.error);
 		fetchResidents().catch(console.error);
-	}, []);
+	}, [homeCode]);
 
 	return (
 		<div>
 			<div className="flex justify-start">
 				<button
 					type="button"
-					onClick={() => navigate(`/homelist/${username}`)}
+					onClick={() => navigate(`/homelist/`)}
 					className="button h-14 w-14 flex items-center justify-center rounded-xl"
 				>
 					←
@@ -77,7 +81,6 @@ export default function HomeDisplayPage() {
 							items={rules}
 							handleAddClick={() => {}}
 							handleRemoveClick={() => {}}
-							username={username}
 							getKey={(rule) => rule._id}
 							renderItem={(rule) => (
 								<div>
@@ -92,7 +95,6 @@ export default function HomeDisplayPage() {
 							items={events}
 							handleAddClick={() => {}}
 							handleRemoveClick={() => {}}
-							username={username}
 							getKey={(event) => event._id}
 							renderItem={(event) => (
 								<div>
@@ -110,7 +112,6 @@ export default function HomeDisplayPage() {
 								items={groceries}
 								handleAddClick={() => {}}
 								handleRemoveClick={() => {}}
-								username={username}
 								getKey={(grocery) => grocery._id}
 								renderItem={(grocery) => (
 									<div className="flex flex-row gap-4">
@@ -131,7 +132,6 @@ export default function HomeDisplayPage() {
 								items={chores}
 								handleAddClick={() => {}}
 								handleRemoveClick={() => {}}
-								username={username}
 								getKey={(chore) => chore._id}
 								renderItem={(chore) => (
 									<div>
@@ -149,7 +149,6 @@ export default function HomeDisplayPage() {
 					items={residents}
 					handleAddClick={() => {}}
 					handleRemoveClick={() => {}}
-					username={username}
 					getKey={(resident) => resident._id}
 					renderItem={(resident) => (
 						<div className="flex flex-row gap-4">
