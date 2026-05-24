@@ -1,10 +1,19 @@
 // user-services.ts
 import { User } from "./User.js";
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
+const SALT_ROUNDS = 12;
 
 // CREATE
-export function createUser(data: any) {
-	return User.create(data);
+export async function createUser(userData: any) {
+	const hashPassword = await bcrypt.hash(userData.password, SALT_ROUNDS);
+
+	//hash new updated password
+	return User.create({
+		...userData,
+		password: hashPassword,
+	});
 }
 
 // READ
@@ -21,12 +30,21 @@ export function getUsersByHomeId(homeId: mongoose.Types.ObjectId) {
 }
 // UPDATE
 // commented out because redundant as we want all methods to use username
-export function updateUserById(
+export async function updateUserById(
 	userId: mongoose.Types.ObjectId | string,
 	data: any
 ) {
-	// { new: true } returns the updated doc
-	return User.findByIdAndUpdate(userId, data, {
+	const updateData = { ...data };
+
+	//hash new updated password
+	if (updateData.password) {
+		updateData.password = await bcrypt.hash(
+			updateData.password,
+			SALT_ROUNDS
+		);
+	}
+
+	return User.findByIdAndUpdate(userId, updateData, {
 		returnDocument: "after",
 		runValidators: true,
 	});
@@ -42,9 +60,18 @@ export function getUsersByHomeAndRelation(
 }
 
 // UPDATE
-export function updateUserByUsername(username: string, data: any) {
-	// { new: true } returns the updated doc
-	return User.findOneAndUpdate({ username }, data, {
+export async function updateUserByUsername(username: string, data: any) {
+	const updateData = { ...data };
+
+	//hash new updated password
+	if (updateData.password) {
+		updateData.password = await bcrypt.hash(
+			updateData.password,
+			SALT_ROUNDS
+		);
+	}
+
+	return User.findOneAndUpdate({ username }, updateData, {
 		returnDocument: "after",
 		runValidators: true,
 	});
