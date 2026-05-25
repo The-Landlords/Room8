@@ -1,4 +1,5 @@
 import mockingoose from "mockingoose";
+import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import { expect, test, beforeEach } from "@jest/globals";
 import { User } from "./User";
@@ -42,7 +43,14 @@ test("Creating a user", async () => {
 
 	expect(created).toBeDefined();
 	expect(created.username).toBe(dummyUser.username);
-	expect(created.password).toBe(dummyUser.password);
+	expect(created.password).not.toBe(dummyUser.password);
+
+	const passwordMatches = await bcrypt.compare(
+		dummyUser.password,
+		created.password
+	);
+
+	expect(passwordMatches).toBe(true);
 	expect(created.fullName).toBe(dummyUser.fullName);
 	expect(created.phone).toBe(dummyUser.phone);
 	expect(created.pronouns).toBe(dummyUser.pronouns);
@@ -106,7 +114,7 @@ test("Getting users by home ID", async () => {
 	expect(fetched[0].username).toBe(user.username);
 });
 
-test("Updating a user by ID", async () => {
+test("Updating a user by ID without password does not hash password", async () => {
 	const user = new User(dummyUser);
 	const updatedDoc = new User({
 		...dummyUser,
@@ -116,12 +124,41 @@ test("Updating a user by ID", async () => {
 	mockingoose(User).toReturn(updatedDoc, "findOneAndUpdate");
 
 	const updated = await updateUserById(user._id, {
-		...dummyUser,
 		fullName: "Barry B. Benson Jr.",
 	});
 
 	expect(updated).toBeDefined();
 	expect(updated?.fullName).toBe("Barry B. Benson Jr.");
+});
+
+test("Updating a user by ID hashes password when password is updated", async () => {
+	const user = new User(dummyUser);
+	const updatedPassword = "newhoneypassword";
+	const hashUpdatedPassword = await bcrypt.hash(updatedPassword, 12);
+	const updatedDoc = new User({
+		...dummyUser,
+		password: hashUpdatedPassword,
+		fullName: "Barry B. Benson Jr.",
+	});
+	updatedDoc._id = user._id;
+	mockingoose(User).toReturn(updatedDoc, "findOneAndUpdate");
+
+	const updated = await updateUserById(user._id, {
+		...dummyUser,
+		password: updatedPassword,
+		fullName: "Barry B. Benson Jr.",
+	});
+
+	expect(updated).toBeDefined();
+	expect(updated?.fullName).toBe("Barry B. Benson Jr.");
+	expect(updated?.password).not.toBe(updatedPassword);
+
+	const passwordMatches = await bcrypt.compare(
+		updatedPassword,
+		updated?.password ?? ""
+	);
+
+	expect(passwordMatches).toBe(true);
 });
 
 test("Removing a user by ID", async () => {
@@ -134,7 +171,7 @@ test("Removing a user by ID", async () => {
 	expect(deleted?._id.toString()).toBe(user._id.toString());
 });
 
-test("Updating a user by username", async () => {
+test("Updating a user by username without password does not hash password", async () => {
 	const user = new User(dummyUser);
 	const updatedDoc = new User({
 		...dummyUser,
@@ -144,12 +181,40 @@ test("Updating a user by username", async () => {
 	mockingoose(User).toReturn(updatedDoc, "findOneAndUpdate");
 
 	const updated = await updateUserByUsername(user.username, {
-		...dummyUser,
 		fullName: "Barry B. Benson Sr.",
 	});
 
 	expect(updated).toBeDefined();
 	expect(updated?.fullName).toBe("Barry B. Benson Sr.");
+});
+
+test("Updating a user by username hashes password when password is updated", async () => {
+	const user = new User(dummyUser);
+	const updatedPassword = "newhoneypassword";
+	const hashedUpdatedPassword = await bcrypt.hash(updatedPassword, 12);
+	const updatedDoc = new User({
+		...dummyUser,
+		password: hashedUpdatedPassword,
+		fullName: "Barry B. Benson Sr.",
+	});
+	updatedDoc._id = user._id;
+	mockingoose(User).toReturn(updatedDoc, "findOneAndUpdate");
+
+	const updated = await updateUserByUsername(user.username, {
+		...dummyUser,
+		password: updatedPassword,
+		fullName: "Barry B. Benson Sr.",
+	});
+
+	expect(updated).toBeDefined();
+	expect(updated?.fullName).toBe("Barry B. Benson Sr.");
+	expect(updated?.password).not.toBe(updatedPassword);
+
+	const passwordMatches = await bcrypt.compare(
+		updatedPassword,
+		updated?.password ?? ""
+	);
+	expect(passwordMatches).toBe(true);
 });
 
 test("Removing a user by username", async () => {

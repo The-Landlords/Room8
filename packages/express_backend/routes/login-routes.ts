@@ -1,6 +1,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { User } from "../models/User.js";
+import bcrypt from "bcrypt";
 
 export const loginRouter = express.Router();
 
@@ -22,7 +23,8 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 				.json({ error: "Invalid Username or Password" });
 		}
 
-		if (user.password !== password) {
+		const passwordHashMatches = bcrypt.compare(password, user.password);
+		if (!passwordHashMatches) {
 			return res
 				.status(401)
 				.json({ error: "Invalid Username or Password" });

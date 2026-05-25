@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
 import {
 	expect,
 	test,
@@ -68,7 +70,13 @@ afterEach(async () => {
 test("createUser: success", async () => {
 	expect(u._id).toBeDefined();
 	expect(u.username).toBe(dummyUser.username);
-	expect(u.password).toBe(dummyUser.password);
+	expect(u.password).not.toBe(dummyUser.password);
+
+	const passwordMatches = await bcrypt.compare(
+		dummyUser.password,
+		u.password
+	);
+	expect(passwordMatches).toBe(true);
 	expect(u.fullName).toBe(dummyUser.fullName);
 	expect(u.phone).toBe(dummyUser.phone);
 	expect(u.pronouns).toBe(dummyUser.pronouns);
@@ -243,7 +251,13 @@ test("Updating a user", async () => {
 	const updatedUser = await updateUserById(u._id, updatedData);
 	if (!updatedUser) return;
 	expect(updatedUser).toBeDefined();
-	expect(updatedUser.password).toBe(updatedData.password);
+	expect(updatedUser.password).not.toBe(updatedData.password);
+
+	const passwordMatches = await bcrypt.compare(
+		updatedData.password,
+		updatedUser.password
+	);
+	expect(passwordMatches).toBe(true);
 	expect(updatedUser.pronouns).toBe(dummyUser.pronouns);
 	expect(updatedUser.phone).toBe(dummyUser.phone);
 });
@@ -257,7 +271,13 @@ test("Updating a user by username", async () => {
 	if (!updatedUser) return;
 	expect(updatedUser).toBeDefined();
 	expect(updatedUser._id).toBeDefined();
-	expect(updatedUser.password).toBe(updatedData.password);
+	expect(updatedUser.password).not.toBe(updatedData.password);
+
+	const passwordMatches = await bcrypt.compare(
+		updatedData.password,
+		updatedUser.password
+	);
+	expect(passwordMatches).toBe(true);
 	expect(updatedUser.pronouns).toBe(dummyUser.pronouns);
 	expect(updatedUser.phone).toBe(dummyUser.phone);
 });
@@ -277,4 +297,27 @@ test("Creating a user with an existing username should fail", async () => {
 		expect(err.code).toBe(11000);
 		expect(err.keyValue).toHaveProperty("username");
 	}
+});
+
+test("createUser: same plain password creates different hashes", async () => {
+	const user2 = await createUser({
+		...dummyUser,
+		username: "barrybbenson2",
+	});
+
+	expect(user2.password).not.toBe(dummyUser.password);
+	expect(user2.password).not.toBe(u.password);
+
+	const firstPasswordMatches = await bcrypt.compare(
+		dummyUser.password,
+		u.password
+	);
+
+	const secondPasswordMatches = await bcrypt.compare(
+		dummyUser.password,
+		user2.password
+	);
+
+	expect(firstPasswordMatches).toBe(true);
+	expect(secondPasswordMatches).toBe(true);
 });
