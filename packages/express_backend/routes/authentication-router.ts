@@ -66,6 +66,7 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 	return false;
 }
 
+//gets residents of a home and their information based on the relationship of the user making the request to the home
 authRouter.get(
 	"/auth/residents/:homeCode/",
 	requireAuth,
@@ -108,6 +109,7 @@ authRouter.get(
 	}
 );
 
+//gets guests of a home and their information based on the relationship of the user making the request to the home
 authRouter.get(
 	"/auth/guests/me/:homeCode/",
 	requireAuth,
@@ -193,5 +195,32 @@ authRouter.get(
 
 			res.status(200).json(homeDisplay);
 		}
+	}
+);
+
+//gets a users relationship to a home based on the home code
+authRouter.get(
+	"/auth/relationship/me/:homeCode/",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		const { homeCode } = req.params;
+		const home = await getHomeByCode(homeCode.toString());
+		if (!home) {
+			return res.status(404).json({ error: "User or home not found" });
+		}
+
+		const userRelationObject = await getUserHomeRelation(
+			new mongoose.Types.ObjectId(req.session.userId),
+			home._id
+		);
+		const userRelation = userRelationObject?.homeIds[0].relationship;
+		if (!userRelation) {
+			console.log("No shared home found between user and home");
+			return res
+				.status(404)
+				.json({ error: "No shared home found between users" });
+		}
+
+		res.status(200).json({ relationship: userRelation });
 	}
 );

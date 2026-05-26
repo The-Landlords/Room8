@@ -6,6 +6,7 @@ import { API_BASE } from "../config";
 export default function Residents() {
 	const [residents, setResidents] = useState<any[]>([]);
 	const [guests, setGuests] = useState<any[]>([]);
+	const [relationship, setRelationship] = useState<string>("");
 	const { homeCode } = useParams();
 	const navigate = useNavigate();
 	async function fetchResidents() {
@@ -41,9 +42,30 @@ export default function Residents() {
 				setGuests([]);
 			});
 	}
+	async function fetchRelationship() {
+		if (!homeCode) return;
+
+		fetch(`${API_BASE}/auth/relationship/me/${homeCode}`, {
+			credentials: "include",
+		})
+			.then((res) => {
+				if (!res.ok)
+					console.log(
+						"Relationship not found for home code: " + homeCode
+					);
+				return res.json();
+			})
+			.then((data) => setRelationship(data.relationship))
+			.catch((err) => {
+				console.error(err);
+				setRelationship("");
+			});
+		console.log("Relationship: " + relationship);
+	}
 	useEffect(() => {
 		fetchResidents().catch(console.error);
 		fetchGuests().catch(console.error);
+		fetchRelationship().catch(console.error);
 	}, [homeCode]);
 	return (
 		<div className="flex flex-col">
@@ -225,6 +247,9 @@ export default function Residents() {
 									</div>
 								) : (
 									<p />
+								)}
+								{relationship === "RESIDENT" && (
+									<button>Vote to Become Resident</button>
 								)}
 							</div>
 						)}
