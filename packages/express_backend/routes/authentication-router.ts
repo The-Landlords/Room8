@@ -71,7 +71,7 @@ authRouter.get(
 	requireAuth,
 	async (req: Request, res: Response) => {
 		const { homeCode } = req.params;
-		console.log("Received request for residents with params:", req.params);
+
 		// uses session cookies
 		const userOne = await getUserById(
 			new mongoose.Types.ObjectId(req.session.userId)
@@ -109,13 +109,51 @@ authRouter.get(
 );
 
 authRouter.get(
+	"/auth/guests/me/:homeCode/",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		const { homeCode } = req.params;
+
+		// uses session cookies
+		const userOne = await getUserById(
+			new mongoose.Types.ObjectId(req.session.userId)
+		);
+		const home = await getHomeByCode(homeCode.toString());
+		if (!userOne || !home) {
+			console.log("User or home not found");
+			return res.status(404).json({ error: "User or home not found" });
+		}
+
+		const guests = await getUsersByHomeAndRelation(home._id, "GUEST");
+
+		if (guests.length === 0) {
+			console.log("No guests found for home code: " + homeCode);
+			return res.status(404).json({
+				error: "No residents found for the provided home code",
+			});
+		}
+
+		const userOneRelationObject = await getUserHomeRelation(
+			userOne._id,
+			home._id
+		);
+		const userOneRelation = userOneRelationObject?.homeIds[0].relationship;
+		if (!userOneRelation) {
+			console.log("No shared home found between user and home");
+			return res
+				.status(404)
+				.json({ error: "No shared home found between users" });
+		}
+		const filteredUsers = filterResidents(guests, userOneRelation);
+
+		res.status(200).json(filteredUsers);
+	}
+);
+
+authRouter.get(
 	"/auth/homeDisplay/me/:homeCode/",
 	requireAuth,
 	async (req: Request, res: Response) => {
-		console.log(
-			"Received request for home display with params:",
-			req.params
-		);
 		const { homeCode } = req.params;
 		const home = await getHomeByCode(homeCode.toString());
 		if (!home) {
@@ -145,7 +183,6 @@ authRouter.get(
 				events: await getUpcomingEventsByHome(home._id),
 			};
 			res.status(200).json(homeDisplay);
-			console.log("Home Display for resident:", homeDisplay);
 		} else {
 			const homeDisplay = {
 				name: home.homeName,
@@ -153,7 +190,7 @@ authRouter.get(
 				rules: await getApprovedRulesByHome(home._id),
 				events: await getUpcomingEventsByHome(home._id),
 			};
-			console.log("Home Display for non-resident:", homeDisplay);
+
 			res.status(200).json(homeDisplay);
 		}
 	}
