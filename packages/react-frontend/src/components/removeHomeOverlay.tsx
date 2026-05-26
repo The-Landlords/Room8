@@ -9,23 +9,21 @@ type RemoveHomeProps = {
 	onRemove: any;
 	homeRemove: any | undefined;
 	onCancel: (data: boolean) => void;
-	username: string | undefined;
 };
 
 export default function RemoveHomeOverlay({
 	onRemove,
 	onCancel,
 	homeRemove,
-	username,
 }: RemoveHomeProps) {
 	async function removeHome() {
-		if (!username || !homeRemove) return;
 		console.log("connecting home to user!");
 
 		const promise = await fetch(
-			`${API_BASE}/relate/${username}/${homeRemove}`,
+			`${API_BASE}/relate/me/${homeRemove.homeName}`,
 			{
 				method: "PATCH",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 			}
 		);

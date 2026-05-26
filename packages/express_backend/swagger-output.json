@@ -34,6 +34,9 @@
 					"200": {
 						"description": "OK"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					},
@@ -58,6 +61,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -89,6 +95,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					},
@@ -120,6 +129,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -148,6 +160,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -163,6 +178,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					}
 				}
 			}
@@ -184,6 +202,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -209,6 +230,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -230,6 +254,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -255,6 +282,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -279,6 +309,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -306,6 +339,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					}
 				}
 			}
@@ -334,6 +370,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -357,6 +396,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -382,6 +424,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -403,6 +448,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -446,6 +494,19 @@
 				}
 			}
 		},
+		"/logout": {
+			"post": {
+				"description": "",
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
 		"/homeId/{homeId}/rules": {
 			"get": {
 				"description": "",
@@ -463,6 +524,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					}
 				}
 			}
@@ -481,6 +545,9 @@
 				"responses": {
 					"200": {
 						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"500": {
 						"description": "Internal Server Error"
@@ -518,6 +585,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -553,6 +623,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					}
 				}
 			}
@@ -575,6 +648,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -596,6 +672,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					}
 				}
 			}
@@ -632,6 +711,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -672,6 +754,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -687,6 +772,42 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/users/me": {
+			"patch": {
+				"description": "",
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			},
+			"get": {
+				"description": "",
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				}
 			}
@@ -708,6 +829,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -733,6 +857,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -754,6 +881,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -779,6 +909,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -802,6 +935,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					}
 				}
 			}
@@ -824,6 +960,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -845,6 +984,12 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				}
 			}
@@ -873,6 +1018,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -901,6 +1049,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
@@ -928,6 +1079,9 @@
 					},
 					"400": {
 						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
@@ -965,22 +1119,19 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					}
 				}
 			}
 		},
-		"/relate/{username}/{homeCode}": {
+		"/relate/me/{homeCode}": {
 			"post": {
 				"description": "",
 				"parameters": [
-					{
-						"name": "username",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					},
 					{
 						"name": "homeCode",
 						"in": "path",
@@ -1007,6 +1158,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					},
@@ -1016,17 +1170,9 @@
 				}
 			}
 		},
-		"/relate/{username}": {
+		"/relate/me": {
 			"get": {
 				"description": "",
-				"parameters": [
-					{
-						"name": "username",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "OK"
@@ -1034,6 +1180,9 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					},
@@ -1043,16 +1192,10 @@
 				}
 			}
 		},
-		"/relate/{username}/{homeName}": {
+		"/relate/me/{homeName}": {
 			"patch": {
 				"description": "",
 				"parameters": [
-					{
-						"name": "username",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					},
 					{
 						"name": "homeName",
 						"in": "path",
@@ -1067,11 +1210,119 @@
 					"400": {
 						"description": "Bad Request"
 					},
+					"401": {
+						"description": "Unauthorized"
+					},
 					"404": {
 						"description": "Not Found"
 					},
 					"500": {
 						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
+		"/relate/{homeCode}/{relation}": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "relation",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
+		"/relate/home/{homeId}/residents": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeId",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
+		"/auth/residents/{homeCode}/": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/auth/homeDisplay/me/{homeCode}/": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				}
 			}

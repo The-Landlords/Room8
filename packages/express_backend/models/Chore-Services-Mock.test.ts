@@ -6,6 +6,7 @@ import {
 	createChore,
 	getChoreById,
 	getChoresByHome,
+	getUncompletedChoresByHome,
 	removeChoreById,
 	updateChore,
 } from "./Chore-Services";
@@ -188,4 +189,34 @@ test("nextOccurrence is not required when isRecurring is false", async () => {
 	});
 
 	await expect(chore.validate()).resolves.toBeUndefined();
+});
+
+test("Get uncompleted chores by home ID", async () => {
+	const chore1 = new Chore({ ...choreData, isCompleted: false });
+	const chore2 = new Chore({
+		...choreData,
+		title: "Do the dishes",
+		isCompleted: true,
+	});
+	const chore3 = new Chore({
+		...choreData,
+		title: "Vacuum",
+		isCompleted: false,
+	});
+	mockingoose(Chore).toReturn([chore1, chore3], "find");
+
+	const uncompletedChores = await getUncompletedChoresByHome(
+		choreData.homeId
+	);
+
+	expect(uncompletedChores).toBeDefined();
+	expect(uncompletedChores.length).toBe(2);
+	expect(uncompletedChores[0].isCompleted).toBe(false);
+	expect(uncompletedChores[1].isCompleted).toBe(false);
+	expect(uncompletedChores[0].homeId.toString()).toBe(
+		choreData.homeId.toString()
+	);
+	expect(uncompletedChores[1].homeId.toString()).toBe(
+		choreData.homeId.toString()
+	);
 });

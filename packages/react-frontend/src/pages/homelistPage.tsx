@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import List from "../components/list";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Overlay from "../components/overlay";
 import HomeAddOverlay from "../components/homeAddOverlay";
 import AddHomeOverlay from "../components/addHomeOverlay";
@@ -12,7 +12,6 @@ import { API_BASE } from "../config";
 
 export default function HomeList() {
 	const [homes, setHomes] = useState<any[]>([]);
-	const { username } = useParams();
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [homeDelete, setHomeDelete] = useState<any | null>(null);
@@ -45,9 +44,9 @@ export default function HomeList() {
 	}
 
 	async function fetchHomes() {
-		if (!username) return;
-
-		fetch(`${API_BASE}/relate/${username}`)
+		fetch(`${API_BASE}/relate/me`, {
+			credentials: "include",
+		})
 			.then((res) => {
 				if (!res.ok) throw new Error("Homes not found");
 				return res.json();
@@ -60,7 +59,7 @@ export default function HomeList() {
 	}
 	useEffect(() => {
 		fetchHomes().catch(console.error);
-	}, [username]);
+	}, []);
 
 	const homeNames = homes?.map((h) => h.homeName);
 	// const homeLocations = homes?.map((h) => h.address);
@@ -69,7 +68,7 @@ export default function HomeList() {
 		<div className="background-house flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
 			<div className="iconWrapper">
-				<Link to={`/settings/${username}`}>
+				<Link to={`/settings`}>
 					<FontAwesomeIcon
 						icon={faUserGear}
 						className="w-20 h-20 text-7xl"
@@ -86,7 +85,6 @@ export default function HomeList() {
 				)}
 				{addState == "Add" && (
 					<AddHomeOverlay
-						username={username}
 						onBack={(data) => {
 							setAddState(data);
 						}}
@@ -97,7 +95,6 @@ export default function HomeList() {
 				)}
 				{addState == "Create" && (
 					<CreateHomeOverlay
-						username={username}
 						onBack={(data) => {
 							setAddState(data);
 						}}
@@ -108,7 +105,6 @@ export default function HomeList() {
 				)}
 				{addState == "Remove" && (
 					<RemoveHomeOverlay
-						username={username}
 						homeRemove={homeDelete}
 						onRemove={(data: any) => {
 							handleRemove(data);
@@ -126,7 +122,6 @@ export default function HomeList() {
 					items={homes}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={(home) => handleRemoveClick(home)}
-					username={username}
 					homeCode={homeCodes}
 					getKey={(home) => home._id}
 					renderItem={(home) => (
@@ -149,7 +144,6 @@ export default function HomeList() {
 					items={["No Homes available! Click below to add."]}
 					handleAddClick={handleAddClick}
 					handleRemoveClick={(name) => handleRemoveClick(name)}
-					username={username}
 					homeCode={homeCodes}
 					getKey={(name) => name}
 					renderItem={(name) => <span>{name}</span>}

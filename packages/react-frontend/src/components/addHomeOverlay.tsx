@@ -6,27 +6,19 @@ import { API_BASE } from "../config";
 type AddHomeProps = {
 	onBack: (data: string) => void;
 	onAdd: any;
-	username: string | undefined;
 };
 
-export default function AddHomeOverlay({
-	onBack,
-	onAdd,
-	username,
-}: AddHomeProps) {
+export default function AddHomeOverlay({ onBack, onAdd }: AddHomeProps) {
 	const [homeCode, setHomeCode] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 	async function addHome() {
-		if (!username) return;
 		const relationship = { relationship: "RESIDENT" };
-		const promise = await fetch(
-			`${API_BASE}/relate/${username}/${homeCode}`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(relationship),
-			}
-		);
+		const promise = await fetch(`${API_BASE}/relate/me/${homeCode}`, {
+			method: "POST",
+			credentials: "include",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(relationship),
+		});
 		return promise;
 	}
 	async function handleAddHome() {

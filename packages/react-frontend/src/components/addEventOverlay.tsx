@@ -37,6 +37,7 @@ export default function AddEventOverlay({
 
 		const res = await fetch(`${API_BASE}/${homeCode}/events`, {
 			method: "POST",
+			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				title,

@@ -22,6 +22,7 @@ export default function SignInPage() {
 		fetch(`${API_BASE}/users`, {
 			// matches user-routes.ts POST /users
 			method: "POST",
+			credentials: "include",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -39,7 +40,8 @@ export default function SignInPage() {
 					console.log("Account created!", data);
 
 					// automatically navigate to user settings
-					navigate(`/settings/${data.username}`, { replace: true });
+					// assumes auto login
+					navigate(`/settings/`, { replace: true });
 				}
 			})
 			.catch(() => {

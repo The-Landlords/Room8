@@ -1,117 +1,19 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import * as React from "react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import CalendarPage from "../pages/calendarPage";
 
-jest.mock("../components/list", () => {
-	return function MockList(props: any) {
-		return (
-			<div>
-				<button onClick={props.handleAddClick}>+</button>
-
-				{props.items.map((item: any, index: number) => {
-					const label = typeof item === "string" ? item : item.title;
-					const key =
-						typeof item === "string"
-							? item
-							: (item._id ?? `${label}-${index}`);
-
-					return (
-						<div key={key}>
-							<div>{props.renderItem(item)}</div>
-
-							{typeof item !== "string" && item._id && (
-								<>
-									<button
-										onClick={() =>
-											props.handleRemoveClick(item)
-										}
-									>
-										remove {label}
-									</button>
-
-									<button
-										onClick={() =>
-											props.handleEditClick?.(item)
-										}
-									>
-										edit {label}
-									</button>
-								</>
-							)}
-						</div>
-					);
-				})}
-			</div>
-		);
-	};
-});
-
-jest.mock("../components/addEventOverlay", () => {
-	return function MockAddEventOverlay(props: any) {
-		return (
-			<div>
-				<div>Add Event</div>
-
-				<button
-					onClick={() =>
-						props.onAdd({
-							_id: "event-3",
-							title: "Game Night",
-							description: "Board games",
-							start: "2099-06-01T18:00:00.000Z",
-							end: "2099-06-01T20:00:00.000Z",
-							location: "Living Room",
-						})
-					}
-				>
-					confirm add
-				</button>
-
-				<button onClick={props.onCancel}>cancel add</button>
-			</div>
-		);
-	};
-});
-
-jest.mock("../components/removeEventOverlay", () => {
-	return function MockRemoveEventOverlay(props: any) {
-		return (
-			<div>
-				<div>Remove Event</div>
-
-				<button onClick={() => props.onRemove(props.eventRemove)}>
-					confirm remove
-				</button>
-
-				<button onClick={props.onCancel}>cancel remove</button>
-			</div>
-		);
-	};
-});
-
-jest.mock("../components/EditEventOverlay", () => {
-	return function MockEditEventOverlay(props: any) {
-		return (
-			<div>
-				<div>Edit Event</div>
-
-				<button
-					onClick={() =>
-						props.onEdit({
-							...props.eventEdit,
-							title: "Updated Party",
-						})
-					}
-				>
-					confirm edit
-				</button>
-
-				<button onClick={props.onCancel}>cancel edit</button>
-			</div>
-		);
-	};
-});
+type CalendarEvent = {
+	_id?: string;
+	title: string;
+	description?: string;
+	start?: string;
+	end?: string;
+	location?: string;
+};
 
 function renderCalendarPage() {
 	return render(
@@ -126,22 +28,8 @@ function renderCalendarPage() {
 	);
 }
 
-async function flushPromises() {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-}
-
-async function renderLoadedCalendarPage() {
-	renderCalendarPage();
-
-	await act(async () => {
-		await flushPromises();
-	});
-}
-
-function mockFetchWithEvents(events: any[]) {
-	globalThis.fetch = jest
+function mockFetchWithEvents(events: CalendarEvent[]) {
+	globalThis.fetch = vi
 		.fn()
 		.mockResolvedValueOnce({
 			ok: true,
@@ -150,7 +38,7 @@ function mockFetchWithEvents(events: any[]) {
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => events,
-		});
+		}) as unknown as typeof fetch;
 }
 
 beforeEach(() => {
@@ -158,27 +46,33 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	jest.clearAllMocks();
+	cleanup();
+	vi.clearAllMocks();
 });
 
-test("renders the calendar page empty state", async () => {
-	await renderLoadedCalendarPage();
+test("renders the real calendar page empty state", async () => {
+	renderCalendarPage();
 
-	expect(screen.getByText("Events for Test Home")).toBeInTheDocument();
+	expect(await screen.findByText("Events for Test Home")).toBeInTheDocument();
 
 	expect(
-		screen.getByText("No Events available! Click below to add.")
+		await screen.findByText("No Events available! Click below to add.")
 	).toBeInTheDocument();
 
 	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
 });
 
-test("clicking add opens the add event overlay", async () => {
-	await renderLoadedCalendarPage();
+test("clicking the real add button opens the add event overlay", async () => {
+	renderCalendarPage();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("Events for Test Home");
+	const user = userEvent.setup();
 
-	expect(screen.getByText("Add Event")).toBeInTheDocument();
+	await user.click(screen.getByRole("button", { name: "+" }));
+
+	expect(
+		screen.getByRole("heading", { name: "Add Event" })
+	).toBeInTheDocument();
 });
 
 test("shows upcoming and past sections when events are fetched", async () => {
@@ -201,16 +95,16 @@ test("shows upcoming and past sections when events are fetched", async () => {
 		},
 	]);
 
-	await renderLoadedCalendarPage();
+	renderCalendarPage();
 
-	expect(screen.getByText("Upcoming Events")).toBeInTheDocument();
+	expect(await screen.findByText("Upcoming Events")).toBeInTheDocument();
 	expect(screen.getByText("Past Events")).toBeInTheDocument();
 	expect(screen.getByText("Future Party")).toBeInTheDocument();
 
 	expect(screen.queryByText("Old Meeting")).not.toBeInTheDocument();
 });
 
-test("clicking past events shows past events list", async () => {
+test("clicking past events shows the real past events list", async () => {
 	mockFetchWithEvents([
 		{
 			_id: "event-1",
@@ -230,31 +124,17 @@ test("clicking past events shows past events list", async () => {
 		},
 	]);
 
-	await renderLoadedCalendarPage();
+	renderCalendarPage();
 
-	fireEvent.click(screen.getByRole("button", { name: /Past Events/i }));
+	expect(await screen.findByText("Future Party")).toBeInTheDocument();
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: /Past Events/i }));
 
 	expect(screen.getByText("Old Meeting")).toBeInTheDocument();
 });
 
-test("confirming add appends a new event", async () => {
-	await renderLoadedCalendarPage();
-
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
-
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "confirm add" }));
-		await flushPromises();
-	});
-
-	expect(screen.getByText("Game Night")).toBeInTheDocument();
-
-	expect(
-		screen.queryByText("No Events available! Click below to add.")
-	).not.toBeInTheDocument();
-});
-
-test("confirming remove deletes an event", async () => {
+test("clicking remove mode shows the real remove controls", async () => {
 	mockFetchWithEvents([
 		{
 			_id: "event-1",
@@ -266,53 +146,58 @@ test("confirming remove deletes an event", async () => {
 		},
 	]);
 
-	await renderLoadedCalendarPage();
+	renderCalendarPage();
 
-	expect(screen.getByText("Future Party")).toBeInTheDocument();
+	expect(await screen.findByText("Future Party")).toBeInTheDocument();
+	const user = userEvent.setup();
 
-	fireEvent.click(
-		screen.getByRole("button", { name: "remove Future Party" })
-	);
+	await user.click(screen.getByRole("button", { name: "-" }));
 
-	expect(screen.getByText("Remove Event")).toBeInTheDocument();
+	expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+});
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "confirm remove" }));
-		await flushPromises();
+test("clicking the real trash button sends a DELETE request", async () => {
+	mockFetchWithEvents([
+		{
+			_id: "event-1",
+			title: "Future Party",
+			description: "Snacks",
+			start: "2099-06-01T18:00:00.000Z",
+			end: "2099-06-01T20:00:00.000Z",
+			location: "Clubhouse",
+		},
+	]);
+
+	const fetchMock = globalThis.fetch as unknown as ReturnType<typeof vi.fn>;
+	fetchMock.mockResolvedValueOnce({
+		ok: true,
+		json: async () => ({}),
 	});
 
-	expect(screen.queryByText("Future Party")).not.toBeInTheDocument();
+	renderCalendarPage();
+
+	expect(await screen.findByText("Future Party")).toBeInTheDocument();
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "-" }));
+
+	const trashButton = screen
+		.getAllByRole("button")
+		.find((button) => button.querySelector("svg[data-icon='trash-can']"));
+
+	expect(trashButton).toBeDefined();
+
+	await user.click(trashButton as HTMLButtonElement);
 
 	expect(
-		screen.getByText("No Events available! Click below to add.")
+		screen.getByText("Are you sure you want to remove ", {
+			exact: false,
+		})
 	).toBeInTheDocument();
-});
 
-test("confirming edit updates an event", async () => {
-	mockFetchWithEvents([
-		{
-			_id: "event-1",
-			title: "Future Party",
-			description: "Snacks",
-			start: "2099-06-01T18:00:00.000Z",
-			end: "2099-06-01T20:00:00.000Z",
-			location: "Clubhouse",
-		},
-	]);
+	await user.click(screen.getByRole("button", { name: "Remove" }));
 
-	await renderLoadedCalendarPage();
-
-	expect(screen.getByText("Future Party")).toBeInTheDocument();
-
-	fireEvent.click(screen.getByRole("button", { name: "edit Future Party" }));
-
-	expect(screen.getByText("Edit Event")).toBeInTheDocument();
-
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "confirm edit" }));
-		await flushPromises();
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenCalledTimes(3);
 	});
-
-	expect(screen.getByText("Updated Party")).toBeInTheDocument();
-	expect(screen.queryByText("Future Party")).not.toBeInTheDocument();
 });

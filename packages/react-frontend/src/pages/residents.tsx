@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import List from "../components/list";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 
 export default function Residents() {
 	const [residents, setResidents] = useState<any[]>([]);
-	const { username, homeCode } = useParams();
+	const { homeCode } = useParams();
 	const navigate = useNavigate();
 	async function fetchResidents() {
-		if (!username || !homeCode) return;
+		if (!homeCode) return;
 
-		fetch(`http://localhost:8000/auth/residents/${username}/${homeCode}`)
+		fetch(`${API_BASE}/auth/residents/${homeCode}`, {
+			credentials: "include",
+		})
 			.then((res) => {
 				if (!res.ok) throw new Error("Residents not found ");
 				return res.json();
@@ -22,13 +25,13 @@ export default function Residents() {
 	}
 	useEffect(() => {
 		fetchResidents().catch(console.error);
-	}, [username, homeCode]);
+	}, [homeCode]);
 	return (
 		<div className="flex flex-col">
 			<div className="flex justify-start">
 				<button
 					type="button"
-					onClick={() => navigate(`/homelist/${username}`)}
+					onClick={() => navigate(`/homelist/`)}
 					className="button h-14 w-14 flex items-center justify-center rounded-xl"
 				>
 					←
@@ -112,7 +115,6 @@ export default function Residents() {
 						</div>
 					)}
 					getKey={(resident) => resident._id}
-					username={username}
 					homeCode={homeCode ? [homeCode] : undefined}
 				/>
 			</div>

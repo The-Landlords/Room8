@@ -1,72 +1,34 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: CI
-run-name: "CI · ${{ github.ref_name }} by @${{ github.actor }}"
+name: CI Testing
 
 on:
-  push: # all branches
-  pull_request: # all prs
-permissions:
-  contents: write #This is required for actions/checkout to push back changes from lint and format fix
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
 jobs:
-  continuous-integration:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
-    services:
-          mongo:
-            image: mongo:6
-            ports:
-              - 27017:27017
+        services:
+            mongo:
+                image: mongo:6
+                ports:
+                    - 27017:27017
 
-    strategy:
-      matrix:
-        node-version: [20.20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        env:
+            MONGO_URI_TEST: mongodb://localhost:27017/test
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: node -v
-    - run: npm -v
-    - name: Install dependencies
-      run: npm ci
-    - name: Run lint fix
-      run: npm run lint:fix
-    - name: Run format
-      run: npm run format
-    - name: Commit changes if any from lint and format fix
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+        steps:
+            - uses: actions/checkout@v4
 
-        git add -A
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
 
-        if ! git diff --cached --quiet; then
-          git commit -m "chore: auto-fix lint and format"
-          git push
-        fi
-    - name: Run lint check
-      run: npm run lint:check
+            - run: npm ci
 
-    - name: Run tests
-      env:
-        MONGO_URI_TEST: mongodb://localhost:27017/test
-      run: npm run test
-      
-    - name: Commit changes if any from lint and format fix
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+            - run: npm run lint:check
 
-        git add -A
-
-        if ! git diff --cached --quiet; then
-          git commit -m "chore: auto-fix lint"
-          git push
-        fi
-
+            - run: npm run test

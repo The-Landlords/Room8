@@ -43,6 +43,7 @@ export default function EditEventOverlay({
 
 		const res = await fetch(`${API_BASE}/events/${eventEdit._id}`, {
 			method: "PATCH",
+			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				title,

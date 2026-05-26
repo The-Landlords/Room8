@@ -1,6 +1,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { User } from "../models/User.js";
+import bcrypt from "bcrypt";
 
 export const loginRouter = express.Router();
 
@@ -22,11 +23,15 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 				.json({ error: "Invalid Username or Password" });
 		}
 
-		if (user.password !== password) {
+		const passwordHashMatches = bcrypt.compare(password, user.password);
+		if (!passwordHashMatches) {
 			return res
 				.status(401)
 				.json({ error: "Invalid Username or Password" });
 		}
+
+		req.session.userId = user._id.toString();
+		req.session.username = user.username;
 
 		res.status(200).json({
 			message: "Login successful",
@@ -37,4 +42,14 @@ loginRouter.post("/login", async (req: Request, res: Response) => {
 		console.error(err);
 		res.status(500).json({ error: "Login failed" });
 	}
+});
+loginRouter.post("/logout", (req: Request, res: Response) => {
+	req.session.destroy((err) => {
+		if (err) {
+			return res.status(500).json({ error: "Logout failed" });
+		}
+
+		res.clearCookie("connect.sid");
+		res.status(200).json({ message: "Logged out" });
+	});
 });

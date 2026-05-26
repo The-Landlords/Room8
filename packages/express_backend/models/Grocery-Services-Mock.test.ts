@@ -12,6 +12,7 @@ import {
 	calculateTotalCostForHome,
 	calculateTotalCostForItem,
 	updateGroceryItemQuantity,
+	getCurrentGroceryItemsByHome,
 } from "./Grocery-Services";
 
 const homeId = new mongoose.Types.ObjectId();
@@ -149,4 +150,19 @@ test("Calculating total cost for item throws when item is missing", async () => 
 	await expect(calculateTotalCostForItem(missingId)).rejects.toThrow(
 		"Item not found"
 	);
+});
+
+test("Getting Current Groceries for a home", async () => {
+	const grocery1 = new Grocery({
+		...groceryItem,
+		title: "Bread",
+		status: "CONFIRMED",
+	});
+	mockingoose(Grocery).toReturn([grocery1], "find");
+
+	const groceries = await getCurrentGroceryItemsByHome(groceryItem.homeId);
+
+	expect(groceries).toBeDefined();
+	expect(groceries.length).toBe(1);
+	expect(groceries[0].title).toBe(grocery1.title);
 });

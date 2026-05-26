@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { API_BASE } from "../config";
 
@@ -11,7 +11,6 @@ function isValidPhone(phone: string) {
 
 export default function UserSetting() {
 	const navigate = useNavigate();
-	const { username } = useParams();
 
 	// holds what the user is currently typing
 	const [draft, setDraft] = useState({
@@ -39,9 +38,10 @@ export default function UserSetting() {
 	const [, setError] = useState("");
 
 	useEffect(() => {
-		if (!username) return;
-
-		fetch(`${API_BASE}/users/username/${username}`)
+		// GET
+		fetch(`${API_BASE}/users/me`, {
+			credentials: "include",
+		})
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
@@ -75,7 +75,7 @@ export default function UserSetting() {
 				console.error(err);
 				setUser(null);
 			});
-	}, [username]);
+	}, []);
 
 	/**
 	 *
@@ -89,7 +89,6 @@ export default function UserSetting() {
 			.filter(Boolean);
 	}
 	async function saveProfile() {
-		if (!username) return;
 		console.log("sending:", draft);
 		const payload = {
 			...draft,
@@ -99,8 +98,10 @@ export default function UserSetting() {
 		};
 
 		try {
-			const res = await fetch(`${API_BASE}/users/${user.username}`, {
+			const res = await fetch(`${API_BASE}/users/me`, {
 				method: "PATCH",
+				credentials: "include",
+
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
 			});
@@ -110,12 +111,27 @@ export default function UserSetting() {
 			}
 
 			setError("");
-			navigate(`/homelist/${username}`);
+			alert("User settings saved successfully!");
+			navigate(`/homelist/`);
 		} catch (err) {
 			console.error(err);
 			setError("Unable to save profile.");
 		}
 	}
+
+	async function handleSignOut() {
+		try {
+			await fetch(`${API_BASE}/logout`, {
+				method: "POST",
+				credentials: "include",
+			});
+		} catch (err) {
+			console.error(err);
+		} finally {
+			navigate("/", { replace: true });
+		}
+	}
+
 	return (
 		<div className="settings-background">
 			{/* HEADER */}
@@ -130,7 +146,7 @@ export default function UserSetting() {
 					<div className="flex justify-start">
 						<button
 							type="button"
-							onClick={() => navigate(`/homelist/${username}`)}
+							onClick={() => navigate(`/homelist`)}
 							className="button h-14 w-14 flex items-center justify-center rounded-xl"
 						>
 							←
@@ -141,7 +157,7 @@ export default function UserSetting() {
 					<div className="flex justify-center">
 						<div className="bg-primary/70 h-14 px-8 flex items-center justify-center rounded-xl shadow-md">
 							<div className="font-primary text-text text-2xl">
-								Welcome {user?.username ?? username ?? "User"}
+								Welcome {user?.username ?? "User"}
 							</div>
 						</div>
 					</div>
@@ -164,8 +180,7 @@ export default function UserSetting() {
 					<div className="flex justify-end">
 						<button
 							type="button"
-							//FIX ME Change button nag. to correct page
-							onClick={() => navigate("/")}
+							onClick={handleSignOut}
 							className="button h-14 px-6 rounded-xl"
 						>
 							Sign Out

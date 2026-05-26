@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	faCalendar,
 	faCartShopping,
+	faCalendar,
 	faFileContract,
 	faAngleRight,
 	faPeopleRoof,
 	faDownload,
-	faTrashCan,
 	faClipboardCheck,
+	faTrashCan,
 	faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -32,7 +32,6 @@ interface ListProps<T> {
 export default function List<T>({
 	item,
 	items,
-	username,
 	handleAddClick,
 	handleRemoveClick,
 	handleEditClick,
@@ -52,7 +51,7 @@ export default function List<T>({
 
 	const [removeMode, setRemoveMode] = useState(false);
 	return (
-		<div className="flex flex-col gap-2 panel animate-floatUp">
+		<div className="flex flex-col gap-2 list-container animate-floatUp">
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>
@@ -72,10 +71,10 @@ export default function List<T>({
 						<span className="flex w-full items-center">
 							{renderItem(listItem)}
 
-							{isHomeSpaces && username && !removeMode && (
+							{isHomeSpaces && !removeMode && (
 								<div className="relative ml-auto gap-4 flex self-end-safe">
 									<Link
-										to={`/residents/${username}/${homeCode?.[index]}`}
+										to={`/residents/${homeCode?.[index]}`}
 									>
 										<FontAwesomeIcon
 											className="iconWrapper"
@@ -91,28 +90,26 @@ export default function List<T>({
 										</Link>
 									)}
 									{homeCode?.[index] && (
-										<Link
-											to={`/events/${username}/${homeCode[index]}`}
-										>
+										<Link to={`/events/${homeCode[index]}`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faCalendar}
 											/>
 										</Link>
 									)}
+
 									{homeCode?.[index] && (
-										<Link
-											to={`/${username}/${homeCode[index]}/chores`}
-										>
+										<Link to={`/${homeCode[index]}/chores`}>
 											<FontAwesomeIcon
 												className="iconWrapper"
 												icon={faClipboardCheck}
 											/>
 										</Link>
 									)}
+
 									{homeCode?.[index] && (
 										<Link
-											to={`/grocery/${username}/${homeCode[index]}`}
+											to={`/grocery/${homeCode[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
@@ -120,15 +117,19 @@ export default function List<T>({
 											/>
 										</Link>
 									)}
-									<Link to="/dropdown">
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faAngleRight}
-										/>
-									</Link>
+
+									{homeCode?.[index] && (
+										<Link
+											to={`/homeDisplay/me/${homeCode?.[index]}`}
+										>
+											<FontAwesomeIcon
+												className="iconWrapper"
+												icon={faAngleRight}
+											/>
+										</Link>
+									)}
 								</div>
 							)}
-
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a

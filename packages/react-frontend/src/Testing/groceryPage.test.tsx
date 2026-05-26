@@ -1,58 +1,19 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import * as React from "react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import GroceryPage from "../pages/groceryPage";
-
-jest.mock("../components/list", () => {
-	return function MockList(props: {
-		items: Array<{
-			_id?: string;
-			title?: string;
-			quantity?: number;
-			price?: number;
-		}>;
-		handleAddClick: () => void;
-		handleRemoveClick: (item: {
-			_id?: string;
-			title?: string;
-			quantity?: number;
-			price?: number;
-		}) => void;
-		renderItem: (item: {
-			_id?: string;
-			title?: string;
-			quantity?: number;
-			price?: number;
-		}) => React.ReactNode;
-	}) {
-		return (
-			<div>
-				<button onClick={props.handleAddClick}>+</button>
-
-				{props.items.map((item, index) => {
-					const label = item.title ?? "";
-					const key = item._id ?? `${label}-${index}`;
-
-					return (
-						<div key={key}>
-							{props.renderItem(item)}
-
-							{item._id && (
-								<button
-									onClick={() =>
-										props.handleRemoveClick(item)
-									}
-								>
-									remove {label}
-								</button>
-							)}
-						</div>
-					);
-				})}
-			</div>
-		);
-	};
-});
+import { API_BASE } from "../config";
+type TestGrocery = {
+	_id: string;
+	title: string;
+	quantity: number;
+	price?: number;
+	homeId: string;
+	status: "PENDING" | "PURCHASED" | "CANCELLED";
+};
 
 function renderGroceryPageWithHistory() {
 	return render(
@@ -77,25 +38,11 @@ function renderGroceryPageWithHistory() {
 	);
 }
 
-async function flushPromises() {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-}
-
-async function renderLoadedGroceryPage() {
-	renderGroceryPageWithHistory();
-
-	await act(async () => {
-		await flushPromises();
-	});
-}
-
-function mockFetchWithGroceries(groceries: any[]) {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+function mockFetchWithGroceries(groceries: TestGrocery[]) {
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: true,
 		json: async () => groceries,
-	}) as jest.Mock;
+	}) as unknown as typeof fetch;
 }
 
 beforeEach(() => {
@@ -103,7 +50,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	jest.clearAllMocks();
+	cleanup();
+	vi.clearAllMocks();
 });
 
 test("fetches and displays groceries", async () => {
@@ -118,19 +66,48 @@ test("fetches and displays groceries", async () => {
 		},
 	]);
 
-	await renderLoadedGroceryPage();
+	renderGroceryPageWithHistory();
 
-	expect(screen.getByText("Milk - Qty: 2 - $4.00")).toBeInTheDocument();
+	expect(
+		await screen.findByText("Milk - Qty: 2 - $4.00")
+	).toBeInTheDocument();
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
-		"http://localhost:8000/testhome/grocery"
+		`${API_BASE}/testhome/grocery`,
+		{
+			credentials: "include",
+		}
 	);
 });
 
-test("clicking the add button opens the add overlay", async () => {
-	await renderLoadedGroceryPage();
+test("displays the empty grocery state on the real page", async () => {
+	mockFetchWithGroceries([]);
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	renderGroceryPageWithHistory();
+
+	expect(await screen.findByText("No Grocery")).toBeInTheDocument();
+});
+
+test("renders the real add grocery button", async () => {
+	mockFetchWithGroceries([]);
+
+	renderGroceryPageWithHistory();
+
+	await screen.findByText("No Grocery");
+
+	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
+});
+
+test("clicking the add button opens the add overlay", async () => {
+	mockFetchWithGroceries([]);
+
+	renderGroceryPageWithHistory();
+
+	await screen.findByText("No Grocery");
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
 
 	expect(screen.getByText("Add Grocery")).toBeInTheDocument();
 
@@ -146,15 +123,21 @@ test("clicking the add button opens the add overlay", async () => {
 });
 
 test("clicking the back button sends you to the previous page", async () => {
-	await renderLoadedGroceryPage();
+	mockFetchWithGroceries([]);
 
-	fireEvent.click(screen.getByRole("button", { name: "←" }));
+	renderGroceryPageWithHistory();
+
+	await screen.findByText("No Grocery");
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "←" }));
 
 	expect(screen.getByText("Home Page")).toBeInTheDocument();
 });
 
 test("submitting a new grocery sends a POST request with quantity and price", async () => {
-	globalThis.fetch = jest
+	globalThis.fetch = vi
 		.fn()
 		.mockResolvedValueOnce({
 			ok: true,
@@ -170,50 +153,51 @@ test("submitting a new grocery sends a POST request with quantity and price", as
 				homeId: "home-1",
 				status: "PENDING",
 			}),
-		}) as jest.Mock;
+		}) as unknown as typeof fetch;
 
-	await renderLoadedGroceryPage();
+	renderGroceryPageWithHistory();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("No Grocery");
 
-	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
-		target: { value: "Eggs" },
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+
+	await user.type(screen.getByPlaceholderText("enter grocery item"), "Eggs");
+
+	await user.clear(screen.getByPlaceholderText("Quantity"));
+	await user.type(screen.getByPlaceholderText("Quantity"), "12");
+
+	await user.type(screen.getByPlaceholderText("Price, optional"), "3.49");
+
+	await user.click(screen.getByRole("button", { name: "Submit" }));
+
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenNthCalledWith(
+			2,
+			`${API_BASE}/testhome/grocery`,
+			{
+				method: "POST",
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					title: "Eggs",
+					quantity: 12,
+					price: 3.49,
+				}),
+			}
+		);
 	});
 
-	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
-		target: { value: "12" },
-	});
-
-	fireEvent.change(screen.getByPlaceholderText("Price, optional"), {
-		target: { value: "3.49" },
-	});
-
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-		await flushPromises();
-	});
-
-	expect(globalThis.fetch).toHaveBeenNthCalledWith(
-		2,
-		"http://localhost:8000/testhome/grocery",
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				title: "Eggs",
-				quantity: 12,
-				price: 3.49,
-			}),
-		}
-	);
-
-	expect(screen.getByText("Eggs - Qty: 12 - $3.49")).toBeInTheDocument();
+	expect(
+		await screen.findByText("Eggs - Qty: 12 - $3.49")
+	).toBeInTheDocument();
 });
 
 test("submitting a new grocery without price sends price as 0", async () => {
-	globalThis.fetch = jest
+	globalThis.fetch = vi
 		.fn()
 		.mockResolvedValueOnce({
 			ok: true,
@@ -229,102 +213,104 @@ test("submitting a new grocery without price sends price as 0", async () => {
 				homeId: "home-1",
 				status: "PENDING",
 			}),
-		}) as jest.Mock;
+		}) as unknown as typeof fetch;
 
-	await renderLoadedGroceryPage();
+	renderGroceryPageWithHistory();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("No Grocery");
 
-	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
-		target: { value: "Bread" },
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+
+	await user.type(screen.getByPlaceholderText("enter grocery item"), "Bread");
+
+	await user.clear(screen.getByPlaceholderText("Quantity"));
+	await user.type(screen.getByPlaceholderText("Quantity"), "2");
+
+	await user.click(screen.getByRole("button", { name: "Submit" }));
+
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenNthCalledWith(
+			2,
+			`${API_BASE}/testhome/grocery`,
+			{
+				method: "POST",
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					title: "Bread",
+					quantity: 2,
+					price: 0,
+				}),
+			}
+		);
 	});
 
-	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
-		target: { value: "2" },
-	});
-
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-		await flushPromises();
-	});
-
-	expect(globalThis.fetch).toHaveBeenNthCalledWith(
-		2,
-		"http://localhost:8000/testhome/grocery",
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				title: "Bread",
-				quantity: 2,
-				price: 0,
-			}),
-		}
-	);
-
-	expect(screen.getByText("Bread - Qty: 2 - $0.00")).toBeInTheDocument();
+	expect(
+		await screen.findByText("Bread - Qty: 2 - $0.00")
+	).toBeInTheDocument();
 });
 
 test("does not submit grocery if quantity is invalid", async () => {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: true,
 		json: async () => [],
-	}) as jest.Mock;
+	}) as unknown as typeof fetch;
 
-	await renderLoadedGroceryPage();
+	renderGroceryPageWithHistory();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("No Grocery");
 
-	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
-		target: { value: "Apples" },
-	});
+	const user = userEvent.setup();
 
-	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
-		target: { value: "0" },
-	});
+	await user.click(screen.getByRole("button", { name: "+" }));
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-		await flushPromises();
-	});
+	await user.type(
+		screen.getByPlaceholderText("enter grocery item"),
+		"Apples"
+	);
+
+	await user.clear(screen.getByPlaceholderText("Quantity"));
+	await user.type(screen.getByPlaceholderText("Quantity"), "0");
+
+	await user.click(screen.getByRole("button", { name: "Submit" }));
 
 	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 });
 
 test("does not submit grocery if price is negative", async () => {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		ok: true,
 		json: async () => [],
-	}) as jest.Mock;
+	}) as unknown as typeof fetch;
 
-	await renderLoadedGroceryPage();
+	renderGroceryPageWithHistory();
 
-	fireEvent.click(screen.getByRole("button", { name: "+" }));
+	await screen.findByText("No Grocery");
 
-	fireEvent.change(screen.getByPlaceholderText("enter grocery item"), {
-		target: { value: "Apples" },
-	});
+	const user = userEvent.setup();
 
-	fireEvent.change(screen.getByPlaceholderText("Quantity"), {
-		target: { value: "3" },
-	});
+	await user.click(screen.getByRole("button", { name: "+" }));
 
-	fireEvent.change(screen.getByPlaceholderText("Price, optional"), {
-		target: { value: "-1" },
-	});
+	await user.type(
+		screen.getByPlaceholderText("enter grocery item"),
+		"Apples"
+	);
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-		await flushPromises();
-	});
+	await user.clear(screen.getByPlaceholderText("Quantity"));
+	await user.type(screen.getByPlaceholderText("Quantity"), "3");
+	await user.type(screen.getByPlaceholderText("Price, optional"), "-1");
+
+	await user.click(screen.getByRole("button", { name: "Submit" }));
 
 	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 });
 
 test("clicking remove sends a DELETE request", async () => {
-	globalThis.fetch = jest
+	globalThis.fetch = vi
 		.fn()
 		.mockResolvedValueOnce({
 			ok: true,
@@ -342,25 +328,34 @@ test("clicking remove sends a DELETE request", async () => {
 		.mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({}),
-		}) as jest.Mock;
+		}) as unknown as typeof fetch;
 
-	await renderLoadedGroceryPage();
+	renderGroceryPageWithHistory();
 
-	fireEvent.click(
-		screen.getByRole("button", {
-			name: "remove Milk",
-		})
-	);
+	expect(
+		await screen.findByText("Milk - Qty: 2 - $4.00")
+	).toBeInTheDocument();
 
-	await act(async () => {
-		await flushPromises();
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "-" }));
+
+	const trashButton = screen
+		.getAllByRole("button")
+		.find((button) => button.querySelector("svg[data-icon='trash-can']"));
+
+	expect(trashButton).toBeDefined();
+
+	await user.click(trashButton as HTMLButtonElement);
+
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenNthCalledWith(
+			2,
+			`${API_BASE}/testhome/grocery/grocery-1`,
+			{
+				method: "DELETE",
+				credentials: "include",
+			}
+		);
 	});
-
-	expect(globalThis.fetch).toHaveBeenNthCalledWith(
-		2,
-		"http://localhost:8000/testhome/grocery/grocery-1",
-		{
-			method: "DELETE",
-		}
-	);
 });

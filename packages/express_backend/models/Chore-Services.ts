@@ -23,3 +23,7 @@ export function updateChore(choreId: mongoose.Types.ObjectId, data: any) {
 		runValidators: true,
 	});
 }
+
+export function getUncompletedChoresByHome(homeId: mongoose.Types.ObjectId) {
+	return Chore.find({ homeId: homeId, isCompleted: false });
+}

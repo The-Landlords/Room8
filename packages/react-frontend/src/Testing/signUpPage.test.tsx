@@ -1,15 +1,19 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import * as React from "react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import SignUpPage from "../pages/signUpPage";
 import { API_BASE } from "../config";
+
 function renderSignUpPage() {
 	return render(
 		<MemoryRouter initialEntries={["/signup"]}>
 			<Routes>
 				<Route path="/signup" element={<SignUpPage />} />
 				<Route
-					path="/settings/:username"
+					path="/settings/"
 					element={<div>User Settings Page</div>}
 				/>
 				<Route path="/" element={<div>Sign In Page</div>} />
@@ -18,44 +22,34 @@ function renderSignUpPage() {
 	);
 }
 
-async function flushPromises() {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-}
-
 function mockSuccessfulSignup() {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		json: async () => ({
 			username: "testuser",
 		}),
-	}) as jest.Mock;
+	}) as unknown as typeof fetch;
 }
 
 function mockFailedSignup() {
-	globalThis.fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
 		json: async () => ({
 			error: "Username already exists",
 		}),
-	}) as jest.Mock;
+	}) as unknown as typeof fetch;
 }
 
-function fillSignupForm() {
-	fireEvent.change(screen.getByPlaceholderText("Username"), {
-		target: { value: "testuser" },
-	});
+async function fillSignupForm() {
+	const user = userEvent.setup();
 
-	fireEvent.change(screen.getByPlaceholderText("Password"), {
-		target: { value: "password123" },
-	});
-
-	fireEvent.change(screen.getByPlaceholderText("Full Name"), {
-		target: { value: "Test User" },
-	});
+	await user.type(screen.getByPlaceholderText("Username"), "testuser");
+	await user.type(screen.getByPlaceholderText("Password"), "password123");
+	await user.type(screen.getByPlaceholderText("Full Name"), "Test User");
 }
 
 afterEach(() => {
-	jest.clearAllMocks();
+	cleanup();
+	vi.clearAllMocks();
+	vi.unstubAllGlobals();
 });
 
 test("renders the sign up form", () => {
@@ -68,46 +62,47 @@ test("renders the sign up form", () => {
 	expect(screen.getByPlaceholderText("Username")).toBeInTheDocument();
 	expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
 	expect(screen.getByPlaceholderText("Full Name")).toBeInTheDocument();
-
 	expect(screen.getByRole("button", { name: "Sign Up" })).toBeInTheDocument();
-
 	expect(screen.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
 });
 
-test("shows an error when fields are empty", () => {
-	renderSignUpPage();
+test("shows an error when fields are empty", async () => {
+	globalThis.fetch = vi.fn() as unknown as typeof fetch;
 
-	fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
+	renderSignUpPage();
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
 	expect(
 		screen.getByText("Please fill in username, password, and full name")
 	).toBeInTheDocument();
 
-	expect(globalThis.fetch).toBeUndefined();
+	expect(globalThis.fetch).not.toHaveBeenCalled();
 });
 
 test("sends signup request when form is filled out", async () => {
 	mockSuccessfulSignup();
 
 	renderSignUpPage();
+	await fillSignupForm();
+	const user = userEvent.setup();
 
-	fillSignupForm();
+	await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-		await flushPromises();
-	});
-
-	expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/users`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			username: "testuser",
-			password: "password123",
-			fullName: "Test User",
-		}),
+	await waitFor(() => {
+		expect(globalThis.fetch).toHaveBeenCalledWith(`${API_BASE}/users`, {
+			method: "POST",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				username: "testuser",
+				password: "password123",
+				fullName: "Test User",
+			}),
+		});
 	});
 });
 
@@ -115,50 +110,44 @@ test("navigates to settings page after successful signup", async () => {
 	mockSuccessfulSignup();
 
 	renderSignUpPage();
+	await fillSignupForm();
+	const user = userEvent.setup();
 
-	fillSignupForm();
+	await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-		await flushPromises();
-	});
-
-	expect(screen.getByText("User Settings Page")).toBeInTheDocument();
+	expect(await screen.findByText("User Settings Page")).toBeInTheDocument();
 });
 
 test("shows backend error when signup fails", async () => {
 	mockFailedSignup();
 
 	renderSignUpPage();
+	await fillSignupForm();
+	const user = userEvent.setup();
 
-	fillSignupForm();
+	await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-		await flushPromises();
-	});
-
-	expect(screen.getByText("Username already exists")).toBeInTheDocument();
-
+	expect(
+		await screen.findByText("Username already exists")
+	).toBeInTheDocument();
 	expect(screen.queryByText("User Settings Page")).not.toBeInTheDocument();
 });
 
 test("shows fallback error when fetch fails", async () => {
-	globalThis.fetch = jest
+	globalThis.fetch = vi
 		.fn()
-		.mockRejectedValueOnce(new Error("Network error")) as jest.Mock;
+		.mockRejectedValueOnce(
+			new Error("Network error")
+		) as unknown as typeof fetch;
 
 	renderSignUpPage();
+	await fillSignupForm();
+	const user = userEvent.setup();
 
-	fillSignupForm();
-
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-		await flushPromises();
-	});
+	await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
 	expect(
-		screen.getByText("Signup failed. Please try again.")
+		await screen.findByText("Signup failed. Please try again.")
 	).toBeInTheDocument();
 
 	expect(screen.queryByText("User Settings Page")).not.toBeInTheDocument();
