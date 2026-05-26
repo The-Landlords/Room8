@@ -12,7 +12,7 @@ export default function AddHomeOverlay({ onBack, onAdd }: AddHomeProps) {
 	const [homeCode, setHomeCode] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 	async function addHome() {
-		const relationship = { relationship: "RESIDENT" };
+		const relationship = { relationship: "GUEST" };
 		const promise = await fetch(`${API_BASE}/relate/me/${homeCode}`, {
 			method: "POST",
 			credentials: "include",

@@ -5,6 +5,7 @@ import { API_BASE } from "../config";
 
 export default function Residents() {
 	const [residents, setResidents] = useState<any[]>([]);
+	const [guests, setGuests] = useState<any[]>([]);
 	const { homeCode } = useParams();
 	const navigate = useNavigate();
 	async function fetchResidents() {
@@ -23,8 +24,26 @@ export default function Residents() {
 				setResidents([]);
 			});
 	}
+	async function fetchGuests() {
+		if (!homeCode) return;
+
+		fetch(`${API_BASE}/auth/guests/me/${homeCode}`, {
+			credentials: "include",
+		})
+			.then((res) => {
+				if (!res.ok)
+					console.log("Guests not found for home code: " + homeCode);
+				return res.json();
+			})
+			.then((data) => setGuests(data))
+			.catch((err) => {
+				console.error(err);
+				setGuests([]);
+			});
+	}
 	useEffect(() => {
 		fetchResidents().catch(console.error);
+		fetchGuests().catch(console.error);
 	}, [homeCode]);
 	return (
 		<div className="flex flex-col">
@@ -49,10 +68,16 @@ export default function Residents() {
 							<h1 className="header-secondary">
 								{resident.fullName}
 							</h1>
-							<p>
-								Allergens:{" "}
-								{resident.allergens.join(", ") || "None"}
-							</p>
+							{resident.allergies &&
+							resident.allergies.length > 0 ? (
+								<p>
+									Allergies:{" "}
+									{resident.allergies.join(", ") || "None"}
+								</p>
+							) : (
+								<p />
+							)}
+
 							{resident.pronouns ? (
 								<div>
 									<p>
@@ -118,6 +143,100 @@ export default function Residents() {
 					homeCode={homeCode ? [homeCode] : undefined}
 				/>
 			</div>
+			{guests.length > 0 ? (
+				<div className="flex flex-col items-center">
+					<h1 className="header ">Guests</h1>
+					<List
+						item="Guests"
+						items={guests}
+						handleAddClick={() => {}}
+						handleRemoveClick={() => {}}
+						renderItem={(guest) => (
+							<div className="flex flex-row gap-4">
+								<h1 className="header-secondary">
+									{guest.fullName}
+								</h1>
+								{guest.allergies &&
+								guest.allergies.length > 0 ? (
+									<p>
+										Allergies:{" "}
+										{guest.allergies.join(", ") || "None"}
+									</p>
+								) : (
+									<p />
+								)}
+
+								{guest.pronouns ? (
+									<div>
+										<p>
+											Dislikes: {guest.pronouns || "N/A"}
+										</p>
+									</div>
+								) : (
+									<p />
+								)}
+								{guest.DOB ? (
+									<div>
+										<p>
+											Date of Birth: {guest.DOB || "N/A"}
+										</p>
+									</div>
+								) : (
+									<p />
+								)}
+								{guest.likes ? (
+									<div>
+										<p>
+											Likes:{" "}
+											{guest.likes?.join(", ") || "N/A"}
+										</p>
+									</div>
+								) : (
+									<p />
+								)}
+								{guest.dislikes ? (
+									<div>
+										<p>
+											Dislikes:{" "}
+											{guest.dislikes?.join(", ") ||
+												"N/A"}
+										</p>
+									</div>
+								) : (
+									<p />
+								)}
+								{guest.emergencyContact ? (
+									<div>
+										<p>
+											Emergency Contact Name:{" "}
+											{guest.emergencyContact.name ||
+												"N/A"}
+										</p>
+										<p>
+											Emergency Contact Phone:{" "}
+											{guest.emergencyContact.phone ||
+												"N/A"}
+										</p>
+										<p>
+											Emergency Contact Relationship:{" "}
+											{guest.emergencyContact
+												.relationship || "N/A"}
+										</p>
+									</div>
+								) : (
+									<p />
+								)}
+							</div>
+						)}
+						getKey={(guest) => guest._id}
+						homeCode={homeCode ? [homeCode] : undefined}
+					/>
+				</div>
+			) : (
+				<p className="text-center mt-4">
+					No guests found for this home.
+				</p>
+			)}
 		</div>
 	);
 }
