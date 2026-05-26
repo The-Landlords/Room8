@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import List from "../components/list";
 import { useParams, useNavigate } from "react-router-dom";
 import { API_BASE } from "../config";
+import GuestVoteOverlay from "../components/GuestVoteOverlay";
+import Overlay from "../components/overlay";
 
 export default function Residents() {
 	const [residents, setResidents] = useState<any[]>([]);
 	const [guests, setGuests] = useState<any[]>([]);
 	const [relationship, setRelationship] = useState<string>("");
 	const { homeCode } = useParams();
+	const [openVotePanel, setOpenVotePanel] = useState(false);
 	const navigate = useNavigate();
 	async function fetchResidents() {
 		if (!homeCode) return;
@@ -78,6 +81,18 @@ export default function Residents() {
 					←
 				</button>
 			</div>
+			{openVotePanel && (
+				<Overlay
+					isOpen={openVotePanel}
+					onClose={() => setOpenVotePanel(false)}
+				>
+					<GuestVoteOverlay
+						guests={guests}
+						homeCode={homeCode || ""}
+						username={""}
+					/>
+				</Overlay>
+			)}
 			<div className="flex flex-col items-center">
 				<h1 className="header ">Residents</h1>
 				<List
@@ -90,11 +105,11 @@ export default function Residents() {
 							<h1 className="header-secondary">
 								{resident.fullName}
 							</h1>
-							{resident.allergies &&
-							resident.allergies.length > 0 ? (
+							{resident.allergens &&
+							resident.allergens.length > 0 ? (
 								<p>
-									Allergies:{" "}
-									{resident.allergies.join(", ") || "None"}
+									Allergies:
+									{resident.allergens?.join(", ") || "None"}
 								</p>
 							) : (
 								<p />
@@ -248,14 +263,21 @@ export default function Residents() {
 								) : (
 									<p />
 								)}
-								{relationship === "RESIDENT" && (
-									<button>Vote to Become Resident</button>
-								)}
 							</div>
 						)}
 						getKey={(guest) => guest._id}
 						homeCode={homeCode ? [homeCode] : undefined}
 					/>
+					{relationship === "RESIDENT" && (
+						<button
+							className="button"
+							onClick={() => {
+								setOpenVotePanel(true);
+							}}
+						>
+							Vote
+						</button>
+					)}
 				</div>
 			) : (
 				<p className="text-center mt-4">
