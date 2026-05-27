@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 
 import {
 	getUsersByHomeAndRelation,
-	getUserByUsername,
+	getUserById
 } from "../models/User-Services.js";
 
 import { getHomeByCode } from "../models/Home-Services.js";
@@ -13,10 +13,11 @@ import {
 	createRule,
 	getRulesByHome,
 	removeRuleById,
-	updateRule,
 } from "../models/Rules-Services.js";
 
 import { Rule } from "../models/Rule.js";
+
+import { requireAuth } from "./userSessionAuth.js";
 
 export const ruleRouter = express.Router();
 
@@ -25,18 +26,22 @@ const asString = (val: string | string[] | undefined): string => {
 	return Array.isArray(val) ? val[0] : val;
 };
 
-// get user
-ruleRouter.get("/auth/user/:username", async (req, res) => {
+ruleRouter.get("/auth/me", requireAuth, async (req, res) => {
 	try {
-		const user = await getUserByUsername(asString(req.params.username));
+		const user = await getUserById(
+			new mongoose.Types.ObjectId(req.session.userId)
+		);
 
-		if (!user) return res.status(404).json({ error: "User not found" });
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
 
 		return res.json(user);
 	} catch {
 		return res.status(500).json({ error: "Failed to fetch user" });
 	}
 });
+
 
 // get rules
 ruleRouter.get("/homes/rules/:homeCode", async (req, res) => {
@@ -49,7 +54,7 @@ ruleRouter.get("/homes/rules/:homeCode", async (req, res) => {
 });
 
 // create rule
-ruleRouter.post("/homes/rules", async (req, res) => {
+ruleRouter.post("/homes/rules", requireAuth, async (req, res) => {
 	try {
 		const home = await getHomeByCode(req.body.homeCode);
 
@@ -77,17 +82,20 @@ async function getResidentCount(homeId: mongoose.Types.ObjectId) {
 }
 
 // ===================== VOTE =====================
-ruleRouter.post("/rules/:ruleId/vote", async (req, res) => {
+ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
+	//ruleRouter.post("/rules/:ruleId/vote", async (req, res) => {
 	try {
 		const { ruleId } = req.params;
-		const { voteId, vote } = req.body;
+		const { vote } = req.body;
+
+		const voteId = req.session.userId;
 
 		if (!mongoose.Types.ObjectId.isValid(ruleId)) {
 			return res.status(400).json({ error: "Invalid rule id" });
 		}
 
-		if (!voteId || !vote) {
-			return res.status(400).json({ error: "Missing voteId or vote" });
+		if (!vote) {
+			return res.status(400).json({ error: "Missing vote" });
 		}
 
 		const rule = await Rule.findById(ruleId);
@@ -130,17 +138,20 @@ ruleRouter.post("/rules/:ruleId/vote", async (req, res) => {
 });
 
 // ===================== DELETE VOTE =====================
-ruleRouter.post("/rules/:ruleId/delete-vote", async (req, res) => {
+ruleRouter.post("/rules/:ruleId/delete-vote", requireAuth, async (req, res) => {
+	//ruleRouter.post("/rules/:ruleId/delete-vote", async (req, res) => {
 	try {
 		const { ruleId } = req.params;
-		const { voteId, vote } = req.body;
+		const { vote } = req.body;
+
+		const voteId = req.session.userId
 
 		if (!mongoose.Types.ObjectId.isValid(ruleId)) {
 			return res.status(400).json({ error: "Invalid rule id" });
 		}
 
-		if (!voteId || !vote) {
-			return res.status(400).json({ error: "Missing voteId or vote" });
+		if (!vote) {
+			return res.status(400).json({ error: "Missing vote" });
 		}
 
 		const rule = await Rule.findById(ruleId);

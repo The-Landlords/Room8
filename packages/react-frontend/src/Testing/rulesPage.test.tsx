@@ -279,6 +279,8 @@ test("clicking yes vote posts vote and refreshes rules", async () => {
 
 	const user = userEvent.setup();
 
+	await user.click(screen.getByRole("button", { name: /vote/i }));
+
 	await user.click(screen.getByRole("button", { name: /yes/i }));
 
 	await waitFor(() => {
@@ -288,7 +290,6 @@ test("clicking yes vote posts vote and refreshes rules", async () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					voteId: "test-vote-id",
 					vote: "YES",
 				}),
 			})

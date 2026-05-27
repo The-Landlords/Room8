@@ -1,38 +1,47 @@
+// VotePanel.tsx
+
 interface VotePanelProps {
 	ruleId: string;
-	myVote?: "YES" | "NO";
 	yesCount: number;
 	noCount: number;
-	onVote: (ruleId: string, vote: "YES" | "NO") => void;
-	voteId?: string;
+	onVote: (id: string, vote: "YES" | "NO") => void;
+	myVote?: "YES" | "NO";
 }
 
 export default function VotePanel({
 	ruleId,
-	myVote,
 	yesCount,
 	noCount,
 	onVote,
-	voteId,
+	myVote,
 }: VotePanelProps) {
+	const base =
+		"px-3 py-1 rounded-lg border font-medium transition";
+
+	const yesClass =
+		myVote === "YES"
+			? "bg-green-500 text-white border-green-600"
+			: "bg-gray-200 hover:bg-gray-300";
+
+	const noClass =
+		myVote === "NO"
+			? "bg-red-500 text-white border-red-600"
+			: "bg-gray-200 hover:bg-gray-300";
+
 	return (
 		<div className="flex gap-2 items-center">
 			<button
-				disabled={!voteId}
+				type="button"
 				onClick={() => onVote(ruleId, "YES")}
-				className={`button px-3 py-1 ${
-					myVote === "YES" ? "vote-yes" : ""
-				}`}
+				className={`${base} ${yesClass}`}
 			>
 				YES
 			</button>
 
 			<button
-				disabled={!voteId}
+				type="button"
 				onClick={() => onVote(ruleId, "NO")}
-				className={`button px-3 py-1 ${
-					myVote === "NO" ? "bg-red-500 text-white" : ""
-				}`}
+				className={`${base} ${noClass}`}
 			>
 				NO
 			</button>

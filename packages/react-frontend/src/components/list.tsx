@@ -22,11 +22,13 @@ interface ListProps<T> {
 	handleAddClick: () => void;
 	handleRemoveClick: (item: T) => void;
 	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
+	handleVoteClick?: () => void;
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
+
 }
 
 export default function List<T>({
@@ -39,6 +41,7 @@ export default function List<T>({
 	getKey,
 	homeCode,
 	eventIds,
+	handleVoteClick,
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
@@ -187,7 +190,7 @@ export default function List<T>({
 
 					{item === "Rules" && (
 						<button
-							onClick={() => (window as any).toggleVoting?.()}
+							onClick={handleVoteClick}
 							className="button absolute right-0"
 						>
 							Vote
