@@ -32,21 +32,23 @@ export default function VotePanel({
 		<div className="flex gap-2 items-center">
 			<button
 				type="button"
+				aria-label="YES"
 				onClick={() => onVote(ruleId, "YES")}
 				className={`${base} ${yesClass}`}
 			>
-				YES
+				✓
 			</button>
 
 			<button
 				type="button"
+				aria-label="NO"
 				onClick={() => onVote(ruleId, "NO")}
 				className={`${base} ${noClass}`}
 			>
-				NO
+				X
 			</button>
 
-			<p className="text-xs text-text/70 ml-2">
+			<p className="text-xs text-text/70 ml-2 whitespace-nowrap">
 				YES {yesCount} | NO {noCount}
 			</p>
 		</div>

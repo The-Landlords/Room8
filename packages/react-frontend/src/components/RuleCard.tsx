@@ -54,41 +54,34 @@ export default function RuleCard({
 	)?.vote;
 
 	return (
-		<div className="w-full border rounded-xl p-4 bg-white/40">
-			<div className="grid grid-cols-[1fr_auto_auto] items-start w-full gap-4">
-				{/* DESCRIPTION */}
-				<div>
-					<p className="text-base font-medium break-words">
-						{rule.description}
-					</p>
-				</div>
+		<div className="grid grid-cols-[1fr_120px_auto_220px] items-center gap-4 w-full">
+			{/* RULE */}
+			<p className="text-lg font-bold truncate">
+				{rule.description}
+			</p>
 
-				{/* APPROVAL COUNT */}
-				<div className="flex justify-center">
-					<p className="text-sm text-text/70 whitespace-nowrap">
-						{yes}/{totalResidents} Approve
-					</p>
-				</div>
+			{/* APPROVAL COUNT */}
+			<p className="text-sm text-text/70 italic text-center whitespace-nowrap">
+				{yes}/{totalResidents} Approve
+			</p>
 
-				{/* STATUS + VOTING */}
-				<div className="flex flex-col items-end max-w-[220px]">
-					<p className="text-sm text-text/70 whitespace-nowrap">
-						Status: {formatStatus(rule.status)}
-					</p>
-
-					{showVoting && (
-						<div className="mt-2">
-							<VotePanel
-								ruleId={rule._id}
-								yesCount={yes}
-								noCount={no}
-								onVote={onVote}
-								myVote={myVote}
-							/>
-						</div>
-					)}
-				</div>
+			{/* BUTTONS */}
+			<div className="flex justify-end">
+				{showVoting && (
+					<VotePanel
+						ruleId={rule._id}
+						yesCount={yes}
+						noCount={no}
+						onVote={onVote}
+						myVote={myVote}
+					/>
+				)}
 			</div>
+
+			{/* STATUS */}
+			<p className="text-lg font-bold text-right whitespace-nowrap">
+				Status : {formatStatus(rule.status)}
+			</p>
 		</div>
 	);
 }
