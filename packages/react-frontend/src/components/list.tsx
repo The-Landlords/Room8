@@ -29,6 +29,7 @@ interface ListProps<T> {
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
+	css?: string;
 }
 
 export default function List<T>({
@@ -42,6 +43,7 @@ export default function List<T>({
 	relationship,
 	homeCode,
 	eventIds,
+	css,
 	handleVoteClick,
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
@@ -55,7 +57,7 @@ export default function List<T>({
 
 	const [removeMode, setRemoveMode] = useState(false);
 	return (
-		<div className="flex flex-col gap-2 list-container animate-floatUp">
+		<div className={` animate-floatUp ${css || ""}`}>
 			<h1 className="header-secondary">
 				{isHomeSpaces ? `Current ${item}` : item}
 			</h1>

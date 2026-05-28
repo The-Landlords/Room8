@@ -77,7 +77,7 @@ export default function HomeList() {
 
 	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
-		<div className="background-house flex flex-col items-center">
+		<div className=" flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
 			<div className="iconWrapper">
 				<Link to={`/settings`}>
@@ -149,6 +149,7 @@ export default function HomeList() {
 							</div>
 						</div>
 					)}
+					css="panel"
 				/>
 			)}
 			{homes.length == 0 && (
@@ -160,6 +161,7 @@ export default function HomeList() {
 					homeCode={homeCodes}
 					getKey={(name) => name}
 					renderItem={(name) => <span>{name}</span>}
+					css="panel"
 				/>
 			)}
 		</div>

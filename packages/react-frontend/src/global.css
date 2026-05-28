@@ -1,32 +1,34 @@
-@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Sriracha&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
 @import "tailwindcss";
 
 body {
-	background-color: #f6f1ea;
+	background-color: #F4FBFF;
 }
 @theme {
-	--color-text: #584945;
-	--color-primary: #b5a398;
-	--color-secondary: #f6f1ea;
-	--font-primary: "Sriracha", cursive;
+	--color-text: #FFFFFF;
+	--color-primary: #96C3E3;
+	--color-secondary: #DEF0F9;
+	--color-accent: #F7FFE3;
+	--font-primary: "Inter", sans-serif;
 	--font-secondary: "Gowun Dodum", sans-serif;
 }
 
 @layer components {
 	.header {
-		@apply bg-primary/70 font-primary text-text text-4xl font-bold text-center p-4 rounded-lg shadow-md max-w-80;
+		@apply  font-primary text-primary text-4xl font-bold text-center pt-8  max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-text text-2xl font-semibold p-2  max-w-100;
+		@apply font-primary text-primary text-2xl pt-2;
 	}
 	.panel {
-		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-40 max-h-150 relative overflow-auto;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
 	.panel-secondary {
-		@apply bg-primary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
+		@apply bg-primary flex flex-col gap-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
-	.list-container {
-		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-20 min-h-100 max-h-150 relative overflow-auto;
+	.panel-small {
+		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 m-4 min-w-[20%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
 	.iconWrapper {
 		@apply opacity-70 self-end-safe hover:opacity-90 transition duration-200;
@@ -65,13 +67,7 @@ body {
 		@apply bg-primary/70 rounded-2xl p-6 flex gap-4 justify-between items-start shadow-sm;
 	}
 
-	.vote-yes {
-		@apply bg-green-500 text-white;
-	}
 
-	.vote-no {
-		@apply bg-red-500 text-white;
-	}
 }
 
 @keyframes floatUp {
