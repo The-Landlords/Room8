@@ -24,11 +24,11 @@ interface ListProps<T> {
 	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
 	handleVoteClick?: () => void;
 	renderItem: (item: T) => React.ReactNode;
+	relationship?: (item: T) => string | "";
 	getKey: (item: T) => string;
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
-
 }
 
 export default function List<T>({
@@ -39,6 +39,7 @@ export default function List<T>({
 	handleEditClick,
 	renderItem,
 	getKey,
+	relationship,
 	homeCode,
 	eventIds,
 	handleVoteClick,
@@ -74,65 +75,98 @@ export default function List<T>({
 						<span className="flex w-full items-center">
 							{renderItem(listItem)}
 
-							{isHomeSpaces && !removeMode && (
-								<div className="relative ml-auto gap-4 flex self-end-safe">
-									<Link
-										to={`/residents/${homeCode?.[index]}`}
-									>
-										<FontAwesomeIcon
-											className="iconWrapper"
-											icon={faPeopleRoof}
-										/>
-									</Link>
-									{homeCode?.[index] && (
-										<Link to={`/rules/${homeCode[index]}`}>
-											<FontAwesomeIcon
-												className="iconWrapper"
-												icon={faFileContract}
-											/>
-										</Link>
-									)}
-									{homeCode?.[index] && (
-										<Link to={`/events/${homeCode[index]}`}>
-											<FontAwesomeIcon
-												className="iconWrapper"
-												icon={faCalendar}
-											/>
-										</Link>
-									)}
-
-									{homeCode?.[index] && (
-										<Link to={`/${homeCode[index]}/chores`}>
-											<FontAwesomeIcon
-												className="iconWrapper"
-												icon={faClipboardCheck}
-											/>
-										</Link>
-									)}
-
-									{homeCode?.[index] && (
+							{isHomeSpaces &&
+								!removeMode &&
+								relationship?.(listItem) === "RESIDENT" && (
+									<div className="relative ml-auto gap-4 flex self-end-safe">
 										<Link
-											to={`/grocery/${homeCode[index]}`}
+											to={`/residents/${homeCode?.[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faCartShopping}
+												icon={faPeopleRoof}
 											/>
 										</Link>
-									)}
+										{homeCode?.[index] && (
+											<Link
+												to={`/rules/${homeCode[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faFileContract}
+												/>
+											</Link>
+										)}
+										{homeCode?.[index] && (
+											<Link
+												to={`/events/${homeCode[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faCalendar}
+												/>
+											</Link>
+										)}
 
-									{homeCode?.[index] && (
+										{homeCode?.[index] && (
+											<Link
+												to={`/${homeCode[index]}/chores`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faClipboardCheck}
+												/>
+											</Link>
+										)}
+
+										{homeCode?.[index] && (
+											<Link
+												to={`/grocery/${homeCode[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faCartShopping}
+												/>
+											</Link>
+										)}
+
+										{homeCode?.[index] && (
+											<Link
+												to={`/homeDisplay/me/${homeCode?.[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faAngleRight}
+												/>
+											</Link>
+										)}
+									</div>
+								)}
+							{isHomeSpaces &&
+								!removeMode &&
+								relationship?.(listItem) === "GUEST" && (
+									<div className="relative ml-auto gap-4 flex self-end-safe">
 										<Link
-											to={`/homeDisplay/me/${homeCode?.[index]}`}
+											to={`/residents/${homeCode?.[index]}`}
 										>
 											<FontAwesomeIcon
 												className="iconWrapper"
-												icon={faAngleRight}
+												icon={faPeopleRoof}
 											/>
 										</Link>
-									)}
-								</div>
-							)}
+
+										{homeCode?.[index] && (
+											<Link
+												to={`/homeDisplay/me/${homeCode?.[index]}`}
+											>
+												<FontAwesomeIcon
+													className="iconWrapper"
+													icon={faAngleRight}
+												/>
+											</Link>
+										)}
+									</div>
+								)}
 							{isEvents && eventIds?.[index] && (
 								<div className="relative ml-auto flex gap-4 self-end-safe">
 									<a

@@ -25,8 +25,15 @@ export default function HomeList() {
 		setOverlayOpen(false);
 	};
 
-	async function handleAdd(data: any) {
-		setHomes((prev) => [...prev, data]);
+	type Relationship = "RESIDENT" | "GUEST";
+
+	async function handleAdd(data: any, relationship: Relationship) {
+		const homeWithRelationship = {
+			...data,
+			relationship,
+		};
+
+		setHomes((prev) => [...prev, homeWithRelationship]);
 		handleClose();
 	}
 
@@ -61,8 +68,13 @@ export default function HomeList() {
 		fetchHomes().catch(console.error);
 	}, []);
 
-	const homeNames = homes?.map((h) => h.homeName);
-	// const homeLocations = homes?.map((h) => h.address);
+	function getRelationship(home: any): string {
+		const relationship = home.relationship;
+		if (relationship === "RESIDENT") return "RESIDENT";
+		if (relationship === "GUEST") return "GUEST";
+		return "";
+	}
+
 	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
 		<div className="background-house flex flex-col items-center">
@@ -89,7 +101,7 @@ export default function HomeList() {
 							setAddState(data);
 						}}
 						onAdd={(data: any) => {
-							handleAdd(data);
+							handleAdd(data, "GUEST");
 						}}
 					/>
 				)}
@@ -99,7 +111,7 @@ export default function HomeList() {
 							setAddState(data);
 						}}
 						onAdd={(data: any) => {
-							handleAdd(data);
+							handleAdd(data, "RESIDENT");
 						}}
 					/>
 				)}
@@ -116,7 +128,7 @@ export default function HomeList() {
 					/>
 				)}
 			</Overlay>
-			{homeNames.length > 0 && (
+			{homes.length > 0 && (
 				<List
 					item="Home Spaces"
 					items={homes}
@@ -124,6 +136,7 @@ export default function HomeList() {
 					handleRemoveClick={(home) => handleRemoveClick(home)}
 					homeCode={homeCodes}
 					getKey={(home) => home._id}
+					relationship={(home) => getRelationship(home)}
 					renderItem={(home) => (
 						<div>
 							<div>{home.homeName}</div>
@@ -138,7 +151,7 @@ export default function HomeList() {
 					)}
 				/>
 			)}
-			{homeNames.length == 0 && (
+			{homes.length == 0 && (
 				<List<string>
 					item="Home Spaces"
 					items={["No Homes available! Click below to add."]}

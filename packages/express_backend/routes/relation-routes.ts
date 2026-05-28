@@ -107,7 +107,24 @@ relationRouter.get(
 
 			let homes = [];
 			homes = await getHomesByUser(u._id);
-			res.status(200).json(homes);
+			const homesWithRelationship = homes.map((home: any) => {
+				const homeObj = home.toObject ? home.toObject() : home;
+
+				const currentUserHomeEntry = homeObj.userIds.find(
+					(entry: any) => {
+						return String(entry.userId) === String(u._id);
+					}
+				);
+
+				const { userIds, ...homeWithoutUserIds } = homeObj;
+
+				return {
+					...homeWithoutUserIds,
+					relationship: currentUserHomeEntry?.relationship ?? "",
+				};
+			});
+
+			res.status(200).json(homesWithRelationship);
 		} catch (err) {
 			console.error(err);
 			res.status(500).json({ error: "Failed to fetch homes from user" });
