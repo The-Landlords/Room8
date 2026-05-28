@@ -25,6 +25,9 @@ function filterResidents(residents: any[], userOneRelation: string) {
 			_id: resident._id,
 			fullName: resident.fullName,
 			allergens: resident.allergens,
+			phone: canSee(resident.visibility.phoneVisible, userOneRelation)
+				? resident.phone
+				: undefined,
 			pronouns: canSee(
 				resident.visibility.pronounsVisible,
 				userOneRelation
@@ -53,6 +56,43 @@ function filterResidents(residents: any[], userOneRelation: string) {
 	});
 }
 
+function filterGuests(guests: any[], userOneRelation: string) {
+	return guests.map((guests) => {
+		return {
+			_id: guests._id,
+			fullName: guests.fullName,
+			allergens: guests.allergens,
+			phone: canSeeGuest(guests.visibility.phoneVisible, userOneRelation)
+				? guests.phone
+				: undefined,
+			pronouns: canSeeGuest(
+				guests.visibility.pronounsVisible,
+				userOneRelation
+			)
+				? guests.pronouns
+				: undefined,
+			DOB: canSeeGuest(guests.visibility.dobVisible, userOneRelation)
+				? guests.DOB
+				: undefined,
+			likes: canSeeGuest(guests.visibility.likesVisible, userOneRelation)
+				? guests.likes
+				: undefined,
+			dislikes: canSeeGuest(
+				guests.visibility.dislikesVisible,
+				userOneRelation
+			)
+				? guests.dislikes
+				: undefined,
+			emergencyContact: canSeeGuest(
+				guests.visibility.emergencyContactVisible,
+				userOneRelation
+			)
+				? guests.emergencyContact
+				: undefined,
+		};
+	});
+}
+
 function canSee(fieldVisible: string, userOneRelation: string): boolean {
 	if (!fieldVisible) {
 		return false;
@@ -65,13 +105,23 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 	}
 	return false;
 }
+function canSeeGuest(fieldVisible: string, userOneRelation: string): boolean {
+	if (!fieldVisible) {
+		return false;
+	}
+	if (fieldVisible === "PUBLIC") {
+		return true;
+	}
+	return false;
+}
 
+//gets residents of a home and their information based on the relationship of the user making the request to the home
 authRouter.get(
 	"/auth/residents/:homeCode/",
 	requireAuth,
 	async (req: Request, res: Response) => {
 		const { homeCode } = req.params;
-		console.log("Received request for residents with params:", req.params);
+
 		// uses session cookies
 		const userOne = await getUserById(
 			new mongoose.Types.ObjectId(req.session.userId)
@@ -108,14 +158,53 @@ authRouter.get(
 	}
 );
 
+//gets guests of a home and their information based on the relationship of the user making the request to the home
+authRouter.get(
+	"/auth/guests/me/:homeCode/",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		const { homeCode } = req.params;
+
+		// uses session cookies
+		const userOne = await getUserById(
+			new mongoose.Types.ObjectId(req.session.userId)
+		);
+		const home = await getHomeByCode(homeCode.toString());
+		if (!userOne || !home) {
+			console.log("User or home not found");
+			return res.status(404).json({ error: "User or home not found" });
+		}
+
+		const guests = await getUsersByHomeAndRelation(home._id, "GUEST");
+
+		if (guests.length === 0) {
+			console.log("No guests found for home code: " + homeCode);
+			return res.status(404).json({
+				error: "No residents found for the provided home code",
+			});
+		}
+
+		const userOneRelationObject = await getUserHomeRelation(
+			userOne._id,
+			home._id
+		);
+		const userOneRelation = userOneRelationObject?.homeIds[0].relationship;
+		if (!userOneRelation) {
+			console.log("No shared home found between user and home");
+			return res
+				.status(404)
+				.json({ error: "No shared home found between users" });
+		}
+		const filteredUsers = filterGuests(guests, userOneRelation);
+
+		res.status(200).json(filteredUsers);
+	}
+);
+
 authRouter.get(
 	"/auth/homeDisplay/me/:homeCode/",
 	requireAuth,
 	async (req: Request, res: Response) => {
-		console.log(
-			"Received request for home display with params:",
-			req.params
-		);
 		const { homeCode } = req.params;
 		const home = await getHomeByCode(homeCode.toString());
 		if (!home) {
@@ -145,7 +234,6 @@ authRouter.get(
 				events: await getUpcomingEventsByHome(home._id),
 			};
 			res.status(200).json(homeDisplay);
-			console.log("Home Display for resident:", homeDisplay);
 		} else {
 			const homeDisplay = {
 				name: home.homeName,
@@ -153,8 +241,35 @@ authRouter.get(
 				rules: await getApprovedRulesByHome(home._id),
 				events: await getUpcomingEventsByHome(home._id),
 			};
-			console.log("Home Display for non-resident:", homeDisplay);
+
 			res.status(200).json(homeDisplay);
 		}
+	}
+);
+
+//gets a users relationship to a home based on the home code
+authRouter.get(
+	"/auth/relationship/me/:homeCode/",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		const { homeCode } = req.params;
+		const home = await getHomeByCode(homeCode.toString());
+		if (!home) {
+			return res.status(404).json({ error: "User or home not found" });
+		}
+
+		const userRelationObject = await getUserHomeRelation(
+			new mongoose.Types.ObjectId(req.session.userId),
+			home._id
+		);
+		const userRelation = userRelationObject?.homeIds[0].relationship;
+		if (!userRelation) {
+			console.log("No shared home found between user and home");
+			return res
+				.status(404)
+				.json({ error: "No shared home found between users" });
+		}
+
+		res.status(200).json({ relationship: userRelation });
 	}
 );
