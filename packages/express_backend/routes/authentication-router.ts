@@ -25,6 +25,9 @@ function filterResidents(residents: any[], userOneRelation: string) {
 			_id: resident._id,
 			fullName: resident.fullName,
 			allergens: resident.allergens,
+			phone: canSee(resident.visibility.phoneVisible, userOneRelation)
+				? resident.phone
+				: undefined,
 			pronouns: canSee(
 				resident.visibility.pronounsVisible,
 				userOneRelation
@@ -59,6 +62,9 @@ function filterGuests(guests: any[], userOneRelation: string) {
 			_id: guests._id,
 			fullName: guests.fullName,
 			allergens: guests.allergens,
+			phone: canSeeGuest(guests.visibility.phoneVisible, userOneRelation)
+				? guests.phone
+				: undefined,
 			pronouns: canSeeGuest(
 				guests.visibility.pronounsVisible,
 				userOneRelation
