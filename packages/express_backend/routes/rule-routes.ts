@@ -43,13 +43,79 @@ ruleRouter.get("/auth/me", requireAuth, async (req, res) => {
 });
 
 
-// get rules
 ruleRouter.get("/homes/rules/:homeCode", async (req, res) => {
 	try {
-		const rules = await getRulesByHome(asString(req.params.homeCode));
-		return res.json(rules);
+		const rules = await getRulesByHome(
+			asString(req.params.homeCode)
+		);
+
+		const cleanedRules = await Promise.all(
+			rules.map(async (rule) => {
+				if (!rule.homeId) {
+					return rule;
+				}
+
+				const validVotes = await filterValidVotes(
+					rule.homeId,
+					rule.votes ?? []
+				);
+
+				const validDeleteVotes = await filterValidVotes(
+					rule.homeId,
+					rule.deleteVotes ?? []
+				);
+
+				let changed = false;
+
+				if (
+					validVotes.length !==
+					(rule.votes ?? []).length
+				) {
+					rule.votes = validVotes;
+					changed = true;
+				}
+
+				if (
+					validDeleteVotes.length !==
+					(rule.deleteVotes ?? []).length
+				) {
+					rule.deleteVotes = validDeleteVotes;
+					changed = true;
+				}
+
+				const yes = validVotes.filter(
+					(v) => v.vote === "YES"
+				).length;
+
+				const no = validVotes.filter(
+					(v) => v.vote === "NO"
+				).length;
+
+				const TOTAL = await getResidentCount(
+					rule.homeId
+				);
+
+				if (no > 0) {
+					rule.status = "REJECTED";
+				} else if (yes >= TOTAL) {
+					rule.status = "CONFIRMED";
+				} else {
+					rule.status = "PENDING";
+				}
+
+				if (changed) {
+					await rule.save();
+				}
+
+				return rule;
+			})
+		);
+
+		return res.json(cleanedRules);
 	} catch {
-		return res.status(500).json({ error: "Failed to fetch rules" });
+		return res.status(500).json({
+			error: "Failed to fetch rules",
+		});
 	}
 });
 
@@ -81,7 +147,25 @@ async function getResidentCount(homeId: mongoose.Types.ObjectId) {
 	return res.length;
 }
 
-// ===================== VOTE =====================
+async function filterValidVotes(
+	homeId: mongoose.Types.ObjectId,
+	votes: { voteId: string; vote: "YES" | "NO" }[]
+) {
+	const residents = await getUsersByHomeAndRelation(
+		homeId,
+		"RESIDENT"
+	);
+
+	const residentIds = new Set(
+		residents.map((r) => String(r._id))
+	);
+
+	return votes.filter((v) =>
+		residentIds.has(String(v.voteId))
+	);
+}
+
+// dVOTE d
 ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
 	//ruleRouter.post("/rules/:ruleId/vote", async (req, res) => {
 	try {
@@ -101,7 +185,10 @@ ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
 		const rule = await Rule.findById(ruleId);
 		if (!rule) return res.status(404).json({ error: "Rule not found" });
 
-		const votes = rule.votes ?? [];
+		let votes = await filterValidVotes(
+			rule.homeId,
+			rule.votes ?? []
+		);
 
 		const idx = votes.findIndex((v) => String(v.voteId) === String(voteId));
 
@@ -157,7 +244,10 @@ ruleRouter.post("/rules/:ruleId/delete-vote", requireAuth, async (req, res) => {
 		const rule = await Rule.findById(ruleId);
 		if (!rule) return res.status(404).json({ error: "Rule not found" });
 
-		const deleteVotes = rule.deleteVotes ?? [];
+		let deleteVotes = await filterValidVotes(
+			rule.homeId,
+			rule.deleteVotes ?? []
+		);
 
 		const idx = deleteVotes.findIndex(
 			(v) => String(v.voteId) === String(voteId)
