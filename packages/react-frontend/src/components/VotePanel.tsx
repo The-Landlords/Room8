@@ -1,41 +1,54 @@
-// import React from "react";
+// VotePanel.tsx
 
 interface VotePanelProps {
 	ruleId: string;
-	myVote?: "YES" | "NO";
 	yesCount: number;
 	noCount: number;
-	onVote: (ruleId: string, vote: "YES" | "NO") => void;
+	onVote: (id: string, vote: "YES" | "NO") => void;
+	myVote?: "YES" | "NO";
 }
 
 export default function VotePanel({
 	ruleId,
-	myVote,
 	yesCount,
 	noCount,
 	onVote,
+	myVote,
 }: VotePanelProps) {
+	const base =
+		"px-3 py-1 rounded-lg border font-medium transition";
+
+	const yesClass =
+		myVote === "YES"
+			? "bg-green-500 text-white border-green-600"
+			: "bg-gray-200 hover:bg-gray-300";
+
+	const noClass =
+		myVote === "NO"
+			? "bg-red-500 text-white border-red-600"
+			: "bg-gray-200 hover:bg-gray-300";
+
 	return (
-		<div className="flex flex-col gap-2 items-end">
+		<div className="flex gap-2 items-center">
 			<button
+				type="button"
+				aria-label="YES"
 				onClick={() => onVote(ruleId, "YES")}
-				className={`button px-3 py-1 ${
-					myVote === "YES" ? "vote-yes" : ""
-				}`}
+				className={`${base} ${yesClass}`}
 			>
-				Yes
+				✓
 			</button>
 
 			<button
+				type="button"
+				aria-label="NO"
 				onClick={() => onVote(ruleId, "NO")}
-				className={`button px-3 py-1 ${
-					myVote === "NO" ? "bg-red-500 text-white" : ""
-				}`}
+				className={`${base} ${noClass}`}
 			>
-				No
+				X
 			</button>
 
-			<p className="text-sm text-text/70">
+			<p className="text-xs text-text/70 ml-2 whitespace-nowrap">
 				YES {yesCount} | NO {noCount}
 			</p>
 		</div>

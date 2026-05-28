@@ -22,11 +22,13 @@ interface ListProps<T> {
 	handleAddClick: () => void;
 	handleRemoveClick: (item: T) => void;
 	handleEditClick?: (item: T) => void; // FIXME can be used for edit house too!
+	handleVoteClick?: () => void;
 	renderItem: (item: T) => React.ReactNode;
 	getKey: (item: T) => string;
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
+
 }
 
 export default function List<T>({
@@ -39,6 +41,7 @@ export default function List<T>({
 	getKey,
 	homeCode,
 	eventIds,
+	handleVoteClick,
 }: ListProps<T>) {
 	const isHomeSpaces = item === "Home Spaces";
 	const isEvents = item === "Events";
@@ -171,20 +174,28 @@ export default function List<T>({
 				))}
 			</ul>
 			{!removeMode && !isBasic && (
-				<div className="flex flex-row flex-center self-center gap-4">
-					<button
-						onClick={handleAddClick}
-						className="button self-center"
-					>
-						+
-					</button>
+				<div className="relative flex justify-center items-center mt-4">
+					<div className="flex gap-4">
+						<button onClick={handleAddClick} className="button">
+							+
+						</button>
 
-					<button
-						onClick={() => setRemoveMode((prev) => !prev)}
-						className="button self-center"
-					>
-						-
-					</button>
+						<button
+							onClick={() => setRemoveMode((prev) => !prev)}
+							className="button"
+						>
+							-
+						</button>
+					</div>
+
+					{item === "Rules" && (
+						<button
+							onClick={handleVoteClick}
+							className="button absolute right-0"
+						>
+							Vote
+						</button>
+					)}
 				</div>
 			)}
 
