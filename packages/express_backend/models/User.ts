@@ -1,5 +1,23 @@
 import mongoose from "mongoose";
 
+const EncryptedFieldSchema = new mongoose.Schema(
+	{
+		encryptedData: {
+			type: String,
+			required: true,
+		},
+		iv: {
+			type: String,
+			required: true,
+		},
+		authTag: {
+			type: String,
+			required: true,
+		},
+	},
+	{ _id: false }
+);
+
 export const UserSchema = new mongoose.Schema(
 	{
 		username: {
@@ -18,9 +36,7 @@ export const UserSchema = new mongoose.Schema(
 			trim: true,
 		},
 		phone: {
-			type: String,
-			trim: true,
-			match: /^\+?[1-9]\d{1,14}$/,
+			type: EncryptedFieldSchema,
 			/*
 			^ → start of the string
 			\+? → optional + at the beginning
@@ -39,8 +55,7 @@ export const UserSchema = new mongoose.Schema(
 			trim: true,
 		},
 		DOB: {
-			type: Date,
-			trim: true,
+			type: EncryptedFieldSchema,
 		},
 		likes: [
 			{
@@ -90,9 +105,7 @@ export const UserSchema = new mongoose.Schema(
 			},
 
 			phone: {
-				type: String,
-				trim: true,
-				match: /^\+?[1-9]\d{1,14}$/,
+				type: EncryptedFieldSchema,
 
 				/*
 				^ → start of the string

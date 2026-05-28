@@ -8,7 +8,8 @@ import {
 	// updateUserById,
 	removeUserById,
 	updateUserByUsername,
-	getUsersByHomeAndRelation,
+	//getUsersByHomeAndRelation,
+	getUserSettingsById,
 	updateUserById,
 } from "../models/User-Services.js";
 
@@ -67,10 +68,12 @@ userRouter.patch(
 				return res.status(404).json({ error: "User not found" });
 			}
 
-			res.status(200).json(updated);
+			const decryptedUser = await getUserSettingsById(userId);
+
+			res.status(200).json(decryptedUser);
 		} catch (error) {
 			console.error(error);
-			res.status(400).json({ error: "Invalid username" });
+			res.status(400).json({ error: "Failed to update User settings" });
 		}
 	}
 );
@@ -120,7 +123,7 @@ userRouter.get(
 
 			const userId = new mongoose.Types.ObjectId(sessionUserId);
 
-			const user = await getUserById(userId);
+			const user = await getUserSettingsById(userId);
 
 			if (!user) {
 				return res
@@ -167,7 +170,6 @@ userRouter.get(
 );
 
 // GET BY USERNAME
-
 // REDUNDANT I THINK
 userRouter.get(
 	"/users/username/:username",

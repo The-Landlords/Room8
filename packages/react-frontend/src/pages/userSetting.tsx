@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { API_BASE } from "../config";
 
-const phoneRegex = /^\+?[1-9]\d{1,10}$/;
+const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
 function isValidPhone(phone: string) {
 	return phoneRegex.test(phone);
@@ -92,9 +92,17 @@ export default function UserSetting() {
 		console.log("sending:", draft);
 		const payload = {
 			...draft,
+			phone: draft.phone.trim() || undefined,
+			DOB: draft.DOB || undefined,
 			allergens: toList(draft.allergens),
 			likes: toList(draft.likes),
 			dislikes: toList(draft.dislikes),
+			emergencyContact: {
+				name: draft.emergencyContact.name.trim() || undefined,
+				phone: draft.emergencyContact.phone.trim() || undefined,
+				relationship:
+					draft.emergencyContact.relationship.trim() || undefined,
+			},
 		};
 
 		try {
@@ -238,9 +246,7 @@ export default function UserSetting() {
 
 								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
 									<label className="block">
-										<span className="mr-3">
-											Birthday ! :
-										</span>
+										<span className="mr-3">Birthday:</span>
 										<input
 											type="date"
 											value={draft.DOB}
