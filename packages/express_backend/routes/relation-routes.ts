@@ -181,6 +181,74 @@ relationRouter.patch(
 	}
 );
 
+//patch route to update a users relationship to a home, used for changing resident to guest or vice versa
+relationRouter.patch(
+	"/relate/me/:homeName/:newRelation",
+	requireAuth,
+	async (req: Request, res: Response) => {
+		try {
+			console.log("Updating relation!");
+
+			const homename = req.params.homeName;
+			const newRelation = req.params.newRelation;
+
+			if (typeof homename !== "string") {
+				return res.status(400).json({ error: "Invalid home name" });
+			}
+
+			const h = await getHomeByName(homename);
+
+			if (!h) {
+				return res.status(404).json({ error: "Home not found" });
+			}
+
+			const userId = getSessionUserId(req);
+			if (!userId) {
+				return res
+					.status(400)
+					.json({ error: "Invalid user id in session" });
+			}
+
+			const u = await getUserById(userId);
+
+			if (!u) {
+				return res.status(404).json({ error: "User not found" });
+			}
+			const updatedHome = await updateHome(h._id, {
+				userIds: h.userIds.map((user) =>
+					user.userId.equals(u._id)
+						? { userId: user.userId, relationship: newRelation }
+						: user
+				),
+			});
+			if (!updatedHome) {
+				return res
+					.status(404)
+					.json({ error: "Home not found for update" });
+			}
+			await h.save();
+			const updatedUser = await updateUserById(u._id, {
+				homeIds: u.homeIds.map((home) =>
+					home.homeId.equals(h._id)
+						? { homeId: home.homeId, relationship: newRelation }
+						: home
+				),
+			});
+			if (!updatedUser) {
+				return res
+					.status(404)
+					.json({ error: "User not found for update" });
+			}
+			await u.save();
+
+			res.status(200).json(h);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: "Failed to update relationship" });
+		}
+	}
+);
+
 //get users based off passed in home and relation
 relationRouter.get(
 	"/relate/:homeCode/:relation",

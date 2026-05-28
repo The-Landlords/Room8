@@ -53,6 +53,40 @@ function filterResidents(residents: any[], userOneRelation: string) {
 	});
 }
 
+function filterGuests(guests: any[], userOneRelation: string) {
+	return guests.map((guests) => {
+		return {
+			_id: guests._id,
+			fullName: guests.fullName,
+			allergens: guests.allergens,
+			pronouns: canSeeGuest(
+				guests.visibility.pronounsVisible,
+				userOneRelation
+			)
+				? guests.pronouns
+				: undefined,
+			DOB: canSeeGuest(guests.visibility.dobVisible, userOneRelation)
+				? guests.DOB
+				: undefined,
+			likes: canSeeGuest(guests.visibility.likesVisible, userOneRelation)
+				? guests.likes
+				: undefined,
+			dislikes: canSeeGuest(
+				guests.visibility.dislikesVisible,
+				userOneRelation
+			)
+				? guests.dislikes
+				: undefined,
+			emergencyContact: canSeeGuest(
+				guests.visibility.emergencyContactVisible,
+				userOneRelation
+			)
+				? guests.emergencyContact
+				: undefined,
+		};
+	});
+}
+
 function canSee(fieldVisible: string, userOneRelation: string): boolean {
 	if (!fieldVisible) {
 		return false;
@@ -61,6 +95,15 @@ function canSee(fieldVisible: string, userOneRelation: string): boolean {
 		return true;
 	}
 	if (fieldVisible === "RESIDENT" && userOneRelation === "RESIDENT") {
+		return true;
+	}
+	return false;
+}
+function canSeeGuest(fieldVisible: string, userOneRelation: string): boolean {
+	if (!fieldVisible) {
+		return false;
+	}
+	if (fieldVisible === "PUBLIC") {
 		return true;
 	}
 	return false;
@@ -146,7 +189,7 @@ authRouter.get(
 				.status(404)
 				.json({ error: "No shared home found between users" });
 		}
-		const filteredUsers = filterResidents(guests, userOneRelation);
+		const filteredUsers = filterGuests(guests, userOneRelation);
 
 		res.status(200).json(filteredUsers);
 	}
