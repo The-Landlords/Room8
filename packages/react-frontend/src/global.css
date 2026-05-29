@@ -1,22 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
 @import "tailwindcss";
 
 body {
-	background-color: #F4FBFF;
+	background-color: #f4fbff;
 }
 @theme {
-	--color-text: #FFFFFF;
-	--color-primary: #96C3E3;
-	--color-secondary: #DEF0F9;
-	--color-accent: #F7FFE3;
+	--color-text: #ffffff;
+	--color-primary: #96c3e3;
+	--color-secondary: #def0f9;
+	--color-accent: #f7ffe3;
 	--font-primary: "Inter", sans-serif;
 	--font-secondary: "Gowun Dodum", sans-serif;
 }
 
 @layer components {
 	.header {
-		@apply  font-primary text-primary text-4xl font-bold text-center pt-8  max-w-[80%];
+		@apply font-primary text-primary text-4xl font-bold text-center pt-8  max-w-[80%];
 	}
 	.header-secondary {
 		@apply font-primary text-primary text-2xl pt-2;
@@ -31,7 +31,7 @@ body {
 		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 m-4 min-w-[20%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
 	.iconWrapper {
-		@apply opacity-70 self-end-safe hover:opacity-90 transition duration-200;
+		@apply opacity-70 self-end-safe hover:text-accent hover:opacity-100 transition duration-200;
 	}
 	.list-item {
 		@apply bg-primary/70 text-text font-secondary text-xl p-3 rounded-md shadow-sm mb-2;
@@ -49,7 +49,7 @@ body {
 		@apply bg-secondary/70 rounded-lg shadow-lg p-6 max-w-md w-full;
 	}
 	.button {
-		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-md shadow-sm hover:bg-primary/90 transition-colors duration-150;
+		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-md shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
 	}
 	.settings-background {
 		@apply min-h-screen flex flex-col;
@@ -59,15 +59,14 @@ body {
 		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
 	}
 
-	.input {
-		@apply bg-secondary/70 text-text font-secondary text-sm p-3 rounded-md shadow-sm w-full;
+	.input-field {
+		@apply min-w-[10%] max-w-[40%] rounded-lg border-2 border-primary/40 bg-white p-3;
+		@apply focus:bg-accent focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 
 	.card {
 		@apply bg-primary/70 rounded-2xl p-6 flex gap-4 justify-between items-start shadow-sm;
 	}
-
-
 }
 
 @keyframes floatUp {

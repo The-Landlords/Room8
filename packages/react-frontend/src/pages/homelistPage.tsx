@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import List from "../components/list";
+import HomeSpaceList from "../components/homeList";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Overlay from "../components/overlay";
 import HomeAddOverlay from "../components/homeAddOverlay";
@@ -10,11 +10,19 @@ import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import RemoveHomeOverlay from "../components/removeHomeOverlay";
 import { API_BASE } from "../config";
 
+type Home = {
+	_id: string;
+	homeCode: string;
+	homeName: string;
+	address: string;
+	relationship?: string;
+};
+
 export default function HomeList() {
-	const [homes, setHomes] = useState<any[]>([]);
+	const [homes, setHomes] = useState<Home[]>([]);
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
-	const [homeDelete, setHomeDelete] = useState<any | null>(null);
+	const [homeDelete, setHomeDelete] = useState<Home | null>(null);
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
@@ -25,9 +33,7 @@ export default function HomeList() {
 		setOverlayOpen(false);
 	};
 
-	type Relationship = "RESIDENT" | "GUEST";
-
-	async function handleAdd(data: any, relationship: Relationship) {
+	async function handleAdd(data: any, relationship: string) {
 		const homeWithRelationship = {
 			...data,
 			relationship,
@@ -75,7 +81,6 @@ export default function HomeList() {
 		return "";
 	}
 
-	const homeCodes = homes?.map((h) => h.homeCode);
 	return (
 		<div className=" flex flex-col items-center">
 			<h1 className="header">Home Spaces</h1>
@@ -128,42 +133,28 @@ export default function HomeList() {
 					/>
 				)}
 			</Overlay>
-			{homes.length > 0 && (
-				<List
-					item="Home Spaces"
-					items={homes}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(home) => handleRemoveClick(home)}
-					homeCode={homeCodes}
-					getKey={(home) => home._id}
-					relationship={(home) => getRelationship(home)}
-					renderItem={(home) => (
+
+			<HomeSpaceList
+				className="panel"
+				items={homes}
+				handleAddClick={handleAddClick}
+				handleRemoveClick={(home) => handleRemoveClick(home)}
+				homeCode={(home) => home.homeCode}
+				getKey={(home) => home._id}
+				getRelationship={(home) => getRelationship(home)}
+				renderItem={(home) => (
+					<div>
+						<div>{home.homeName}</div>
 						<div>
-							<div>{home.homeName}</div>
-							<div>
-								<FontAwesomeIcon
-									icon={faMapPin}
-									className="text-sm"
-								/>
-								{home.address}
-							</div>
+							<FontAwesomeIcon
+								icon={faMapPin}
+								className="text-sm"
+							/>
+							{home.address}
 						</div>
-					)}
-					css="panel"
-				/>
-			)}
-			{homes.length == 0 && (
-				<List<string>
-					item="Home Spaces"
-					items={["No Homes available! Click below to add."]}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(name) => handleRemoveClick(name)}
-					homeCode={homeCodes}
-					getKey={(name) => name}
-					renderItem={(name) => <span>{name}</span>}
-					css="panel"
-				/>
-			)}
+					</div>
+				)}
+			/>
 		</div>
 	);
 }
