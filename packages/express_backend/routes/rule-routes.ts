@@ -15,7 +15,7 @@ import {
 	removeRuleById,
 } from "../models/Rules-Services.js";
 
-import { Rule } from "../models/Rule.js";
+import { Rule, type RuleVote } from "../models/Rule.js";
 
 import { requireAuth } from "./userSessionAuth.js";
 
@@ -25,6 +25,9 @@ const asString = (val: string | string[] | undefined): string => {
 	if (!val) throw new Error("Missing param");
 	return Array.isArray(val) ? val[0] : val;
 };
+
+const isRuleVote = (vote: unknown): vote is RuleVote["vote"] =>
+	vote === "YES" || vote === "NO";
 
 ruleRouter.get("/auth/me", requireAuth, async (req, res) => {
 	try {
@@ -149,7 +152,7 @@ async function getResidentCount(homeId: mongoose.Types.ObjectId) {
 
 async function filterValidVotes(
 	homeId: mongoose.Types.ObjectId,
-	votes: { voteId: string; vote: "YES" | "NO" }[]
+	votes: RuleVote[]
 ) {
 	const residents = await getUsersByHomeAndRelation(
 		homeId,
@@ -169,7 +172,7 @@ async function filterValidVotes(
 ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
 	//ruleRouter.post("/rules/:ruleId/vote", async (req, res) => {
 	try {
-		const { ruleId } = req.params;
+		const ruleId = asString(req.params.ruleId);
 		const { vote } = req.body;
 
 		const voteId = req.session.userId;
@@ -178,8 +181,8 @@ ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
 			return res.status(400).json({ error: "Invalid rule id" });
 		}
 
-		if (!vote) {
-			return res.status(400).json({ error: "Missing vote" });
+		if (!isRuleVote(vote)) {
+			return res.status(400).json({ error: "Invalid vote" });
 		}
 
 		const rule = await Rule.findById(ruleId);
@@ -228,17 +231,17 @@ ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
 ruleRouter.post("/rules/:ruleId/delete-vote", requireAuth, async (req, res) => {
 	//ruleRouter.post("/rules/:ruleId/delete-vote", async (req, res) => {
 	try {
-		const { ruleId } = req.params;
+		const ruleId = asString(req.params.ruleId);
 		const { vote } = req.body;
 
-		const voteId = req.session.userId
+		const voteId = req.session.userId;
 
 		if (!mongoose.Types.ObjectId.isValid(ruleId)) {
 			return res.status(400).json({ error: "Invalid rule id" });
 		}
 
-		if (!vote) {
-			return res.status(400).json({ error: "Missing vote" });
+		if (!isRuleVote(vote)) {
+			return res.status(400).json({ error: "Invalid vote" });
 		}
 
 		const rule = await Rule.findById(ruleId);
