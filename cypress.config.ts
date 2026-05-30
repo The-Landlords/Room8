@@ -9,8 +9,7 @@ export default defineConfig({
 		supportFile: "cypress/support/e2e.ts",
 		setupNodeEvents(on, config) {
 			// implement node event listeners here
-		}
-
+		},
 	},
 
 	component: {

@@ -45,16 +45,12 @@ export default function RuleCard({
 	const yes = votes.filter((v) => v.vote === "YES").length;
 	const no = votes.filter((v) => v.vote === "NO").length;
 
-	const myVote = votes.find(
-		(v) => String(v.voteId) === String(voteId)
-	)?.vote;
+	const myVote = votes.find((v) => String(v.voteId) === String(voteId))?.vote;
 
 	return (
 		<div className="grid grid-cols-[1fr_120px_auto_220px] items-center gap-4 w-full">
 			{/* RULE */}
-			<p className="text-lg font-bold truncate">
-				{rule.description}
-			</p>
+			<p className="text-lg font-bold truncate">{rule.description}</p>
 
 			{/* APPROVAL COUNT */}
 			<p className="text-sm text-text/70 italic text-center whitespace-nowrap">

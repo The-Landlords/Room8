@@ -75,12 +75,9 @@ export default function RulesPage() {
 		try {
 			setError("");
 
-			const homeRes = await fetch(
-				`${API_BASE}/homes/code/${homeCode}`,
-				{
-					credentials: "include",
-				}
-			);
+			const homeRes = await fetch(`${API_BASE}/homes/code/${homeCode}`, {
+				credentials: "include",
+			});
 
 			if (!homeRes.ok) {
 				throw new Error("Failed to fetch home");
@@ -165,10 +162,7 @@ export default function RulesPage() {
 		}
 	}
 
-	async function handleVote(
-		ruleId: string,
-		vote: "YES" | "NO"
-	) {
+	async function handleVote(ruleId: string, vote: "YES" | "NO") {
 		try {
 			await fetch(`${API_BASE}/rules/${ruleId}/vote`, {
 				method: "POST",
@@ -188,32 +182,24 @@ export default function RulesPage() {
 		}
 	}
 
-	async function handleDeleteVote(
-		ruleId: string,
-		vote: "YES" | "NO"
-	) {
+	async function handleDeleteVote(ruleId: string, vote: "YES" | "NO") {
 		try {
-			const res = await fetch(
-				`${API_BASE}/rules/${ruleId}/delete-vote`,
-				{
-					method: "POST",
-					credentials: "include",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						voteId,
-						vote,
-					}),
-				}
-			);
+			const res = await fetch(`${API_BASE}/rules/${ruleId}/delete-vote`, {
+				method: "POST",
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					voteId,
+					vote,
+				}),
+			});
 
 			const data = await res.json();
 
 			if (data.deleted) {
-				setRules((prev) =>
-					prev.filter((r) => r._id !== ruleId)
-				);
+				setRules((prev) => prev.filter((r) => r._id !== ruleId));
 
 				setDeleteTarget(null);
 			} else {
@@ -225,9 +211,7 @@ export default function RulesPage() {
 		}
 	}
 
-	const selectedRule = rules.find(
-		(r) => r._id === deleteTarget
-	);
+	const selectedRule = rules.find((r) => r._id === deleteTarget);
 
 	return (
 		<div className="background-house min-h-screen flex flex-col">
@@ -252,12 +236,8 @@ export default function RulesPage() {
 					item="Rules"
 					items={rules}
 					handleAddClick={() => setOverlayOpen(true)}
-					handleRemoveClick={(rule) =>
-						setDeleteTarget(rule._id)
-					}
-					handleVoteClick={() =>
-						setShowVoting((prev) => !prev)
-					}
+					handleRemoveClick={(rule) => setDeleteTarget(rule._id)}
+					handleVoteClick={() => setShowVoting((prev) => !prev)}
 					getKey={(rule) => rule._id}
 					renderItem={(rule) => (
 						<RuleCard
@@ -274,9 +254,7 @@ export default function RulesPage() {
 			{overlayOpen && (
 				<div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 					<div className="bg-white p-6 rounded-2xl w-[400px]">
-						<h2 className="text-xl mb-4">
-							Add Rule
-						</h2>
+						<h2 className="text-xl mb-4">Add Rule</h2>
 
 						<textarea
 							ref={inputRef}
@@ -287,9 +265,7 @@ export default function RulesPage() {
 						<div className="flex justify-end gap-3 mt-4">
 							<button
 								type="button"
-								onClick={() =>
-									setOverlayOpen(false)
-								}
+								onClick={() => setOverlayOpen(false)}
 							>
 								Cancel
 							</button>
@@ -312,9 +288,7 @@ export default function RulesPage() {
 					ruleId={deleteTarget}
 					voteId={voteId}
 					deleteVotes={selectedRule?.deleteVotes || []}
-					deleteStatus={
-						selectedRule?.deleteStatus || "NONE"
-					}
+					deleteStatus={selectedRule?.deleteStatus || "NONE"}
 					totalResidents={totalResidents}
 					onVote={handleDeleteVote}
 					onCancel={() => setDeleteTarget(null)}
