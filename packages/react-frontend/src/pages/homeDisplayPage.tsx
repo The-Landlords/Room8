@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { API_BASE } from "../config";
-import List from "../components/list";
+import BasicList from "../components/basicList";
+import Cards from "../components/userCards";
 
 export default function HomeDisplayPage() {
 	const { homeCode } = useParams();
 	const navigate = useNavigate();
+
 	const [home, setHome] = useState("");
 	const [groceries, setGroceries] = useState<any[]>([]);
 	const [rules, setRules] = useState<any[]>([]);
@@ -22,15 +24,18 @@ export default function HomeDisplayPage() {
 				credentials: "include",
 			})
 				.then((res) => {
-					if (!res.ok) throw new Error("Residents not found ");
+					if (!res.ok) throw new Error("Residents not found");
 					return res.json();
 				})
-				.then((data) => setResidents(data))
+				.then((data) => {
+					setResidents(Array.isArray(data) ? data : []);
+				})
 				.catch((err) => {
 					console.error(err);
 					setResidents([]);
 				});
 		}
+
 		async function fetchHomeName() {
 			if (!homeCode) return;
 
@@ -41,14 +46,18 @@ export default function HomeDisplayPage() {
 						credentials: "include",
 					}
 				);
+
 				const data = await res.json();
+
 				if (res.ok) {
 					setHome(data.name);
 
-					setGroceries(data.groceries || []);
-					setRules(data.rules || []);
-					setEvents(data.events || []);
-					setChores(data.chores || []);
+					setGroceries(
+						Array.isArray(data.groceries) ? data.groceries : []
+					);
+					setRules(Array.isArray(data.rules) ? data.rules : []);
+					setEvents(Array.isArray(data.events) ? data.events : []);
+					setChores(Array.isArray(data.chores) ? data.chores : []);
 				} else {
 					throw new Error(data.error || "Failed to fetch home name");
 				}
@@ -56,107 +65,121 @@ export default function HomeDisplayPage() {
 				console.error("Error fetching home name:", error);
 			}
 		}
+
 		fetchHomeName().catch(console.error);
 		fetchResidents().catch(console.error);
 	}, [homeCode]);
 
 	return (
-		<div>
-			<div className="flex justify-start">
-				<button
-					type="button"
-					onClick={() => navigate(`/homelist/`)}
-					className="button h-14 w-14 flex items-center justify-center rounded-xl"
-				>
-					←
-				</button>
-			</div>
-			<div className="flex flex-col items-center">
+		<div className="min-h-screen flex flex-col">
+			<div className="flex flex-col items-center w-full px-5">
 				<h1 className="header">{home}</h1>
-				<h2 className="header-secondary"> homeCode : {homeCode}</h2>
-				<div className="flex flex-row gap-3 w-50%">
-					<div>
-						<List
-							item="current rules"
-							items={rules}
-							handleAddClick={() => {}}
-							handleRemoveClick={() => {}}
-							getKey={(rule) => rule._id}
-							renderItem={(rule) => (
-								<div>
-									<p>{rule.description}</p>
-								</div>
-							)}
-						></List>
-					</div>
-					<div>
-						<List
-							item="current events"
-							items={events}
-							handleAddClick={() => {}}
-							handleRemoveClick={() => {}}
-							getKey={(event) => event._id}
-							renderItem={(event) => (
-								<div>
-									<p>{event.name}</p>
-									<p>{event.description}</p>
-									<p>{event.start}</p>
-								</div>
-							)}
-						></List>
-					</div>
-					{groceries ? (
-						<div>
-							<List
-								item="current groceries"
-								items={groceries}
-								handleAddClick={() => {}}
-								handleRemoveClick={() => {}}
-								getKey={(grocery) => grocery._id}
-								renderItem={(grocery) => (
-									<div className="flex flex-row gap-4">
-										<p>{grocery.title}</p>
-										<p>{grocery.quantity}</p>
-										<p>${grocery.price}</p>
-									</div>
-								)}
-							></List>
-						</div>
-					) : (
-						<p></p>
-					)}
-					{chores ? (
-						<div>
-							<List
-								item="current chores"
-								items={chores}
-								handleAddClick={() => {}}
-								handleRemoveClick={() => {}}
-								getKey={(chore) => chore._id}
-								renderItem={(chore) => (
-									<div>
-										<p>{chore.title}</p>
-									</div>
-								)}
-							></List>
-						</div>
-					) : (
-						<p></p>
-					)}
+
+				<div className="self-start p-5">
+					<button
+						type="button"
+						onClick={() => navigate(`/homelist/`)}
+						className="button h-14 w-14 flex items-center justify-center rounded-xl"
+					>
+						←
+					</button>
 				</div>
-				<List
-					item="current residents"
-					items={residents}
-					handleAddClick={() => {}}
-					handleRemoveClick={() => {}}
-					getKey={(resident) => resident._id}
-					renderItem={(resident) => (
-						<div className="flex flex-row gap-4">
-							<p>{resident.fullName}</p>
-							<p>{resident.allergens}</p>
-						</div>
-					)}
-				></List>
+
+				<h2 className="header-secondary">homeCode: {homeCode}</h2>
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 w-full max-w-7xl">
+					<BasicList
+						title="Current Rules"
+						items={rules}
+						getKey={(rule) => rule._id}
+						emptyMessage="No rules"
+						className="card"
+						renderItem={(rule) => (
+							<div>
+								<p>{rule.description}</p>
+							</div>
+						)}
+					/>
+
+					<BasicList
+						title="Current Events"
+						items={events}
+						getKey={(event) => event._id}
+						emptyMessage="No events"
+						className="card"
+						renderItem={(event) => (
+							<div>
+								<p>{event.name}</p>
+								<p>{event.description}</p>
+								<p>{event.start}</p>
+							</div>
+						)}
+					/>
+
+					<BasicList
+						title="Current Groceries"
+						items={groceries}
+						getKey={(grocery) => grocery._id}
+						emptyMessage="No groceries"
+						className="card"
+						renderItem={(grocery) => (
+							<div className="flex flex-row gap-4">
+								<p>{grocery.title}</p>
+								<p>{grocery.quantity}</p>
+								<p>${grocery.price}</p>
+							</div>
+						)}
+					/>
+
+					<BasicList
+						title="Current Chores"
+						items={chores}
+						getKey={(chore) => chore._id}
+						emptyMessage="No chores"
+						className="card"
+						renderItem={(chore) => (
+							<div>
+								<p>{chore.title}</p>
+							</div>
+						)}
+					/>
+				</div>
+
+				<div className="w-full max-w-7xl mt-8">
+					<h2 className="header-secondary font-semibold p-5 text-center">
+						Residents
+					</h2>
+
+					<Cards
+						items={residents}
+						getKey={(resident) => resident._id}
+						getTitle={(resident) => resident.fullName}
+						getDetails={(resident) => [
+							{
+								label: "Allergens",
+								value: resident.allergens?.join
+									? resident.allergens.join(", ")
+									: resident.allergens || "",
+							},
+							{
+								label: "Phone",
+								value: resident.phoneNumber || "",
+							},
+							{
+								label: "Pronouns",
+								value: resident.pronouns || "",
+							},
+							{
+								label: "Likes",
+								value: resident.likes?.join(", ") || "",
+							},
+							{
+								label: "Dislikes",
+								value: resident.dislikes?.join(", ") || "",
+							},
+						]}
+						emptyMessage="No residents found."
+					/>
+				</div>
 			</div>
 		</div>
 	);

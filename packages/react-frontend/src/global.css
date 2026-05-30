@@ -16,17 +16,21 @@ body {
 
 @layer components {
 	.header {
-		@apply font-primary text-primary text-4xl font-bold text-center pt-8  max-w-[80%];
+		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-8 max-w-[80%];
 	}
 	.header-secondary {
 		@apply font-primary text-primary text-2xl pt-2;
 	}
 	.panel {
-		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
 	.panel-secondary {
 		@apply bg-primary flex flex-col gap-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
+	.card {
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[40%] relative;
+	}
+	
 	.panel-small {
 		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 m-4 min-w-[20%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
@@ -34,8 +38,9 @@ body {
 		@apply opacity-70 self-end-safe hover:text-accent hover:opacity-100 transition duration-200;
 	}
 	.list-item {
-		@apply bg-primary/70 text-text font-secondary text-xl p-3 rounded-md shadow-sm mb-2;
+		@apply bg-primary/70 text-text font-secondary text-xl p-3 rounded-lg shadow-sm mb-2;
 	}
+
 	.animate-floatUp {
 		animation: floatUp 0.5s ease-out forwards;
 	}
@@ -49,7 +54,7 @@ body {
 		@apply bg-secondary/70 rounded-lg shadow-lg p-6 max-w-md w-full;
 	}
 	.button {
-		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-md shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
+		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
 	}
 	.settings-background {
 		@apply min-h-screen flex flex-col;
@@ -64,9 +69,8 @@ body {
 		@apply focus:bg-accent focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 
-	.card {
-		@apply bg-primary/70 rounded-2xl p-6 flex gap-4 justify-between items-start shadow-sm;
-	}
+
+	
 }
 
 @keyframes floatUp {

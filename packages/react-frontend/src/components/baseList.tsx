@@ -40,7 +40,7 @@ export default function BaseList<T>({
 
 			<ul>
 				{items.length === 0 && (
-					<li className="list-item font-bold animate-floatUp">
+					<li className="header-secondary animate-floatUp">
 						{emptyMessage}
 					</li>
 				)}
