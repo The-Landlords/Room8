@@ -1,0 +1,33 @@
+name: Cypress E2E
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    cypress:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - run: npm ci
+
+            - name: Build frontend
+              run: npm -w packages/react-frontend run build
+
+            - name: Run Cypress tests
+              uses: cypress-io/github-action@v6
+              with:
+                  install-command: npm install cypress --no-save
+                  start: npm -w packages/react-frontend run dev -- --host 0.0.0.0
+                  wait-on: http://127.0.0.1:5173
+                  config-file: packages/react-frontend/cypress.config.cjs
+                  browser: chrome
