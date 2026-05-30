@@ -24,7 +24,7 @@
 		"swagger": "npm -w packages/express_backend run swagger",
 		"cy:open": "cypress open",
 		"cy:component": "cypress run --component",
-		"cy:e2e": "concurrently -c red,blue \"npm run dev\" \"cypress run --e2e\"",
+		"cy:e2e": "concurrently -c green,magenta \"npm run dev\" \"cypress run --e2e\"",
 		"cy:run": "npm run cy:component && npm run cy:e2e"
 	},
 	"repository": {
