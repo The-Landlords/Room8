@@ -5,6 +5,20 @@ import { API_BASE } from "../config";
 import BasicList from "../components/basicList";
 import Cards from "../components/userCards";
 
+function formatDate(dateString: string) {
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) return dateString;
+
+	const options: Intl.DateTimeFormatOptions = {
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	};
+
+	return date.toLocaleDateString(undefined, options);
+}
 export default function HomeDisplayPage() {
 	const { homeCode } = useParams();
 	const navigate = useNavigate();
@@ -86,65 +100,66 @@ export default function HomeDisplayPage() {
 				</div>
 
 				<h2 className="header-secondary">homeCode: {homeCode}</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 w-full max-w-7xl">
+				<div className="flex flex-row flex-wrap justify-center gap-4 w-full max-w-7xl mx-auto">
 					<BasicList
-						title="Current Rules"
+						title="Current Rules: "
 						items={rules}
 						getKey={(rule) => rule._id}
 						emptyMessage="No rules"
-						className="card"
+						className="dashboard-card"
 						renderItem={(rule) => (
 							<div>
 								<p>{rule.description}</p>
 							</div>
 						)}
 					/>
-
 					<BasicList
-						title="Current Events"
+						title="Current Events: "
 						items={events}
 						getKey={(event) => event._id}
 						emptyMessage="No events"
-						className="card"
+						className="dashboard-card"
 						renderItem={(event) => (
 							<div>
 								<p>{event.name}</p>
 								<p>{event.description}</p>
-								<p>{event.start}</p>
+								<p>{formatDate(event.start)}</p>
 							</div>
 						)}
 					/>
-
-					<BasicList
-						title="Current Groceries"
-						items={groceries}
-						getKey={(grocery) => grocery._id}
-						emptyMessage="No groceries"
-						className="card"
-						renderItem={(grocery) => (
-							<div className="flex flex-row gap-4">
-								<p>{grocery.title}</p>
-								<p>{grocery.quantity}</p>
-								<p>${grocery.price}</p>
-							</div>
-						)}
-					/>
-
-					<BasicList
-						title="Current Chores"
-						items={chores}
-						getKey={(chore) => chore._id}
-						emptyMessage="No chores"
-						className="card"
-						renderItem={(chore) => (
-							<div>
-								<p>{chore.title}</p>
-							</div>
-						)}
-					/>
+					{groceries.length > 0 && (
+						<BasicList
+							title="Current Groceries: "
+							items={groceries}
+							getKey={(grocery) => grocery._id}
+							emptyMessage="No groceries"
+							className="dashboard-card"
+							renderItem={(grocery) => (
+								<div className="flex flex-row gap-4">
+									<p>{grocery.title}</p>
+									<p>{grocery.quantity}</p>
+									<p>${grocery.price}</p>
+								</div>
+							)}
+						/>
+					)}
+					{chores.length > 0 && (
+						<BasicList
+							title="Current Chores: "
+							items={chores}
+							getKey={(chore) => chore._id}
+							emptyMessage="No chores"
+							className="dashboard-card"
+							renderItem={(chore) => (
+								<div>
+									<p>{chore.title}</p>
+								</div>
+							)}
+						/>
+					)}
 				</div>
 
-				<div className="w-full max-w-7xl mt-8">
+				<div className="w-full max-w-7xl mt-8 pb-10">
 					<h2 className="header-secondary font-semibold p-5 text-center">
 						Residents
 					</h2>
