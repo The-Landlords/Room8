@@ -55,7 +55,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 		{ type: "text", field: "dislikes", placeholder: "workouts, seafoods, etc."}
 	]},
 	phone: {label: "Phone", layout: "horizonal", fields: [
-		{type: "text", field: "phone", placeholder: "+15551239876"}
+		{type: "text", field: "phone", placeholder: "+19998887777"}
 	]},
 	emergencyContact: {label: "Emergency Contact", layout: "vertical", fields: [
 		{type: "group", field: "emergencyContact", fields: [
@@ -323,6 +323,13 @@ export default function UserSetting() {
 
 							<div className="space-y-5">
 								<InputField fieldName={settingsFields.phone} state={{draft, setDraft}}/>
+								{draft.phone.length > 0 &&
+											!phoneRegex.test(draft.phone) && (
+												<p className="text-sm text-red-500">
+													Use E.164 format (e.g.
+													+14155552671)
+												</p>
+											)}
 								<InputField fieldName={settingsFields.emergencyContact} state={{draft, setDraft}}/>
 							</div>
 						</div>
