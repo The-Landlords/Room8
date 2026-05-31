@@ -48,7 +48,7 @@ export default function SignInPage() {
 
 	return (
 		<div className="background-house flex items-center justify-center">
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px]">
+			<div className="panel flex flex-col items-center animate-floatUp min-w-[30%]">
 				<h1 className="header mb-4">Sign In</h1>
 
 				<form
@@ -61,7 +61,7 @@ export default function SignInPage() {
 						placeholder="Username"
 						value={username}
 						onChange={(e) => setUsername(e.target.value)}
-						className="list-item w-full"
+						className="input-field w-full self-center-safe"
 					/>
 
 					{/* password */}
@@ -70,7 +70,7 @@ export default function SignInPage() {
 						placeholder="Password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						className="list-item w-full"
+						className="input-field w-full self-center-safe"
 					/>
 
 					{/* sign in */}

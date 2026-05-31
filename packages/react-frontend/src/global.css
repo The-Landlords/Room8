@@ -16,7 +16,7 @@ body {
 
 @layer components {
 	.header {
-		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-8 max-w-[80%];
+		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
 		@apply font-primary text-primary text-2xl pt-2;
@@ -69,7 +69,7 @@ body {
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[40%] rounded-lg border-2 border-primary/40 bg-white p-3;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary/40 bg-white p-3;
 		@apply focus:bg-accent focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }

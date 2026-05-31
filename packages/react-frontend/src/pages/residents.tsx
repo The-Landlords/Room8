@@ -180,7 +180,7 @@ export default function Residents() {
 					className="mx-auto justify-items-center"
 				/>
 
-				{relationship === "RESIDENT" && (
+				{relationship === "RESIDENT" && guests.length != 0 && (
 					<button
 						className="button"
 						onClick={() => {

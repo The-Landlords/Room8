@@ -66,20 +66,20 @@ export default function AddEventOverlay({
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
 				placeholder="Title"
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 			<input
 				value={description}
 				onChange={(e) => setDescription(e.target.value)}
 				placeholder="Description"
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
 				type="datetime-local"
 				value={start}
 				onChange={(e) => setStart(e.target.value)}
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
@@ -87,14 +87,14 @@ export default function AddEventOverlay({
 				value={end}
 				min={start}
 				onChange={(e) => setEnd(e.target.value)}
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
 				value={location}
 				onChange={(e) => setLocation(e.target.value)}
 				placeholder="Location"
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			{errorMsg && (

@@ -135,7 +135,7 @@ export default function HomeList() {
 			</Overlay>
 
 			<HomeSpaceList
-				className="panel"
+				className="panel pb-8"
 				items={homes}
 				handleAddClick={handleAddClick}
 				handleRemoveClick={(home) => handleRemoveClick(home)}
