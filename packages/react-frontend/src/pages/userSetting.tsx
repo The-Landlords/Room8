@@ -11,6 +11,38 @@ function isValidPhone(phone: string) {
 	return phoneRegex.test(phone);
 }
 
+/* Force type-matching here so mapping works later on */
+type userVisibilityPreset = "everyone" | "roommates" | "private";
+type userVisibility = userVisibilityPreset | "custom";
+type homeVisibility = "PUBLIC" | "RESIDENT" | "PRIVATE";
+
+/* Defining the relations between visibilities here */
+/* Yes, this should be better structured. Make it a 'future' issue. */
+const UserToHome: Record<userVisibilityPreset, homeVisibility> = {
+	everyone: "PUBLIC",
+	roommates: "RESIDENT",
+	private: "PRIVATE",
+} as const;
+const HomeToUser: Record<homeVisibility, userVisibilityPreset> = {
+	PUBLIC: "everyone",
+	RESIDENT: "roommates",
+	PRIVATE: "private",
+} as const;
+
+/* Helper function for setting global visibilies, automatically sets both the single-value scheduleVisibility, */
+/* and all associated values inside visibility: */
+function setUniformVisibility<T extends {settings: Record<string,string>, visibility: Record<string,string>}>(d : T, visibility : userVisibilityPreset) : T {
+	const newVisibilities = Object.fromEntries(Object.keys(d.visibility).map((k) => [k, UserToHome[visibility]]));
+	return {
+		...d,
+		settings: {
+			...d.settings,
+			scheduleVisibility: visibility
+		},
+		visibility: newVisibilities,
+	};
+}
+
 /* This should definitely go somewhere else */
 /* But I don't know where yet */
 interface DraftProps {
@@ -30,7 +62,17 @@ interface DraftProps {
 		textSize: string;
 		theme: string;
 		colorBlindMode: string;
-		scheduleVisibility: string;
+		scheduleVisibility: userVisibility;
+	}
+	visibility: {
+		nameVisible: homeVisibility;
+		phoneVisible: homeVisibility;
+		dobVisible: homeVisibility;
+		likesVisible: homeVisibility;
+		dislikesVisible: homeVisibility;
+		emergencyContactVisible: homeVisibility;
+		allergensVisible: homeVisibility;
+		pronounsVisible: homeVisibility;
 	};
 }
 
@@ -87,12 +129,11 @@ const settingsFields: FieldsLayout<DraftProps> = {
 		{type: "select", field: "scheduleVisibility", options: [
 			{value: "everyone", label: "Everyone"},
 			{value: "roommates", label: "Only Roomates"},
-			{value: "private", label: "No One (Private)"}
+			{value: "private", label: "No One (Private)"},
+			{value: "custom", label: "Customized"}
 		]}
 	]}
 }
-
-
 
 export default function UserSetting() {
 	const navigate = useNavigate();
@@ -115,9 +156,36 @@ export default function UserSetting() {
 			textSize: "medium",
 			theme: "light",
 			colorBlindMode: "off",
-			scheduleVisibility: "roommates", // default
+			scheduleVisibility: "roommates" as userVisibility,
 		},
+		visibility: {
+			nameVisible: "RESIDENT" as homeVisibility,
+			phoneVisible: "RESIDENT" as homeVisibility,
+			dobVisible: "RESIDENT" as homeVisibility,
+			likesVisible: "RESIDENT" as homeVisibility,
+			dislikesVisible: "RESIDENT" as homeVisibility,
+			emergencyContactVisible: "RESIDENT" as homeVisibility,
+			allergensVisible: "RESIDENT" as homeVisibility,
+			pronounsVisible: "RESIDENT" as homeVisibility,
+		}
 	});
+
+	/* Every time visibility updates, check for congruence and update toggle */
+	/* Currently we don't do any changing on this page, but in case we add a dropdown to change it later... */
+	useEffect(() => {
+		setDraft((d) => {
+			const visibilities = Object.values(d.visibility) as homeVisibility[];
+			const defaultVisibility = visibilities[0];
+			const allMatch = Object.values(d.visibility).every((v) => v === defaultVisibility);
+
+			return {
+				...d,settings: {
+					...d.settings,
+					scheduleVisibility: allMatch ? HomeToUser[defaultVisibility] : "custom" as userVisibility,
+				},
+			};
+		});
+	}, [draft.visibility]);
 
 	const [user, setUser] = useState<any>(null);
 	const [, setError] = useState("");
@@ -152,8 +220,18 @@ export default function UserSetting() {
 						theme: data?.settings?.theme ?? "light",
 						colorBlindMode: data?.settings?.colorBlindMode ?? "off",
 						scheduleVisibility:
-							data?.settings?.scheduleVisibility ?? "roommates",
+							data?.settings?.scheduleVisibility ?? "roommates" as userVisibility,
 					},
+					visibility: {
+						nameVisible: data?.visibility?.nameVisible ?? "RESIDDENT" as homeVisibility,
+						phoneVisible: data?.visibility?.phoneVisible ?? "RESIDDENT" as homeVisibility,
+						dobVisible: data?.visibility?.dobVisible ?? "RESIDDENT" as homeVisibility,
+						likesVisible: data?.visibility?.likesVisible ?? "RESIDDENT" as homeVisibility,
+						dislikesVisible: data?.visibility?.dislikesVisible ?? "RESIDDENT" as homeVisibility,
+						emergencyContactVisible: data?.visibility?.emergencyContactVisible ?? "RESIDDENT" as homeVisibility,
+						allergensVisible: data?.visibility?.allergensVisible ?? "RESIDDENT" as homeVisibility,
+						pronounsVisible: data?.visibility?.pronounsVisible ?? "RESIDDENT" as homeVisibility,
+					}
 				});
 			})
 			.catch((err) => {
@@ -349,13 +427,7 @@ export default function UserSetting() {
 								<button
 									type="button"
 									onClick={() =>
-										setDraft((d) => ({
-											...d,
-											settings: {
-												...d.settings,
-												scheduleVisibility: "everyone",
-											},
-										}))
+										setDraft((d) => setUniformVisibility(d,"everyone"))
 									}
 									className="input-field"
 								>
@@ -371,13 +443,7 @@ export default function UserSetting() {
 								<button
 									type="button"
 									onClick={() =>
-										setDraft((d) => ({
-											...d,
-											settings: {
-												...d.settings,
-												scheduleVisibility: "roommates",
-											},
-										}))
+										setDraft((d) => setUniformVisibility(d,"roommates"))
 									}
 									className="input-field"
 								>
@@ -393,13 +459,7 @@ export default function UserSetting() {
 								<button
 									type="button"
 									onClick={() =>
-										setDraft((d) => ({
-											...d,
-											settings: {
-												...d.settings,
-												scheduleVisibility: "private",
-											},
-										}))
+										setDraft((d) => setUniformVisibility(d,"private"))
 									}
 									className="input-field"
 								>
