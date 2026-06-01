@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 
 import {
 	getUsersByHomeAndRelation,
-	getUserById
+	getUserById,
 } from "../models/User-Services.js";
 
 import { getHomeByCode } from "../models/Home-Services.js";
@@ -42,12 +42,9 @@ ruleRouter.get("/auth/me", requireAuth, async (req, res) => {
 	}
 });
 
-
 ruleRouter.get("/homes/rules/:homeCode", async (req, res) => {
 	try {
-		const rules = await getRulesByHome(
-			asString(req.params.homeCode)
-		);
+		const rules = await getRulesByHome(asString(req.params.homeCode));
 
 		const cleanedRules = await Promise.all(
 			rules.map(async (rule) => {
@@ -67,33 +64,23 @@ ruleRouter.get("/homes/rules/:homeCode", async (req, res) => {
 
 				let changed = false;
 
-				if (
-					validVotes.length !==
-					(rule.votes ?? []).length
-				) {
+				if (validVotes.length !== (rule.votes ?? []).length) {
 					rule.votes = validVotes;
 					changed = true;
 				}
 
 				if (
-					validDeleteVotes.length !==
-					(rule.deleteVotes ?? []).length
+					validDeleteVotes.length !== (rule.deleteVotes ?? []).length
 				) {
 					rule.deleteVotes = validDeleteVotes;
 					changed = true;
 				}
 
-				const yes = validVotes.filter(
-					(v) => v.vote === "YES"
-				).length;
+				const yes = validVotes.filter((v) => v.vote === "YES").length;
 
-				const no = validVotes.filter(
-					(v) => v.vote === "NO"
-				).length;
+				const no = validVotes.filter((v) => v.vote === "NO").length;
 
-				const TOTAL = await getResidentCount(
-					rule.homeId
-				);
+				const TOTAL = await getResidentCount(rule.homeId);
 
 				if (no > 0) {
 					rule.status = "REJECTED";
@@ -151,18 +138,11 @@ async function filterValidVotes(
 	homeId: mongoose.Types.ObjectId,
 	votes: { voteId: string; vote: "YES" | "NO" }[]
 ) {
-	const residents = await getUsersByHomeAndRelation(
-		homeId,
-		"RESIDENT"
-	);
+	const residents = await getUsersByHomeAndRelation(homeId, "RESIDENT");
 
-	const residentIds = new Set(
-		residents.map((r) => String(r._id))
-	);
+	const residentIds = new Set(residents.map((r) => String(r._id)));
 
-	return votes.filter((v) =>
-		residentIds.has(String(v.voteId))
-	);
+	return votes.filter((v) => residentIds.has(String(v.voteId)));
 }
 
 // dVOTE d
@@ -185,10 +165,7 @@ ruleRouter.post("/rules/:ruleId/vote", requireAuth, async (req, res) => {
 		const rule = await Rule.findById(ruleId);
 		if (!rule) return res.status(404).json({ error: "Rule not found" });
 
-		let votes = await filterValidVotes(
-			rule.homeId,
-			rule.votes ?? []
-		);
+		let votes = await filterValidVotes(rule.homeId, rule.votes ?? []);
 
 		const idx = votes.findIndex((v) => String(v.voteId) === String(voteId));
 
@@ -231,7 +208,7 @@ ruleRouter.post("/rules/:ruleId/delete-vote", requireAuth, async (req, res) => {
 		const { ruleId } = req.params;
 		const { vote } = req.body;
 
-		const voteId = req.session.userId
+		const voteId = req.session.userId;
 
 		if (!mongoose.Types.ObjectId.isValid(ruleId)) {
 			return res.status(400).json({ error: "Invalid rule id" });

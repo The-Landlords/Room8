@@ -15,8 +15,7 @@ export default function VotePanel({
 	onVote,
 	myVote,
 }: VotePanelProps) {
-	const base =
-		"px-3 py-1 rounded-lg border font-medium transition";
+	const base = "px-3 py-1 rounded-lg border font-medium transition";
 
 	const yesClass =
 		myVote === "YES"
