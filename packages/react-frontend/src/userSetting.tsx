@@ -35,63 +35,136 @@ interface DraftProps {
 
 /* Defining the layout to be called below */
 const settingsFields: FieldsLayout<DraftProps> = {
-	fullName: {label: "Name", layout: "horizonal", fields: [
-		{ type: "text", field: "fullName", placeholder: "Barry B. Benson"}
-	]},
-	pronouns: {label: "Pronouns", layout: "horizonal", fields: [
-		{ type: "text", field: "pronouns", placeholder: "she/they"}
-	]},
-	DOB: {label: "Birthday", layout: "horizonal", fields: [
-		{ type: "date", field: "DOB"}
-	]},
-	allergens: {label: "Allergens", layout: "vertical", fields: [
-		{ type: "text", field: "allergens", placeholder: "pollen, dairy, etc."}
-	]},
-	likes: {label: "Likes", layout: "vertical", fields: [
-		{ type: "text", field: "likes", placeholder: "concerts, movies, etc."}
-	]},
-	dislikes: {label: "Dislikes", layout: "vertical", fields: [
-		{ type: "text", field: "dislikes", placeholder: "workouts, seafoods, etc."}
-	]},
-	phone: {label: "Phone", layout: "horizonal", fields: [
-		{type: "text", field: "phone", placeholder: "+15551239876"}
-	]},
-	emergencyContact: {label: "Emergency Contact", layout: "vertical", fields: [
-		{type: "group", field: "emergencyContact", fields: [
-			{field: "name", placeholder: "Adam Flayman"},
-			{field: "phone", placeholder: "+15551990123"},
-			{field: "relationship", placeholder: "Brother"}
-		]}
-	]},
-	textSize: {label: "Text Size", layout: "horizontal", fields: [
-		{type: "dropdown", field: "textSize", options: [
-			{value: "small", label: "Small"},
-			{value: "medium", label: "Medium"},
-			{value: "large", label: "Large"}
-		]}
-	]},
-	theme: {label: "Theme", layout: "horizonal", fields: [
-		{type: "toggle", field: "theme", onName: "light", offName: "dark"}
-	]},
-	colorBlindMode: {label: "Color-Blind Mode", layout: "horizonal", fields: [
-		{type: "dropdown", field: "colorBlindMode", options: [
-			{value: "off", label: "Off"},
-			{value: "protanopia", label: "Protanopia"},
-			{value: "deuteranopia", label: "Deuteranopia"},
-			{value: "tritanopia", label: "Tritanopia"}
-		]}
-	]},
+	fullName: {
+		label: "Name",
+		layout: "horizonal",
+		fields: [
+			{ type: "text", field: "fullName", placeholder: "Barry B. Benson" },
+		],
+	},
+	pronouns: {
+		label: "Pronouns",
+		layout: "horizonal",
+		fields: [{ type: "text", field: "pronouns", placeholder: "she/they" }],
+	},
+	DOB: {
+		label: "Birthday",
+		layout: "horizonal",
+		fields: [{ type: "date", field: "DOB" }],
+	},
+	allergens: {
+		label: "Allergens",
+		layout: "vertical",
+		fields: [
+			{
+				type: "text",
+				field: "allergens",
+				placeholder: "pollen, dairy, etc.",
+			},
+		],
+	},
+	likes: {
+		label: "Likes",
+		layout: "vertical",
+		fields: [
+			{
+				type: "text",
+				field: "likes",
+				placeholder: "concerts, movies, etc.",
+			},
+		],
+	},
+	dislikes: {
+		label: "Dislikes",
+		layout: "vertical",
+		fields: [
+			{
+				type: "text",
+				field: "dislikes",
+				placeholder: "workouts, seafoods, etc.",
+			},
+		],
+	},
+	phone: {
+		label: "Phone",
+		layout: "horizonal",
+		fields: [{ type: "text", field: "phone", placeholder: "+15551239876" }],
+	},
+	emergencyContact: {
+		label: "Emergency Contact",
+		layout: "vertical",
+		fields: [
+			{
+				type: "group",
+				field: "emergencyContact",
+				fields: [
+					{ field: "name", placeholder: "Adam Flayman" },
+					{ field: "phone", placeholder: "+15551990123" },
+					{ field: "relationship", placeholder: "Brother" },
+				],
+			},
+		],
+	},
+	textSize: {
+		label: "Text Size",
+		layout: "horizontal",
+		fields: [
+			{
+				type: "dropdown",
+				field: "textSize",
+				options: [
+					{ value: "small", label: "Small" },
+					{ value: "medium", label: "Medium" },
+					{ value: "large", label: "Large" },
+				],
+			},
+		],
+	},
+	theme: {
+		label: "Theme",
+		layout: "horizonal",
+		fields: [
+			{
+				type: "toggle",
+				field: "theme",
+				onName: "light",
+				offName: "dark",
+			},
+		],
+	},
+	colorBlindMode: {
+		label: "Color-Blind Mode",
+		layout: "horizonal",
+		fields: [
+			{
+				type: "dropdown",
+				field: "colorBlindMode",
+				options: [
+					{ value: "off", label: "Off" },
+					{ value: "protanopia", label: "Protanopia" },
+					{ value: "deuteranopia", label: "Deuteranopia" },
+					{ value: "tritanopia", label: "Tritanopia" },
+				],
+			},
+		],
+	},
 	/* This one is unused as a custom, prettier button is preferred */
-	scheduleVisibility: {label: "Who can see my schedule?", layout: "vertical", fields: [
-		{type: "select", field: "scheduleVisibility", options: [
-			{value: "everyone", label: "Everyone"},
-			{value: "roommates", label: "Only Roomates"},
-			{value: "private", label: "No One (Private)"}
-		]}
-	]}
-}
-
-
+	scheduleVisibility: {
+		label: "Who can see my schedule?",
+		layout: "vertical",
+		fields: [
+			{
+				type: "select",
+				field: "scheduleVisibility",
+				options: [
+					{ value: "everyone", label: "Everyone" },
+					{ value: "roommates", label: "Only Roomates" },
+					{ value: "private", label: "No One (Private)" },
+				],
+			},
+		],
+	},
+};
 
 export default function UserSetting() {
 	const navigate = useNavigate();
@@ -255,18 +328,34 @@ export default function UserSetting() {
 					<div className="md:order-1 w-full min-w-0 animate-floatUp">
 						<div className="bubble">
 							{/*COLUMN HEADER*/}
-							<h2 className="bubble-header">
-								Personal Info
-							</h2>
+							<h2 className="bubble-header">Personal Info</h2>
 
 							{/*COLUMN MEMBERS*/}
 							<div className="space-y-5">
-								<InputField fieldName={settingsFields.fullName} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.pronouns} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.DOB} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.allergens} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.likes} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.dislikes} state={{draft, setDraft}}/>
+								<InputField
+									fieldName={settingsFields.fullName}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.pronouns}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.DOB}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.allergens}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.likes}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.dislikes}
+									state={{ draft, setDraft }}
+								/>
 							</div>
 						</div>
 					</div>
@@ -275,14 +364,21 @@ export default function UserSetting() {
 					<div className="md:order-3 w-full min-w-0 animate-floatUp">
 						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="bubble-header">
-								Display Settings
-							</h2>
+							<h2 className="bubble-header">Display Settings</h2>
 
 							<div className="space-y-5">
-								<InputField fieldName={settingsFields.textSize} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.theme} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.colorBlindMode} state={{draft, setDraft}}/>
+								<InputField
+									fieldName={settingsFields.textSize}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.theme}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.colorBlindMode}
+									state={{ draft, setDraft }}
+								/>
 							</div>
 						</div>
 					</div>
@@ -291,13 +387,17 @@ export default function UserSetting() {
 					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
 						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="bubble-header">
-								Emergency Info
-							</h2>
+							<h2 className="bubble-header">Emergency Info</h2>
 
 							<div className="space-y-5">
-								<InputField fieldName={settingsFields.phone} state={{draft, setDraft}}/>
-								<InputField fieldName={settingsFields.emergencyContact} state={{draft, setDraft}}/>
+								<InputField
+									fieldName={settingsFields.phone}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.emergencyContact}
+									state={{ draft, setDraft }}
+								/>
 							</div>
 						</div>
 

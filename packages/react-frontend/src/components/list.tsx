@@ -28,7 +28,6 @@ interface ListProps<T> {
 	username?: string;
 	homeCode?: string[];
 	eventIds?: string[];
-
 }
 
 export default function List<T>({
