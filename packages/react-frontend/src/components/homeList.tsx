@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faCartShopping,
 	faCalendar,
-	faFileContract,
+	faBookBookmark,
 	faAngleRight,
 	faPeopleRoof,
-	faClipboardCheck,
+	faListCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import BaseList from "./baseList";
 
@@ -80,7 +80,7 @@ export default function HomeSpaceList<T>({
 							<Link to={`/rules/${code}`}>
 								<FontAwesomeIcon
 									className="iconWrapper"
-									icon={faFileContract}
+									icon={faBookBookmark}
 								/>
 							</Link>
 
@@ -94,7 +94,7 @@ export default function HomeSpaceList<T>({
 							<Link to={`/${code}/chores`}>
 								<FontAwesomeIcon
 									className="iconWrapper"
-									icon={faClipboardCheck}
+									icon={faListCheck}
 								/>
 							</Link>
 

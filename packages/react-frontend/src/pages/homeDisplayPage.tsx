@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { API_BASE } from "../config";
 import BasicList from "../components/basicList";
 import Cards from "../components/userCards";
+import Header from "../components/header";
 
 function formatDate(dateString: string) {
 	const date = new Date(dateString);
@@ -21,7 +22,6 @@ function formatDate(dateString: string) {
 }
 export default function HomeDisplayPage() {
 	const { homeCode } = useParams();
-	const navigate = useNavigate();
 
 	const [home, setHome] = useState("");
 	const [groceries, setGroceries] = useState<any[]>([]);
@@ -85,116 +85,106 @@ export default function HomeDisplayPage() {
 	}, [homeCode]);
 
 	return (
-		<div className="min-h-screen flex flex-col">
-			<div className="flex flex-col items-center w-full px-5">
-				<h1 className="header">{home}</h1>
+		<div className="min-h-screen flex flex-col  items-center-safe">
+			<Header title="Overview" homeCode={homeCode} />
 
-				<div className="self-start p-5">
-					<button
-						type="button"
-						onClick={() => navigate(`/homelist/`)}
-						className="button h-14 w-14 flex items-center justify-center rounded-xl"
-					>
-						←
-					</button>
-				</div>
-
-				<h2 className="header-secondary">homeCode: {homeCode}</h2>
-				<div className="flex flex-row flex-wrap justify-center gap-4 w-full max-w-7xl mx-auto">
+			<h2 className="header-secondary self-center-safe">
+				homeCode: {homeCode}
+			</h2>
+			<div className="flex flex-row flex-wrap justify-center gap-4 w-full max-w-7xl mx-auto">
+				<BasicList
+					title="Current Rules: "
+					items={rules}
+					getKey={(rule) => rule._id}
+					emptyMessage="No rules"
+					className="dashboard-card"
+					renderItem={(rule) => (
+						<div>
+							<p>{rule.description}</p>
+						</div>
+					)}
+				/>
+				<BasicList
+					title="Current Events: "
+					items={events}
+					getKey={(event) => event._id}
+					emptyMessage="No events"
+					className="dashboard-card"
+					renderItem={(event) => (
+						<div>
+							<p>{event.name}</p>
+							<p>{event.description}</p>
+							<p>{formatDate(event.start)}</p>
+						</div>
+					)}
+				/>
+				{groceries.length > 0 && (
 					<BasicList
-						title="Current Rules: "
-						items={rules}
-						getKey={(rule) => rule._id}
-						emptyMessage="No rules"
+						title="Current Groceries: "
+						items={groceries}
+						getKey={(grocery) => grocery._id}
+						emptyMessage="No groceries"
 						className="dashboard-card"
-						renderItem={(rule) => (
-							<div>
-								<p>{rule.description}</p>
+						renderItem={(grocery) => (
+							<div className="flex flex-row gap-4">
+								<p>{grocery.title}</p>
+								<p>{grocery.quantity}</p>
+								<p>${grocery.price}</p>
 							</div>
 						)}
 					/>
+				)}
+				{chores.length > 0 && (
 					<BasicList
-						title="Current Events: "
-						items={events}
-						getKey={(event) => event._id}
-						emptyMessage="No events"
+						title="Current Chores: "
+						items={chores}
+						getKey={(chore) => chore._id}
+						emptyMessage="No chores"
 						className="dashboard-card"
-						renderItem={(event) => (
+						renderItem={(chore) => (
 							<div>
-								<p>{event.name}</p>
-								<p>{event.description}</p>
-								<p>{formatDate(event.start)}</p>
+								<p>{chore.title}</p>
 							</div>
 						)}
 					/>
-					{groceries.length > 0 && (
-						<BasicList
-							title="Current Groceries: "
-							items={groceries}
-							getKey={(grocery) => grocery._id}
-							emptyMessage="No groceries"
-							className="dashboard-card"
-							renderItem={(grocery) => (
-								<div className="flex flex-row gap-4">
-									<p>{grocery.title}</p>
-									<p>{grocery.quantity}</p>
-									<p>${grocery.price}</p>
-								</div>
-							)}
-						/>
-					)}
-					{chores.length > 0 && (
-						<BasicList
-							title="Current Chores: "
-							items={chores}
-							getKey={(chore) => chore._id}
-							emptyMessage="No chores"
-							className="dashboard-card"
-							renderItem={(chore) => (
-								<div>
-									<p>{chore.title}</p>
-								</div>
-							)}
-						/>
-					)}
-				</div>
+				)}
+			</div>
 
-				<div className="w-full max-w-7xl mt-8 pb-10">
-					<h2 className="header-secondary font-semibold p-5 text-center">
-						Residents
-					</h2>
+			<div className="w-full max-w-7xl mt-8 pb-10 justify-self-center">
+				<h2 className="header-secondary font-semibold p-5 text-center">
+					{home}&#39;s Residents
+				</h2>
 
-					<Cards
-						items={residents}
-						getKey={(resident) => resident._id}
-						getTitle={(resident) => resident.fullName}
-						getDetails={(resident) => [
-							{
-								label: "Allergens",
-								value: resident.allergens?.join
-									? resident.allergens.join(", ")
-									: resident.allergens || "",
-							},
-							{
-								label: "Phone",
-								value: resident.phoneNumber || "",
-							},
-							{
-								label: "Pronouns",
-								value: resident.pronouns || "",
-							},
-							{
-								label: "Likes",
-								value: resident.likes?.join(", ") || "",
-							},
-							{
-								label: "Dislikes",
-								value: resident.dislikes?.join(", ") || "",
-							},
-						]}
-						emptyMessage="No residents found."
-					/>
-				</div>
+				<Cards
+					items={residents}
+					getKey={(resident) => resident._id}
+					getTitle={(resident) => resident.fullName}
+					getDetails={(resident) => [
+						{
+							label: "Allergens",
+							value: resident.allergens?.join
+								? resident.allergens.join(", ")
+								: resident.allergens || "",
+						},
+						{
+							label: "Phone",
+							value: resident.phoneNumber || "",
+						},
+						{
+							label: "Pronouns",
+							value: resident.pronouns || "",
+						},
+						{
+							label: "Likes",
+							value: resident.likes?.join(", ") || "",
+						},
+						{
+							label: "Dislikes",
+							value: resident.dislikes?.join(", ") || "",
+						},
+					]}
+					emptyMessage="No residents found."
+				/>
 			</div>
 		</div>
 	);

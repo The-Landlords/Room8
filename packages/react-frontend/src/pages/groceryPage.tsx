@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { API_BASE } from "../config";
-import List from "../components/list";
+
 import AddOverlay from "../components/addOverlay";
+import Header from "../components/header";
+
+import BaseList from "../components/baseList";
 
 type Grocery = {
 	_id: string;
@@ -22,7 +25,6 @@ export default function GroceryPage() {
 	const [quantity, setQuantity] = useState("1");
 	const [price, setPrice] = useState("");
 
-	const navigate = useNavigate();
 	const { username = "", homeCode = "" } = useParams();
 
 	function formatGrocery(grocery: Grocery) {
@@ -134,19 +136,8 @@ export default function GroceryPage() {
 	}, [username, homeCode]);
 
 	return (
-		<div>
-			<div className="relative mb-4 pt-2">
-				<button
-					onClick={() => navigate(-1)}
-					className="button absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 text-2xl"
-				>
-					←
-				</button>
-
-				<div className="header mx-auto w-fit px-8 py-3 text-center">
-					Grocery
-				</div>
-			</div>
+		<div className="flex flex-col items-center-safe">
+			<Header title="Groceries" homeCode={homeCode} />
 
 			<AddOverlay
 				isOpen={showAddOverlay}
@@ -179,18 +170,23 @@ export default function GroceryPage() {
 				/>
 			</AddOverlay>
 
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] max-h-[70vh] overflow-y-auto bg-primary/70 p-6">
-				<List
-					item="Grocery"
-					items={groceries}
-					handleAddClick={() => setShowAddOverlay(true)}
-					handleRemoveClick={handleRemoveGrocery}
-					getKey={(grocery) => grocery._id}
-					renderItem={(grocery) => (
-						<span>{formatGrocery(grocery)}</span>
-					)}
-				/>
-			</div>
+			<BaseList
+				title="Current Groceries"
+				items={groceries}
+				getKey={(grocery) => grocery._id}
+				handleAddClick={() => setShowAddOverlay(true)}
+				handleRemoveClick={(grocery) => handleRemoveGrocery(grocery)}
+				className="panel pb-6"
+				addMinus={true}
+				emptyMessage="No groceries"
+				renderItem={(grocery) => (
+					<div className="flex items-center justify-between w-full">
+						<span className="flex flex-row gap-4">
+							{formatGrocery(grocery)}
+						</span>
+					</div>
+				)}
+			/>
 		</div>
 	);
 }

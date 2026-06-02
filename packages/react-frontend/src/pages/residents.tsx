@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { API_BASE } from "../config";
 import GuestVoteOverlay from "../components/GuestVoteOverlay";
 import Overlay from "../components/overlay";
 import Cards from "../components/userCards";
+import Header from "../components/header";
 
 function formatDob(dob?: string): string {
 	if (!dob) return "";
@@ -44,8 +45,9 @@ export default function Residents() {
 	const [guests, setGuests] = useState<any[]>([]);
 	const [relationship, setRelationship] = useState<string>("");
 	const { homeCode } = useParams();
+
 	const [openVotePanel, setOpenVotePanel] = useState(false);
-	const navigate = useNavigate();
+
 	async function fetchResidents() {
 		if (!homeCode) return;
 
@@ -62,6 +64,7 @@ export default function Residents() {
 				setResidents([]);
 			});
 	}
+
 	async function fetchGuests() {
 		if (!homeCode) return;
 
@@ -128,16 +131,7 @@ export default function Residents() {
 				</Overlay>
 			)}
 			<div className="flex flex-col items-center justify-center">
-				<h1 className="header p-5">Residents</h1>
-				<div className="self-start p-5">
-					<button
-						type="button"
-						onClick={() => navigate(`/homelist/`)}
-						className="button h-14 w-14 flex items-center justify-center rounded-xl"
-					>
-						←
-					</button>
-				</div>
+				<Header title="Residents" homeCode={homeCode} />
 				<Cards
 					items={residents}
 					getKey={(user) => user._id}

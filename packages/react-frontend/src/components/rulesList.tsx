@@ -20,6 +20,14 @@ export default function RulesList<T>({
 	handleVoteClick,
 	className = "",
 }: RulesListProps<T>) {
+	const [showVoting, setShowVoting] = React.useState(false);
+	function handleVoteClickWrapper() {
+		if (handleVoteClick) {
+			handleVoteClick();
+			setShowVoting((prev) => !prev);
+		}
+	}
+
 	return (
 		<BaseList
 			title="Rules"
@@ -32,14 +40,21 @@ export default function RulesList<T>({
 			className={className}
 			emptyMessage="No Rules"
 			voteButtonAction={() =>
-				handleVoteClick ? (
+				handleVoteClick && !showVoting ? (
 					<button
-						onClick={handleVoteClick}
+						onClick={() => handleVoteClickWrapper()}
 						className="button absolute right-0"
 					>
 						Vote
 					</button>
-				) : null
+				) : (
+					<button
+						onClick={() => handleVoteClickWrapper()}
+						className="button absolute right-0"
+					>
+						Save
+					</button>
+				)
 			}
 		/>
 	);

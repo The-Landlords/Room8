@@ -24,8 +24,6 @@ function formatStatus(status: Rule["status"]) {
 			return "Rejected";
 		case "CANCELLED":
 			return "Cancelled";
-		default:
-			return status.toLowerCase();
 	}
 }
 

@@ -29,7 +29,7 @@ body {
 		@apply w-full sm:w-80 xl:w-72;
 	}
 	.panel {
-		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] max-h-[50%] relative overflow-auto;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 pb-8 min-w-[80%] min-h-[30%] max-h-[40%] relative overflow-auto;
 	}
 	.panel-secondary {
 		@apply bg-primary flex flex-col gap-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
@@ -72,8 +72,8 @@ body {
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary/40 bg-white p-3;
-		@apply focus:bg-accent focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary/40 bg-white p-3 text-primary;
+		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }
 
