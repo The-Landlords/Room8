@@ -507,26 +507,21 @@
 				}
 			}
 		},
-		"/homeId/{homeId}/rules": {
+		"/auth/me": {
 			"get": {
 				"description": "",
-				"parameters": [
-					{
-						"name": "homeId",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "OK"
 					},
-					"400": {
-						"description": "Bad Request"
-					},
 					"401": {
 						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
 					}
 				}
 			}
@@ -546,50 +541,8 @@
 					"200": {
 						"description": "OK"
 					},
-					"401": {
-						"description": "Unauthorized"
-					},
 					"500": {
 						"description": "Internal Server Error"
-					}
-				}
-			}
-		},
-		"/{homeCode}/rules": {
-			"post": {
-				"description": "",
-				"parameters": [
-					{
-						"name": "homeCode",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					},
-					{
-						"name": "body",
-						"in": "body",
-						"schema": {
-							"type": "object",
-							"properties": {
-								"description": {
-									"example": "any"
-								}
-							}
-						}
-					}
-				],
-				"responses": {
-					"201": {
-						"description": "Created"
-					},
-					"400": {
-						"description": "Bad Request"
-					},
-					"401": {
-						"description": "Unauthorized"
-					},
-					"404": {
-						"description": "Not Found"
 					}
 				}
 			}
@@ -604,13 +557,10 @@
 						"schema": {
 							"type": "object",
 							"properties": {
-								"description": {
-									"example": "any"
-								},
-								"status": {
-									"example": "any"
-								},
 								"homeCode": {
+									"example": "any"
+								},
+								"description": {
 									"example": "any"
 								}
 							}
@@ -626,55 +576,9 @@
 					},
 					"401": {
 						"description": "Unauthorized"
-					}
-				}
-			}
-		},
-		"/rules/{ruleId}": {
-			"put": {
-				"description": "",
-				"parameters": [
-					{
-						"name": "ruleId",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK"
-					},
-					"400": {
-						"description": "Bad Request"
-					},
-					"401": {
-						"description": "Unauthorized"
 					},
 					"404": {
 						"description": "Not Found"
-					}
-				}
-			},
-			"delete": {
-				"description": "",
-				"parameters": [
-					{
-						"name": "ruleId",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "No Content"
-					},
-					"400": {
-						"description": "Bad Request"
-					},
-					"401": {
-						"description": "Unauthorized"
 					}
 				}
 			}
@@ -695,9 +599,6 @@
 						"schema": {
 							"type": "object",
 							"properties": {
-								"voteId": {
-									"example": "any"
-								},
 								"vote": {
 									"example": "any"
 								}
@@ -737,9 +638,6 @@
 						"schema": {
 							"type": "object",
 							"properties": {
-								"voteId": {
-									"example": "any"
-								},
 								"vote": {
 									"example": "any"
 								}
@@ -1168,6 +1066,34 @@
 						"description": "Internal Server Error"
 					}
 				}
+			},
+			"patch": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
 			}
 		},
 		"/relate/me": {
@@ -1192,12 +1118,18 @@
 				}
 			}
 		},
-		"/relate/me/{homeName}": {
+		"/relate/me/{homeName}/{newRelation}": {
 			"patch": {
 				"description": "",
 				"parameters": [
 					{
 						"name": "homeName",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "newRelation",
 						"in": "path",
 						"required": true,
 						"type": "string"
@@ -1303,7 +1235,55 @@
 				}
 			}
 		},
+		"/auth/guests/me/{homeCode}/": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
 		"/auth/homeDisplay/me/{homeCode}/": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/auth/relationship/me/{homeCode}/": {
 			"get": {
 				"description": "",
 				"parameters": [
