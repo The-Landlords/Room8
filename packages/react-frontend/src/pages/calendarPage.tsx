@@ -13,10 +13,11 @@ import AddEventOverlay from "../components/addEventOverlay";
 import RemoveEventOverlay from "../components/removeEventOverlay";
 import EditEventOverlay from "../components/EditEventOverlay";
 import { API_BASE } from "../config";
+import Header from "../components/header";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
-	const [homeName, setHomeName] = useState("");
+
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [eventDelete, setEventDelete] = useState<any>();
@@ -74,8 +75,6 @@ export default function CalendarPage() {
 
 		const data = await homeObject.json();
 		const homeObjectId = data._id;
-
-		setHomeName(data.homeName);
 
 		fetch(`${API_BASE}/homeId/${homeObjectId}/events/`, {
 			credentials: "include",
@@ -149,7 +148,7 @@ export default function CalendarPage() {
 	);
 	return (
 		<div>
-			<h1 className="header">Events for {homeName}</h1>
+			<Header title="Calendar" homeCode={homeCode} />
 
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
 				{addState === "Add" && (

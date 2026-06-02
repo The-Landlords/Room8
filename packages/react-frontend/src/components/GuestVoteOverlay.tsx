@@ -1,5 +1,3 @@
-import React, { type ReactNode, useState } from "react";
-import { API_BASE } from "../config";
 import List from "./list";
 
 type Guest = {
@@ -17,11 +15,6 @@ export default function GuestVoteOverlay({
 	guests,
 	homeCode,
 }: GuestVoteOverlayProps<Guest>) {
-	const [vote, setVote] = useState<"approve" | "reject" | "abstain" | null>(
-		null
-	);
-	const [errorMsg, setErrorMsg] = useState("");
-
 	/*async function submitVote() {
         if (!vote) {
             setErrorMsg("Please select a vote option.");
