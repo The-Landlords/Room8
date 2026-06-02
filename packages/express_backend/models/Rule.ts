@@ -1,5 +1,24 @@
 import mongoose from "mongoose";
 
+export type RuleVoteValue = "YES" | "NO";
+export type RuleStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED";
+export type RuleDeleteStatus = "NONE" | "PENDING" | "CONFIRMED" | "REJECTED";
+
+export interface RuleVote {
+	voteId: string;
+	vote: RuleVoteValue;
+}
+
+export interface RuleDocument {
+	description: string;
+	status: RuleStatus;
+	createdAt: Date;
+	homeId: mongoose.Types.ObjectId;
+	votes: RuleVote[];
+	deleteVotes: RuleVote[];
+	deleteStatus: RuleDeleteStatus;
+}
+
 const VoteSchema = new mongoose.Schema(
 	{
 		voteId: {
@@ -15,7 +34,7 @@ const VoteSchema = new mongoose.Schema(
 	{ _id: false }
 );
 
-const RuleSchema = new mongoose.Schema({
+const RuleSchema = new mongoose.Schema<RuleDocument>({
 	description: {
 		type: String,
 		required: true,
@@ -58,4 +77,4 @@ const RuleSchema = new mongoose.Schema({
 	},
 });
 
-export const Rule = mongoose.model("Rules", RuleSchema);
+export const Rule = mongoose.model<RuleDocument>("Rules", RuleSchema);

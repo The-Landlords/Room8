@@ -15,18 +15,14 @@ interface Rule {
 }
 
 function formatStatus(status: Rule["status"]) {
-	switch (status) {
-		case "CONFIRMED":
-			return "Approved";
-		case "PENDING":
-			return "Pending";
-		case "REJECTED":
-			return "Rejected";
-		case "CANCELLED":
-			return "Cancelled";
-		default:
-			return status.toLowerCase();
-	}
+	const labels: Record<Rule["status"], string> = {
+		CONFIRMED: "Approved",
+		PENDING: "Pending",
+		REJECTED: "Rejected",
+		CANCELLED: "Cancelled",
+	};
+
+	return labels[status];
 }
 
 interface RuleCardProps {

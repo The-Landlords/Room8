@@ -1,5 +1,3 @@
-//import React, { type ReactNode, useState } from "react";
-//import { API_BASE } from "../config";
 import List from "./list";
 
 type Guest = {
@@ -7,7 +5,7 @@ type Guest = {
 	fullName: string;
 };
 
-type GuestVoteOverlayProps<Guest> = {
+type GuestVoteOverlayProps = {
 	guests: Guest[];
 	homeCode: string;
 	username: string;
@@ -16,37 +14,7 @@ type GuestVoteOverlayProps<Guest> = {
 export default function GuestVoteOverlay({
 	guests,
 	homeCode,
-}: GuestVoteOverlayProps<Guest>) {
-	// const [vote, setVote] = useState<"approve" | "reject" | "abstain" | null>(
-	// 	null
-	// );
-	// const [errorMsg, setErrorMsg] = useState("");
-
-	/*async function submitVote() {
-        if (!vote) {
-            setErrorMsg("Please select a vote option.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BASE}/rules/vote/${ruleId}`, {
-                method: "POST",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ vote }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Failed to submit vote.");
-            }
-
-            setErrorMsg("");
-        } catch (error) {
-            setErrorMsg(error.message);
-        }
-    }*/
-
+}: GuestVoteOverlayProps) {
 	return (
 		<div className="overlay">
 			<h2>Vote on Guest Ascencion</h2>
