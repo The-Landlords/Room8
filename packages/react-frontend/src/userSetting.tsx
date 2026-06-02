@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { API_BASE } from "../config";
-import { InputField } from "../components/input";
-import type { FieldsLayout } from "../components/input";
+import { useNavigate, useParams } from "react-router-dom";
+import { API_BASE } from "./config";
+import { InputField } from "./components/input";
+import type { FieldsLayout } from "./components/input";
 
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
@@ -89,7 +88,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 	phone: {
 		label: "Phone",
 		layout: "horizonal",
-		fields: [{ type: "text", field: "phone", placeholder: "+19998887777" }],
+		fields: [{ type: "text", field: "phone", placeholder: "+15551239876" }],
 	},
 	emergencyContact: {
 		label: "Emergency Contact",
@@ -169,6 +168,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 
 export default function UserSetting() {
 	const navigate = useNavigate();
+	const { username } = useParams();
 
 	// holds what the user is currently typing
 	const [draft, setDraft] = useState({
@@ -193,13 +193,12 @@ export default function UserSetting() {
 	});
 
 	const [user, setUser] = useState<any>(null);
-	const [, setError] = useState("");
+	// const [error, setError] = useState("");
 
 	useEffect(() => {
-		// GET
-		fetch(`${API_BASE}/users/me`, {
-			credentials: "include",
-		})
+		if (!username) return;
+
+		fetch(`${API_BASE}/users/username/${username}`)
 			.then((res) => {
 				if (!res.ok) throw new Error("User not found");
 				return res.json();
@@ -233,7 +232,7 @@ export default function UserSetting() {
 				console.error(err);
 				setUser(null);
 			});
-	}, []);
+	}, [username]);
 
 	/**
 	 *
@@ -247,6 +246,7 @@ export default function UserSetting() {
 			.filter(Boolean);
 	}
 	async function saveProfile() {
+		if (!username) return;
 		console.log("sending:", draft);
 		const payload = {
 			...draft,
@@ -255,41 +255,14 @@ export default function UserSetting() {
 			dislikes: toList(draft.dislikes),
 		};
 
-		try {
-			const res = await fetch(`${API_BASE}/users/me`, {
-				method: "PATCH",
-				credentials: "include",
+		console.log("sending:", payload);
 
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			});
-
-			if (!res.ok) {
-				throw new Error("Unable to save profile.");
-			}
-
-			setError("");
-			alert("User settings saved successfully!");
-			navigate(`/homelist/`);
-		} catch (err) {
-			console.error(err);
-			setError("Unable to save profile.");
-		}
+		await fetch(`${API_BASE}/users/${user.username}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
 	}
-
-	async function handleSignOut() {
-		try {
-			await fetch(`${API_BASE}/logout`, {
-				method: "POST",
-				credentials: "include",
-			});
-		} catch (err) {
-			console.error(err);
-		} finally {
-			navigate("/", { replace: true });
-		}
-	}
-
 	return (
 		<div className="settings-background">
 			{/* HEADER */}
@@ -304,7 +277,7 @@ export default function UserSetting() {
 					<div className="flex justify-start">
 						<button
 							type="button"
-							onClick={() => navigate(`/homelist`)}
+							onClick={() => navigate(`/homelist/${username}`)}
 							className="button h-14 w-14 flex items-center justify-center rounded-xl"
 						>
 							←
@@ -315,7 +288,7 @@ export default function UserSetting() {
 					<div className="flex justify-center">
 						<div className="bg-primary/70 h-14 px-8 flex items-center justify-center rounded-xl shadow-md">
 							<div className="font-primary text-text text-2xl">
-								Welcome {user?.username ?? "User"}
+								Welcome {user?.username ?? username ?? "User"}
 							</div>
 						</div>
 					</div>
@@ -338,7 +311,8 @@ export default function UserSetting() {
 					<div className="flex justify-end">
 						<button
 							type="button"
-							onClick={handleSignOut}
+							//FIX ME Change button nag. to correct page
+							onClick={() => navigate("/")}
 							className="button h-14 px-6 rounded-xl"
 						>
 							Sign Out
@@ -420,12 +394,6 @@ export default function UserSetting() {
 									fieldName={settingsFields.phone}
 									state={{ draft, setDraft }}
 								/>
-								{draft.phone.length > 0 &&
-									!phoneRegex.test(draft.phone) && (
-										<p className="text-sm text-red-500">
-											Use E.164 format (e.g. +14155552671)
-										</p>
-									)}
 								<InputField
 									fieldName={settingsFields.emergencyContact}
 									state={{ draft, setDraft }}

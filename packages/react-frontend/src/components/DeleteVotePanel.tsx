@@ -31,18 +31,14 @@ export default function DeleteVotePanel({
 		(v) => String(v.voteId) === String(voteId)
 	)?.vote;
 
-	const isRejected =
-		deleteStatus === "REJECTED" || no > 0;
+	const isRejected = deleteStatus === "REJECTED" || no > 0;
 
-	const isPending =
-		deleteStatus === "PENDING" && !isRejected;
+	const isPending = deleteStatus === "PENDING" && !isRejected;
 
 	return (
 		<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 			<div className="bg-white p-6 rounded-2xl w-[400px] text-center">
-				<h2 className="text-lg mb-3">
-					Vote to delete this rule
-				</h2>
+				<h2 className="text-lg mb-3">Vote to delete this rule</h2>
 
 				{isRejected && (
 					<p className="text-red-600 font-semibold mb-2">
@@ -65,10 +61,11 @@ export default function DeleteVotePanel({
 						type="button"
 						aria-label="YES"
 						onClick={() => onVote(ruleId, "YES")}
-						className={`button px-4 py-2 ${myVote === "YES"
-							? "bg-green-500 text-white border-green-600"
-							: "bg-gray-200 hover:bg-gray-300"
-							}`}
+						className={`button px-4 py-2 ${
+							myVote === "YES"
+								? "bg-green-500 text-white border-green-600"
+								: "bg-gray-200 hover:bg-gray-300"
+						}`}
 					>
 						✓
 					</button>
@@ -77,10 +74,11 @@ export default function DeleteVotePanel({
 						type="button"
 						aria-label="NO"
 						onClick={() => onVote(ruleId, "NO")}
-						className={`button px-4 py-2 ${myVote === "NO"
-							? "bg-red-500 text-white border-red-600"
-							: "bg-gray-200 hover:bg-gray-300"
-							}`}
+						className={`button px-4 py-2 ${
+							myVote === "NO"
+								? "bg-red-500 text-white border-red-600"
+								: "bg-gray-200 hover:bg-gray-300"
+						}`}
 					>
 						X
 					</button>
