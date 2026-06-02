@@ -26,45 +26,35 @@ const asString = (val: string | string[] | undefined): string => {
 	return Array.isArray(val) ? val[0] : val;
 };
 
-ruleRouter.get(
-	"/auth/me",
-	requireAuth,
-	async (req: Request, res: Response) => {
-		try {
-			if (!req.session.userId) {
-				return res.status(401).json({
-					error: "Not authenticated",
-				});
-			}
-
-			const user = await getUserById(
-				new mongoose.Types.ObjectId(
-					asString(req.session.userId)
-				)
-			);
-
-			if (!user) {
-				return res
-					.status(404)
-					.json({ error: "User not found" });
-			}
-
-			return res.json(user);
-		} catch {
-			return res.status(500).json({
-				error: "Failed to fetch user",
+ruleRouter.get("/auth/me", requireAuth, async (req: Request, res: Response) => {
+	try {
+		if (!req.session.userId) {
+			return res.status(401).json({
+				error: "Not authenticated",
 			});
 		}
+
+		const user = await getUserById(
+			new mongoose.Types.ObjectId(asString(req.session.userId))
+		);
+
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
+		return res.json(user);
+	} catch {
+		return res.status(500).json({
+			error: "Failed to fetch user",
+		});
 	}
-);
+});
 
 ruleRouter.get(
 	"/homes/rules/:homeCode",
 	async (req: Request, res: Response) => {
 		try {
-			const rules = await getRulesByHome(
-				asString(req.params.homeCode)
-			);
+			const rules = await getRulesByHome(asString(req.params.homeCode));
 
 			const cleanedRules = await Promise.all(
 				rules.map(async (rule) => {
@@ -77,18 +67,14 @@ ruleRouter.get(
 						rule.votes ?? []
 					);
 
-					const validDeleteVotes =
-						await filterValidVotes(
-							rule.homeId,
-							rule.deleteVotes ?? []
-						);
+					const validDeleteVotes = await filterValidVotes(
+						rule.homeId,
+						rule.deleteVotes ?? []
+					);
 
 					let changed = false;
 
-					if (
-						validVotes.length !==
-						(rule.votes ?? []).length
-					) {
+					if (validVotes.length !== (rule.votes ?? []).length) {
 						rule.set("votes", validVotes);
 						changed = true;
 					}
@@ -97,10 +83,7 @@ ruleRouter.get(
 						validDeleteVotes.length !==
 						(rule.deleteVotes ?? []).length
 					) {
-						rule.set(
-							"deleteVotes",
-							validDeleteVotes
-						);
+						rule.set("deleteVotes", validDeleteVotes);
 						changed = true;
 					}
 
@@ -108,13 +91,9 @@ ruleRouter.get(
 						(v) => v.vote === "YES"
 					).length;
 
-					const no = validVotes.filter(
-						(v) => v.vote === "NO"
-					).length;
+					const no = validVotes.filter((v) => v.vote === "NO").length;
 
-					const TOTAL = await getResidentCount(
-						rule.homeId
-					);
+					const TOTAL = await getResidentCount(rule.homeId);
 
 					if (no > 0) {
 						rule.status = "REJECTED";
@@ -147,9 +126,7 @@ ruleRouter.post(
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
-			const home = await getHomeByCode(
-				req.body.homeCode
-			);
+			const home = await getHomeByCode(req.body.homeCode);
 			if (!home) {
 				return res.status(404).json({
 					error: "Home not found",
@@ -173,13 +150,8 @@ ruleRouter.post(
 );
 
 // RESIDENT COUNT
-async function getResidentCount(
-	homeId: mongoose.Types.ObjectId
-) {
-	const residents = await getUsersByHomeAndRelation(
-		homeId,
-		"RESIDENT"
-	);
+async function getResidentCount(homeId: mongoose.Types.ObjectId) {
+	const residents = await getUsersByHomeAndRelation(homeId, "RESIDENT");
 	return residents.length;
 }
 
@@ -188,17 +160,10 @@ async function filterValidVotes(
 	homeId: mongoose.Types.ObjectId,
 	votes: { voteId: string; vote: "YES" | "NO" }[]
 ) {
-	const residents = await getUsersByHomeAndRelation(
-		homeId,
-		"RESIDENT"
-	);
-	const residentIds = new Set(
-		residents.map((r) => String(r._id))
-	);
+	const residents = await getUsersByHomeAndRelation(homeId, "RESIDENT");
+	const residentIds = new Set(residents.map((r) => String(r._id)));
 
-	return votes.filter((v) =>
-		residentIds.has(String(v.voteId))
-	);
+	return votes.filter((v) => residentIds.has(String(v.voteId)));
 }
 
 // RULE VOTE
@@ -230,15 +195,10 @@ ruleRouter.post(
 				});
 			}
 
-			const votes = await filterValidVotes(
-				rule.homeId,
-				rule.votes ?? []
-			);
+			const votes = await filterValidVotes(rule.homeId, rule.votes ?? []);
 
 			const idx = votes.findIndex(
-				(v) =>
-					String(v.voteId) ===
-					String(voteId)
+				(v) => String(v.voteId) === String(voteId)
 			);
 
 			if (idx !== -1) {
@@ -252,17 +212,11 @@ ruleRouter.post(
 
 			rule.set("votes", votes);
 
-			const yes = votes.filter(
-				(v) => v.vote === "YES"
-			).length;
+			const yes = votes.filter((v) => v.vote === "YES").length;
 
-			const no = votes.filter(
-				(v) => v.vote === "NO"
-			).length;
+			const no = votes.filter((v) => v.vote === "NO").length;
 
-			const TOTAL = await getResidentCount(
-				rule.homeId
-			);
+			const TOTAL = await getResidentCount(rule.homeId);
 
 			if (no > 0) {
 				rule.status = "REJECTED";
@@ -315,16 +269,13 @@ ruleRouter.post(
 				});
 			}
 
-			const deleteVotes =
-				await filterValidVotes(
-					rule.homeId,
-					rule.deleteVotes ?? []
-				);
+			const deleteVotes = await filterValidVotes(
+				rule.homeId,
+				rule.deleteVotes ?? []
+			);
 
 			const idx = deleteVotes.findIndex(
-				(v) =>
-					String(v.voteId) ===
-					String(voteId)
+				(v) => String(v.voteId) === String(voteId)
 			);
 
 			if (idx !== -1) {
@@ -338,17 +289,11 @@ ruleRouter.post(
 
 			rule.set("deleteVotes", deleteVotes);
 
-			const yes = deleteVotes.filter(
-				(v) => v.vote === "YES"
-			).length;
+			const yes = deleteVotes.filter((v) => v.vote === "YES").length;
 
-			const no = deleteVotes.filter(
-				(v) => v.vote === "NO"
-			).length;
+			const no = deleteVotes.filter((v) => v.vote === "NO").length;
 
-			const TOTAL = await getResidentCount(
-				rule.homeId
-			);
+			const TOTAL = await getResidentCount(rule.homeId);
 
 			if (no > 0) {
 				rule.deleteStatus = "REJECTED";
