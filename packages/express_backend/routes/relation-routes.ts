@@ -14,6 +14,10 @@ import {
 	// getUsersByHomeAndRelation,
 	updateUserById,
 } from "../models/User-Services.js";
+import { deleteRulesByHomeId } from "../models/Rules-Services.js";
+import { deleteGroceryItemsByHomeId } from "../models/Grocery-Services.js";
+import { deleteChoresByHomeId } from "../models/Chore-Services.js";
+import { deleteEventsByHomeId } from "../models/Event-Services.js";
 import mongoose from "mongoose";
 import { requireAuth } from "./userSessionAuth.js";
 
@@ -194,6 +198,11 @@ relationRouter.patch(
 			if (willDeleteHome) {
 				// delete the home itself if there are no more users associated with it
 				await deleteHome(h._id);
+				// delete everything associated with that home
+				await deleteRulesByHomeId(h._id);
+				await deleteGroceryItemsByHomeId(h._id);
+				await deleteChoresByHomeId(h._id);
+				await deleteEventsByHomeId(h._id);
 				console.log("Deleted home since there are no more residents");
 				return res.status(200).json({
 					_id: h._id.toString(),

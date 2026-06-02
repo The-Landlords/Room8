@@ -113,3 +113,7 @@ export const getCurrentGroceryItemsByHome = async (
 		status: "PENDING",
 	});
 };
+
+export function deleteGroceryItemsByHomeId(homeId: mongoose.Types.ObjectId) {
+	return Grocery.deleteMany({ homeId });
+}
