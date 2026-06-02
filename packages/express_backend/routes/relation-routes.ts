@@ -196,13 +196,13 @@ relationRouter.patch(
 			// TODO: Add a message saying "You are the last resident. Leaving this home will delete it. Are you sure you want to leave?" and only delete if they confirm
 			// Further, delete all data of rules ,groceries, etc associated with that home.
 			if (willDeleteHome) {
-				// delete the home itself if there are no more users associated with it
-				await deleteHome(h._id);
 				// delete everything associated with that home
 				await deleteRulesByHomeId(h._id);
 				await deleteGroceryItemsByHomeId(h._id);
 				await deleteChoresByHomeId(h._id);
 				await deleteEventsByHomeId(h._id);
+				// delete the home itself if there are no more users associated with it and no other data
+				await deleteHome(h._id);
 				console.log("Deleted home since there are no more residents");
 				return res.status(200).json({
 					_id: h._id.toString(),
