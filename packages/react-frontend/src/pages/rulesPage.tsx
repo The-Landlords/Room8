@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import List from "../components/list";
 import RuleCard from "../components/RuleCard";
 import DeleteVotePanel from "../components/DeleteVotePanel";
+import RulesList from "../components/rulesList";
 
 interface Vote {
 	voteId: string;
@@ -214,8 +215,8 @@ export default function RulesPage() {
 	const selectedRule = rules.find((r) => r._id === deleteTarget);
 
 	return (
-		<div className="background-house min-h-screen flex flex-col">
-			<header className="flex justify-between px-6 pt-8">
+		<div className=" flex flex-col">
+			<header className="header-wrapper">
 				<button
 					type="button"
 					onClick={() => navigate(-1)}
@@ -227,18 +228,16 @@ export default function RulesPage() {
 				<h1 className="header flex-1 text-center">
 					Rules for {homeName}
 				</h1>
-
-				<div className="w-[80px]" />
 			</header>
 
-			<main className="flex justify-center px-6 py-10 flex-1">
-				<List
-					item="Rules"
+			<main className="flex justify-center">
+				<RulesList
 					items={rules}
 					handleAddClick={() => setOverlayOpen(true)}
 					handleRemoveClick={(rule) => setDeleteTarget(rule._id)}
 					handleVoteClick={() => setShowVoting((prev) => !prev)}
 					getKey={(rule) => rule._id}
+					className="panel"
 					renderItem={(rule) => (
 						<RuleCard
 							rule={rule}

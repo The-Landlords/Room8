@@ -83,14 +83,18 @@ export default function HomeList() {
 
 	return (
 		<div className=" flex flex-col items-center">
-			<h1 className="header">Home Spaces</h1>
-
-			<Link
-				to={`/settings`}
-				className="aspect-square w-[20%] min-w-10 max-w-20 flex items-center justify-center self-end-safe  p-2 pr-5"
-			>
-				<FontAwesomeIcon icon={faUserGear} className="button text-xl" />
-			</Link>
+			<header className="header-wrapper">
+				<h1 className="header text-center px-14 ">Home Spaces</h1>
+				<Link
+					to={`/settings`}
+					className="absolute right-6 top-8 aspect-square min-w-10 flex items-center justify-center p-2"
+				>
+					<FontAwesomeIcon
+						icon={faUserGear}
+						className="button text-xl"
+					/>
+				</Link>
+			</header>
 
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
 				{addState == "Base" && (

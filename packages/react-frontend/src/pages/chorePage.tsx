@@ -12,6 +12,7 @@ type Chore = {
 
 export default function ChorePage() {
 	const [chores, setChores] = useState<Chore[]>([]);
+	const [homeName, setHomeName] = useState("");
 	const [showAddOverlay, setShowAddOverlay] = useState(false);
 	const { homeCode = "" } = useParams();
 	const navigate = useNavigate();
@@ -81,6 +82,21 @@ export default function ChorePage() {
 
 				const data = await res.json();
 				setChores(data);
+
+				const homeRes = await fetch(
+					`${API_BASE}/homes/code/${homeCode}`,
+					{
+						credentials: "include",
+					}
+				);
+
+				if (!homeRes.ok) {
+					throw new Error("Failed to fetch home");
+				}
+
+				const homeData = await homeRes.json();
+
+				setHomeName(homeData.homeName || "");
 			} catch (err) {
 				console.error(err);
 				setChores([]);
@@ -92,18 +108,19 @@ export default function ChorePage() {
 
 	return (
 		<div>
-			<div className="relative mb-4 pt-2">
+			<header className="header-wrapper">
 				<button
+					type="button"
 					onClick={() => navigate(-1)}
-					className="button absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 text-2xl"
+					className="button"
 				>
-					←
+					← Back
 				</button>
 
-				<div className="header mx-auto w-fit px-8 py-3 text-center">
-					Chores
-				</div>
-			</div>
+				<h1 className="header flex-1 text-center">
+					Chores for {homeName}
+				</h1>
+			</header>
 
 			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] bg-primary/70 p-6">
 				<AddOverlay

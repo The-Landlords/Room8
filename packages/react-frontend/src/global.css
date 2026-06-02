@@ -21,12 +21,15 @@ body {
 	.header-secondary {
 		@apply font-primary text-primary text-2xl pt-2;
 	}
+	.header-wrapper {
+		@apply relative flex items-center justify-center px-6 pt-8 w-full;
+	}
 	.dashboard-card {
 		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 relative flex flex-col gap-2;
 		@apply w-full sm:w-80 xl:w-72;
 	}
 	.panel {
-		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] max-h-[50%] relative overflow-auto;
 	}
 	.panel-secondary {
 		@apply bg-primary flex flex-col gap-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
