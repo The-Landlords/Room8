@@ -6,6 +6,21 @@ interface EditEventOverlayProps {
 	onCancel: () => void;
 }
 
+function toDatetimeLocalValue(dateString: string) {
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) return "";
+
+	const pad = (num: number) => String(num).padStart(2, "0");
+
+	const year = date.getFullYear();
+	const month = pad(date.getMonth() + 1);
+	const day = pad(date.getDate());
+	const hours = pad(date.getHours());
+	const minutes = pad(date.getMinutes());
+
+	return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export default function EditEventOverlay({
 	eventEdit,
 	onEdit,
@@ -13,12 +28,11 @@ export default function EditEventOverlay({
 }: EditEventOverlayProps) {
 	const [title, setTitle] = useState(eventEdit?.title || "");
 	const [start, setStart] = useState(
-		eventEdit?.start
-			? new Date(eventEdit.start).toISOString().slice(0, 16)
-			: ""
+		eventEdit?.start ? toDatetimeLocalValue(eventEdit.start) : ""
 	);
+
 	const [end, setEnd] = useState(
-		eventEdit?.end ? new Date(eventEdit.end).toISOString().slice(0, 16) : ""
+		eventEdit?.end ? toDatetimeLocalValue(eventEdit.end) : ""
 	);
 	const [location, setLocation] = useState(eventEdit?.location || "");
 	const [description, setDescription] = useState(
@@ -65,28 +79,31 @@ export default function EditEventOverlay({
 	}
 
 	return (
-		<form onSubmit={handleEditEvent} className="flex flex-col gap-4">
-			<h2>Edit Event</h2>
+		<form
+			onSubmit={handleEditEvent}
+			className="flex flex-col gap-4 items-center-safe"
+		>
+			<h2 className="header-secondary">Edit Event</h2>
 
 			<input
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
 				placeholder="Title"
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
 				value={description}
 				onChange={(e) => setDescription(e.target.value)}
 				placeholder="Description"
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
 				type="datetime-local"
 				value={start}
 				onChange={(e) => setStart(e.target.value)}
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
@@ -94,20 +111,20 @@ export default function EditEventOverlay({
 				value={end}
 				min={start}
 				onChange={(e) => setEnd(e.target.value)}
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<input
 				value={location}
 				onChange={(e) => setLocation(e.target.value)}
 				placeholder="Location"
-				className="font-secondary color-secondary"
+				className="input-field"
 			/>
 
 			<select
 				value={status}
 				onChange={(e) => setStatus(e.target.value)}
-				className="font-secondary color-secondary"
+				className="input-field"
 			>
 				<option value="">Select status</option>
 				<option value="pending">Pending</option>

@@ -93,15 +93,14 @@ export default function ChorePage() {
 	return (
 		<div>
 			<Header title="Chores" homeCode={homeCode} />
-
-			<div className="flex flex-col items-center animate-floatUp min-w-[380px] p-6">
-				<AddOverlay
-					isOpen={showAddOverlay}
-					title="Add Chore"
-					placeholder="enter text"
-					onSubmit={handleAddChore}
-					onClose={() => setShowAddOverlay(false)}
-				/>
+			<AddOverlay
+				isOpen={showAddOverlay}
+				title="Add Chore"
+				placeholder="enter text"
+				onSubmit={handleAddChore}
+				onClose={() => setShowAddOverlay(false)}
+			/>
+			<div className="flex flex-col items-center animate-floatUp min-w-[60%] p-6">
 				<BaseList
 					title="Current Chores"
 					items={chores}

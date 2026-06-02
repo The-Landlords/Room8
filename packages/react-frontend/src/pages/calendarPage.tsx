@@ -14,6 +14,7 @@ import RemoveEventOverlay from "../components/removeEventOverlay";
 import EditEventOverlay from "../components/EditEventOverlay";
 import { API_BASE } from "../config";
 import Header from "../components/header";
+import EventList from "../components/eventList";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
@@ -147,9 +148,8 @@ export default function CalendarPage() {
 		</div>
 	);
 	return (
-		<div>
+		<div className="flex flex-col items-center">
 			<Header title="Calendar" homeCode={homeCode} />
-
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
 				{addState === "Add" && (
 					<AddEventOverlay
@@ -184,76 +184,90 @@ export default function CalendarPage() {
 					/>
 				)}
 			</Overlay>
+			<div className="flex flex-col items-center animate-floatUp min-w-[60%] p-6">
+				{upcomingEvents.length > 0 && (
+					<>
+						<button
+							type="button"
+							className="header-secondary"
+							onClick={() => setShowUpcoming((prev) => !prev)}
+						>
+							<span className="header-secondary self-start-safe">
+								Upcoming Events
+							</span>
+							<FontAwesomeIcon
+								icon={showUpcoming ? faCaretDown : faCaretRight}
+								className="ml-2 transition-transform duration-200"
+							/>
+						</button>
 
-			{upcomingEvents.length > 0 && (
-				<>
-					<button
-						type="button"
-						className="header-secondary"
-						onClick={() => setShowUpcoming((prev) => !prev)}
-					>
-						<span>Upcoming Events</span>
-						<FontAwesomeIcon
-							icon={showUpcoming ? faCaretDown : faCaretRight}
-							className="ml-2 transition-transform duration-200"
-						/>
-					</button>
+						{showUpcoming && (
+							<EventList
+								items={upcomingEvents}
+								handleAddClick={handleAddClick}
+								handleRemoveClick={(event) =>
+									handleRemoveClick(event)
+								}
+								handleEditClick={(event) =>
+									handleEditClick(event)
+								}
+								getKey={(event) => event._id}
+								renderItem={renderItem}
+								getEventId={(event) => event._id}
+								className="panel"
+							/>
+						)}
+					</>
+				)}
 
-					{showUpcoming && (
-						<List
-							item="Events"
-							items={upcomingEvents}
-							handleAddClick={handleAddClick}
-							handleRemoveClick={handleRemoveClick}
-							handleEditClick={handleEditClick}
-							getKey={(event) => event._id}
-							renderItem={renderItem}
-							eventIds={upcomingEvents.map((e) => e._id)}
-						/>
-					)}
-				</>
-			)}
+				{pastEvents.length > 0 && (
+					<>
+						<button
+							type="button"
+							className="header-secondary"
+							onClick={() => setShowPast((prev) => !prev)}
+						>
+							<span className="header-secondary self-start-safe">
+								Past Events
+							</span>
+							<FontAwesomeIcon
+								icon={showPast ? faCaretDown : faCaretRight}
+								className="ml-2 transition-transform duration-200"
+							/>
+						</button>
 
-			{pastEvents.length > 0 && (
-				<>
-					<button
-						type="button"
-						className="header-secondary"
-						onClick={() => setShowPast((prev) => !prev)}
-					>
-						<span>Past Events</span>
-						<FontAwesomeIcon
-							icon={showPast ? faCaretDown : faCaretRight}
-							className="ml-2 transition-transform duration-200"
-						/>
-					</button>
+						{showPast && (
+							<EventList
+								items={pastEvents}
+								handleAddClick={handleAddClick}
+								handleRemoveClick={(event) =>
+									handleRemoveClick(event)
+								}
+								handleEditClick={(event) =>
+									handleEditClick(event)
+								}
+								getKey={(event) => event._id}
+								renderItem={renderItem}
+								getEventId={(event) => event._id}
+								className="panel"
+							/>
+						)}
+					</>
+				)}
 
-					{showPast && (
-						<List
-							item="Events"
-							items={pastEvents}
-							handleAddClick={handleAddClick}
-							handleRemoveClick={handleRemoveClick}
-							handleEditClick={handleEditClick}
-							getKey={(event) => event._id}
-							renderItem={renderItem}
-							eventIds={pastEvents.map((e) => e._id)}
-						/>
-					)}
-				</>
-			)}
-
-			{events.length == 0 && (
-				<List<string>
-					item="Events"
-					items={["No Events available! Click below to add."]}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(event) => handleRemoveClick(event)}
-					handleEditClick={(event) => handleEditClick(event)}
-					getKey={(item) => item}
-					renderItem={(item) => <span>{item}</span>}
-				/>
-			)}
+				{events.length == 0 && (
+					<EventList
+						items={[]}
+						handleAddClick={handleAddClick}
+						getKey={(event) => event._id}
+						renderItem={renderItem}
+						getEventId={(event) => event._id}
+						className="panel"
+						handleRemoveClick={() => {}}
+						handleEditClick={() => {}}
+					/>
+				)}
+			</div>
 		</div>
 	);
 }
