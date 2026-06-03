@@ -1,70 +1,183 @@
-//import React, { type ReactNode, useState } from "react";
-//import { API_BASE } from "../config";
-import List from "./list";
+import React, { useEffect, useState } from "react";
+import { API_BASE } from "../config";
 
-type Guest = {
+type Ascension = {
 	_id: string;
-	fullName: string;
+	guestId:
+	| {
+		_id: string;
+		fullName: string;
+	}
+	| string;
+
+	status: "PENDING" | "APPROVED" | "REJECTED";
+
+	votes: {
+		voteId: string;
+		vote: "YES" | "NO";
+	}[];
+
+	yesVotes: number;
+	noVotes: number;
+	totalResidents: number;
 };
 
-type GuestVoteOverlayProps<Guest> = {
-	guests: Guest[];
+type Props = {
 	homeCode: string;
-	username: string;
 };
 
-export default function GuestVoteOverlay({
-	guests,
-	homeCode,
-}: GuestVoteOverlayProps<Guest>) {
-	// const [vote, setVote] = useState<"approve" | "reject" | "abstain" | null>(
-	// 	null
-	// );
-	// const [errorMsg, setErrorMsg] = useState("");
+export default function GuestVoteOverlay({ homeCode }: Props) {
+	const [ascensions, setAscensions] = useState<Ascension[]>([]);
+	const [errorMsg, setErrorMsg] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [votingId, setVotingId] = useState<string | null>(null);
 
-	/*async function submitVote() {
-        if (!vote) {
-            setErrorMsg("Please select a vote option.");
-            return;
-        }
+	async function fetchAscensions() {
+		if (!homeCode) return;
 
-        try {
-            const response = await fetch(`${API_BASE}/rules/vote/${ruleId}`, {
-                method: "POST",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ vote }),
-            });
+		setLoading(true);
+		setErrorMsg("");
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Failed to submit vote.");
-            }
+		try {
+			const res = await fetch(
+				`${API_BASE}/guest-ascension/home/${homeCode}`,
+				{ credentials: "include" }
+			);
 
-            setErrorMsg("");
-        } catch (error) {
-            setErrorMsg(error.message);
-        }
-    }*/
+			const data = await res.json();
+
+			if (!res.ok) {
+				throw new Error(data.error || "Failed to load");
+			}
+
+			setAscensions(Array.isArray(data) ? data : []);
+		} catch (err: any) {
+			console.error("FETCH ASCENSIONS ERROR:", err);
+			setErrorMsg(err.message || "Error loading ascensions");
+			setAscensions([]);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	useEffect(() => {
+		fetchAscensions();
+	}, [homeCode]);
+
+	async function voteOnAscension(id: string, vote: "YES" | "NO") {
+		setVotingId(id);
+		setErrorMsg("");
+
+		try {
+			const res = await fetch(
+				`${API_BASE}/guest-ascension/${id}/vote`,
+				{
+					method: "POST",
+					credentials: "include",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ vote }),
+				}
+			);
+
+			const data = await res.json();
+
+			if (!res.ok) {
+				throw new Error(data.error || "Vote failed");
+			}
+
+			await fetchAscensions();
+		} catch (err: any) {
+			console.error("VOTE ERROR:", err);
+			setErrorMsg(err.message || "Vote error");
+		} finally {
+			setVotingId(null);
+		}
+	}
+
+	async function deleteAscension(id: string) {
+		try {
+			const res = await fetch(
+				`${API_BASE}/guest-ascension/${id}`,
+				{
+					method: "DELETE",
+					credentials: "include",
+				}
+			);
+
+			const data = await res.json();
+
+			if (!res.ok) {
+				throw new Error(data.error || "Delete failed");
+			}
+
+			await fetchAscensions();
+		} catch (err: any) {
+			setErrorMsg(err.message);
+		}
+	}
+
+	// ✅ FIX: do NOT hide REJECTED anymore
+	const visible = ascensions;
+
+	function getGuestName(guestId: Ascension["guestId"]) {
+		if (typeof guestId === "string") return "Loading...";
+		return guestId?.fullName ?? "Unknown User";
+	}
 
 	return (
 		<div className="overlay">
-			<h2>Vote on Guest Ascencion</h2>
-			<div>
-				<List
-					item=""
-					items={guests}
-					handleAddClick={() => {}}
-					handleRemoveClick={() => {}}
-					getKey={(guests: Guest) => guests._id}
-					renderItem={(guest: Guest) => (
-						<div>
-							<p>{guest.fullName}</p>
-							<button className="button">Yes</button>
+			<h2 className="text-lg font-semibold mb-3">
+				Guest Ascension Votes
+			</h2>
+
+			{loading && <p>Loading...</p>}
+			{errorMsg && <p className="text-red-500">{errorMsg}</p>}
+
+			{!loading && visible.length === 0 && (
+				<p>No requests</p>
+			)}
+
+			<div className="flex flex-col gap-4">
+				{visible.map((a) => (
+					<div key={a._id} className="border p-3 rounded">
+						<p>Guest: {getGuestName(a.guestId)}</p>
+
+						<p>
+							Yes: {a.yesVotes} | No: {a.noVotes} | Total: {a.totalResidents}
+						</p>
+
+						<p className="text-sm font-semibold">
+							Status: {a.status}
+						</p>
+
+						<div className="flex gap-2 mt-3">
+							<button
+								className="button"
+								disabled={votingId === a._id}
+								onClick={() => voteOnAscension(a._id, "YES")}
+							>
+								YES
+							</button>
+
+							<button
+								className="button"
+								disabled={votingId === a._id}
+								onClick={() => voteOnAscension(a._id, "NO")}
+							>
+								NO
+							</button>
+
+							<button
+								className="button mt-2"
+								onClick={() => deleteAscension(a._id)}
+							>
+								Delete Request
+							</button>
 						</div>
-					)}
-					homeCode={homeCode ? [homeCode] : undefined}
-				></List>
+					</div>
+				))}
 			</div>
 		</div>
 	);

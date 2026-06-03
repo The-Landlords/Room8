@@ -1,23 +1,27 @@
 import express from "express";
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
+
 import {
 	getHomeByCode,
-	getHomesByUser,
 	getHomeByName,
 	updateHome,
+	getHomesByUser,
 	getHomesByUserAndRelation,
 } from "../models/Home-Services.js";
+
 import {
 	getUserById,
 	getUsersByHomeAndRelation,
-	// getUsersByHomeAndRelation,
 	updateUserById,
 } from "../models/User-Services.js";
-import mongoose from "mongoose";
+
 import { requireAuth } from "./userSessionAuth.js";
+import { createGuestAscension, getGuestAscensionByGuest } from "../models/GuestAscension-Services.js";
 
 export const relationRouter = express.Router();
 
+//SESSION HELPER
 function getSessionUserId(req: Request) {
 	const sessionUserId = req.session.userId;
 
@@ -31,62 +35,69 @@ function getSessionUserId(req: Request) {
 	return new mongoose.Types.ObjectId(sessionUserId);
 }
 
-//creates a relation between user and home
+//CREATE RELATION
 relationRouter.post(
 	"/relate/me/:homeCode",
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
-			const homecode = req.params.homeCode;
+			const homeCode = String(req.params.homeCode);
 
-			if (typeof homecode !== "string") {
-				return res.status(400).json({ error: "Invalid home code" });
-			}
+			const relationship = String(req.body.relationship || "")
+				.toUpperCase()
+				.trim();
 
-			const relationship = req.body.relationship.toUpperCase();
-
-			const h = await getHomeByCode(homecode);
-
-			if (!h) {
-				return res.status(404).json({ error: "Home not found" });
-			}
+			const home = await getHomeByCode(homeCode);
+			if (!home) return res.status(404).json({ error: "Home not found" });
 
 			const userId = getSessionUserId(req);
 			if (!userId) {
-				return res
-					.status(400)
-					.json({ error: "Invalid user id in session" });
+				return res.status(400).json({ error: "Invalid session user id" });
 			}
 
-			const u = await getUserById(userId);
+			const user = await getUserById(userId);
+			if (!user) return res.status(404).json({ error: "User not found" });
 
-			if (!u) {
-				return res.status(404).json({ error: "User not found" });
+			const alreadyLinked = await getHomesByUserAndRelation(
+				user._id,
+				relationship
+			).then((homes) => homes.some((h) => h._id.equals(home._id)));
+
+			if (alreadyLinked) {
+				return res.status(400).json({ error: "Connection already exists" });
 			}
 
-			if (
-				await getHomesByUserAndRelation(u._id, relationship).then(
-					(homes) => homes.some((home) => home._id.equals(h._id))
-				)
-			) {
-				return res
-					.status(400)
-					.json({ error: "Connection already exists" });
+			home.userIds.push({ userId: user._id, relationship });
+			user.homeIds.push({ homeId: home._id, relationship });
+
+			if (relationship === "GUEST") {
+				const existing = await getGuestAscensionByGuest(
+					user._id,
+					home._id
+				);
+
+				if (!existing) {
+					await createGuestAscension({
+						homeId: home._id,
+						guestId: user._id,
+						status: "PENDING",
+						votes: [],
+					});
+				}
 			}
-			h.userIds.push({ userId: u._id, relationship: relationship });
-			await h.save();
-			u.homeIds.push({ homeId: h._id, relationship: relationship });
-			await u.save();
-			console.log("added relation");
-			res.status(200).json(h);
+
+			await home.save();
+			await user.save();
+
+			return res.status(200).json(home);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: "Failed to create relationship" });
+			return res.status(500).json({ error: "Failed to create relationship" });
 		}
 	}
 );
 
-//gets homes based off passed in user
+//GET USER HOMES
 relationRouter.get(
 	"/relate/me",
 	requireAuth,
@@ -94,204 +105,141 @@ relationRouter.get(
 		try {
 			const userId = getSessionUserId(req);
 			if (!userId) {
-				return res
-					.status(400)
-					.json({ error: "Invalid user id in session" });
+				return res.status(400).json({ error: "Invalid session user id" });
 			}
 
-			const u = await getUserById(userId);
+			const user = await getUserById(userId);
+			if (!user) return res.status(404).json({ error: "User not found" });
 
-			if (!u) {
-				return res.status(404).json({ error: "User not found" });
-			}
-
-			let homes = [];
-			homes = await getHomesByUser(u._id);
-			res.status(200).json(homes);
+			const homes = await getHomesByUser(user._id);
+			return res.status(200).json(homes);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: "Failed to fetch homes from user" });
+			return res.status(500).json({ error: "Failed to fetch homes" });
 		}
 	}
 );
 
-//deletes a relation between user and home, used when a user leaves a home
+//REMOVE RELATION
 relationRouter.patch(
 	"/relate/me/:homeName",
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
-			console.log("Deleting relation!");
+			const homeName = String(req.params.homeName);
 
-			const homename = req.params.homeName;
-
-			if (typeof homename !== "string") {
-				return res.status(400).json({ error: "Invalid home name" });
-			}
-
-			const h = await getHomeByName(homename);
-
-			if (!h) {
-				return res.status(404).json({ error: "Home not found" });
-			}
+			const home = await getHomeByName(homeName);
+			if (!home) return res.status(404).json({ error: "Home not found" });
 
 			const userId = getSessionUserId(req);
 			if (!userId) {
-				return res
-					.status(400)
-					.json({ error: "Invalid user id in session" });
+				return res.status(400).json({ error: "Invalid session user id" });
 			}
 
-			const u = await getUserById(userId);
+			const user = await getUserById(userId);
+			if (!user) return res.status(404).json({ error: "User not found" });
 
-			if (!u) {
-				return res.status(404).json({ error: "User not found" });
-			}
-			const removeOneUser = h.userIds.filter(
-				(user) => !user.userId.equals(u._id)
-			);
-			const removeOneHome = u.homeIds.filter(
-				(home) => !home.homeId.equals(h._id)
-			);
+			const newHomeIds = user.homeIds.filter((h) => !h.homeId.equals(home._id));
+			const newUserIds = home.userIds.filter((u) => !u.userId.equals(user._id));
 
-			const updatedHome = await updateHome(h._id, {
-				userIds: removeOneUser,
-			});
-			if (!updatedHome) {
-				return res
-					.status(404)
-					.json({ error: "Home not found for update" });
-			}
-			await h.save();
-			const updatedUser = await updateUserById(u._id, {
-				homeIds: removeOneHome,
-			});
-			if (!updatedUser) {
-				return res
-					.status(404)
-					.json({ error: "User not found for update" });
-			}
-			await u.save();
+			await updateHome(home._id, { userIds: newUserIds });
+			await updateUserById(user._id, { homeIds: newHomeIds });
 
-			res.status(200).json(h);
+			return res.status(200).json(home);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: "Failed to remove relationship" });
+			return res.status(500).json({ error: "Failed to remove relationship" });
 		}
 	}
 );
 
-//patch route to update a users relationship to a home, used for changing resident to guest or vice versa
+//UPDATE RELATION
 relationRouter.patch(
 	"/relate/me/:homeName/:newRelation",
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
-			console.log("Updating relation!");
+			const homeName = String(req.params.homeName);
+			const newRelation = String(req.params.newRelation)
+				.toUpperCase()
+				.trim();
 
-			const homename = req.params.homeName;
-			const newRelation = req.params.newRelation;
-
-			if (typeof homename !== "string") {
-				return res.status(400).json({ error: "Invalid home name" });
-			}
-
-			const h = await getHomeByName(homename);
-
-			if (!h) {
-				return res.status(404).json({ error: "Home not found" });
-			}
+			const home = await getHomeByName(homeName);
+			if (!home) return res.status(404).json({ error: "Home not found" });
 
 			const userId = getSessionUserId(req);
 			if (!userId) {
-				return res
-					.status(400)
-					.json({ error: "Invalid user id in session" });
+				return res.status(400).json({ error: "Invalid session user id" });
 			}
 
-			const u = await getUserById(userId);
+			const user = await getUserById(userId);
+			if (!user) return res.status(404).json({ error: "User not found" });
 
-			if (!u) {
-				return res.status(404).json({ error: "User not found" });
-			}
-			const updatedHome = await updateHome(h._id, {
-				userIds: h.userIds.map((user) =>
-					user.userId.equals(u._id)
-						? { userId: user.userId, relationship: newRelation }
-						: user
+			await updateHome(home._id, {
+				userIds: home.userIds.map((u) =>
+					u.userId.equals(user._id)
+						? { userId: u.userId, relationship: newRelation }
+						: u
 				),
 			});
-			if (!updatedHome) {
-				return res
-					.status(404)
-					.json({ error: "Home not found for update" });
-			}
-			await h.save();
-			const updatedUser = await updateUserById(u._id, {
-				homeIds: u.homeIds.map((home) =>
-					home.homeId.equals(h._id)
-						? { homeId: home.homeId, relationship: newRelation }
-						: home
+
+			await updateUserById(user._id, {
+				homeIds: user.homeIds.map((h) =>
+					h.homeId.equals(home._id)
+						? { homeId: h.homeId, relationship: newRelation }
+						: h
 				),
 			});
-			if (!updatedUser) {
-				return res
-					.status(404)
-					.json({ error: "User not found for update" });
-			}
-			await u.save();
 
-			res.status(200).json(h);
+			return res.status(200).json(home);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: "Failed to update relationship" });
+			return res.status(500).json({ error: "Failed to update relationship" });
 		}
 	}
 );
 
-//get users based off passed in home and relation
+//GET USERS BY HOME + RELATION
 relationRouter.get(
 	"/relate/:homeCode/:relation",
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
-			const h = await getHomeByCode(req.params.homeCode.toString());
+			const home = await getHomeByCode(String(req.params.homeCode));
+			if (!home) return res.status(404).json({ error: "Home not found" });
 
-			if (!h) {
-				return res.status(404).json({ error: "Home not found" });
-			}
-
-			let users = [];
-			users = await getUsersByHomeAndRelation(
-				h._id,
-				req.params.relation.toString()
+			const users = await getUsersByHomeAndRelation(
+				home._id,
+				String(req.params.relation).toUpperCase()
 			);
-			res.status(200).json(users);
+
+			return res.status(200).json(users);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: "Failed to fetch users from home" });
+			return res.status(500).json({ error: "Failed to fetch users" });
 		}
 	}
 );
 
+//RESIDENT COUNT
 relationRouter.get(
 	"/relate/home/:homeId/residents",
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
+			if (!mongoose.Types.ObjectId.isValid(String(req.params.homeId))) {
+				return res.status(400).json({ error: "Invalid home id" });
+			}
+
 			const residents = await getUsersByHomeAndRelation(
-				new mongoose.Types.ObjectId(req.params.homeId.toString()),
+				new mongoose.Types.ObjectId(String(req.params.homeId)),
 				"RESIDENT"
 			);
 
-			res.status(200).json({
-				count: residents.length,
-			});
+			return res.status(200).json({ count: residents.length });
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({
-				error: "Failed to fetch residents",
-			});
+			return res.status(500).json({ error: "Failed to fetch residents" });
 		}
 	}
 );
