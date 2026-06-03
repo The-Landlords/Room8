@@ -178,7 +178,7 @@ export default function GroceryPage() {
 				handleRemoveClick={(grocery) => handleRemoveGrocery(grocery)}
 				className="panel pb-6"
 				addMinus={true}
-				emptyMessage="No groceries"
+				emptyMessage="No Groceries"
 				renderItem={(grocery) => (
 					<div className="flex items-center justify-between w-full">
 						<span className="flex flex-row gap-4">

@@ -3,9 +3,10 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom/vitest";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import GroceryPage from "../pages/groceryPage";
 import { API_BASE } from "../config";
+
 type TestGrocery = {
 	_id: string;
 	title: string;
@@ -39,15 +40,14 @@ function renderGroceryPageWithHistory() {
 }
 
 function mockFetchWithGroceries(groceries: TestGrocery[]) {
-	globalThis.fetch = vi.fn().mockResolvedValueOnce({
-		ok: true,
-		json: async () => groceries,
+	globalThis.fetch = vi.fn(async () => {
+		return {
+			ok: true,
+			json: async () => groceries,
+			text: async () => "",
+		} as unknown as Response;
 	}) as unknown as typeof fetch;
 }
-
-beforeEach(() => {
-	mockFetchWithGroceries([]);
-});
 
 afterEach(() => {
 	cleanup();
@@ -85,7 +85,7 @@ test("displays the empty grocery state on the real page", async () => {
 
 	renderGroceryPageWithHistory();
 
-	expect(await screen.findByText("No Grocery")).toBeInTheDocument();
+	expect(await screen.findByText("No Groceries")).toBeInTheDocument();
 });
 
 test("renders the real add grocery button", async () => {
@@ -93,7 +93,7 @@ test("renders the real add grocery button", async () => {
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
 });
@@ -103,7 +103,7 @@ test("clicking the add button opens the add overlay", async () => {
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	const user = userEvent.setup();
 
@@ -127,37 +127,46 @@ test("clicking the back button sends you to the previous page", async () => {
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	const user = userEvent.setup();
 
-	await user.click(screen.getByRole("button", { name: "←" }));
+	await user.click(screen.getByRole("button", { name: /back/i }));
 
 	expect(screen.getByText("Home Page")).toBeInTheDocument();
 });
 
 test("submitting a new grocery sends a POST request with quantity and price", async () => {
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce({
-			ok: true,
-			json: async () => [],
-		})
-		.mockResolvedValueOnce({
-			ok: true,
-			json: async () => ({
-				_id: "grocery-1",
-				title: "Eggs",
-				quantity: 12,
-				price: 3.49,
-				homeId: "home-1",
-				status: "PENDING",
-			}),
-		}) as unknown as typeof fetch;
+	const fetchMock = vi.fn(
+		async (_url: RequestInfo | URL, options?: RequestInit) => {
+			if (options?.method === "POST") {
+				return {
+					ok: true,
+					json: async () => ({
+						_id: "grocery-1",
+						title: "Eggs",
+						quantity: 12,
+						price: 3.49,
+						homeId: "home-1",
+						status: "PENDING",
+					}),
+					text: async () => "",
+				} as unknown as Response;
+			}
+
+			return {
+				ok: true,
+				json: async () => [],
+				text: async () => "",
+			} as unknown as Response;
+		}
+	);
+
+	globalThis.fetch = fetchMock as unknown as typeof fetch;
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	const user = userEvent.setup();
 
@@ -173,22 +182,18 @@ test("submitting a new grocery sends a POST request with quantity and price", as
 	await user.click(screen.getByRole("button", { name: "Submit" }));
 
 	await waitFor(() => {
-		expect(globalThis.fetch).toHaveBeenNthCalledWith(
-			2,
-			`${API_BASE}/testhome/grocery`,
-			{
-				method: "POST",
-				credentials: "include",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title: "Eggs",
-					quantity: 12,
-					price: 3.49,
-				}),
-			}
-		);
+		expect(fetchMock).toHaveBeenCalledWith(`${API_BASE}/testhome/grocery`, {
+			method: "POST",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: "Eggs",
+				quantity: 12,
+				price: 3.49,
+			}),
+		});
 	});
 
 	expect(
@@ -197,27 +202,36 @@ test("submitting a new grocery sends a POST request with quantity and price", as
 });
 
 test("submitting a new grocery without price sends price as 0", async () => {
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce({
-			ok: true,
-			json: async () => [],
-		})
-		.mockResolvedValueOnce({
-			ok: true,
-			json: async () => ({
-				_id: "grocery-1",
-				title: "Bread",
-				quantity: 2,
-				price: 0,
-				homeId: "home-1",
-				status: "PENDING",
-			}),
-		}) as unknown as typeof fetch;
+	const fetchMock = vi.fn(
+		async (_url: RequestInfo | URL, options?: RequestInit) => {
+			if (options?.method === "POST") {
+				return {
+					ok: true,
+					json: async () => ({
+						_id: "grocery-1",
+						title: "Bread",
+						quantity: 2,
+						price: 0,
+						homeId: "home-1",
+						status: "PENDING",
+					}),
+					text: async () => "",
+				} as unknown as Response;
+			}
+
+			return {
+				ok: true,
+				json: async () => [],
+				text: async () => "",
+			} as unknown as Response;
+		}
+	);
+
+	globalThis.fetch = fetchMock as unknown as typeof fetch;
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	const user = userEvent.setup();
 
@@ -231,22 +245,18 @@ test("submitting a new grocery without price sends price as 0", async () => {
 	await user.click(screen.getByRole("button", { name: "Submit" }));
 
 	await waitFor(() => {
-		expect(globalThis.fetch).toHaveBeenNthCalledWith(
-			2,
-			`${API_BASE}/testhome/grocery`,
-			{
-				method: "POST",
-				credentials: "include",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title: "Bread",
-					quantity: 2,
-					price: 0,
-				}),
-			}
-		);
+		expect(fetchMock).toHaveBeenCalledWith(`${API_BASE}/testhome/grocery`, {
+			method: "POST",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: "Bread",
+				quantity: 2,
+				price: 0,
+			}),
+		});
 	});
 
 	expect(
@@ -255,14 +265,11 @@ test("submitting a new grocery without price sends price as 0", async () => {
 });
 
 test("does not submit grocery if quantity is invalid", async () => {
-	globalThis.fetch = vi.fn().mockResolvedValueOnce({
-		ok: true,
-		json: async () => [],
-	}) as unknown as typeof fetch;
+	mockFetchWithGroceries([]);
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	const user = userEvent.setup();
 
@@ -278,18 +285,20 @@ test("does not submit grocery if quantity is invalid", async () => {
 
 	await user.click(screen.getByRole("button", { name: "Submit" }));
 
-	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+	expect(globalThis.fetch).not.toHaveBeenCalledWith(
+		`${API_BASE}/testhome/grocery`,
+		expect.objectContaining({
+			method: "POST",
+		})
+	);
 });
 
 test("does not submit grocery if price is negative", async () => {
-	globalThis.fetch = vi.fn().mockResolvedValueOnce({
-		ok: true,
-		json: async () => [],
-	}) as unknown as typeof fetch;
+	mockFetchWithGroceries([]);
 
 	renderGroceryPageWithHistory();
 
-	await screen.findByText("No Grocery");
+	await screen.findByText("No Groceries");
 
 	const user = userEvent.setup();
 
@@ -302,33 +311,48 @@ test("does not submit grocery if price is negative", async () => {
 
 	await user.clear(screen.getByPlaceholderText("Quantity"));
 	await user.type(screen.getByPlaceholderText("Quantity"), "3");
+
 	await user.type(screen.getByPlaceholderText("Price, optional"), "-1");
 
 	await user.click(screen.getByRole("button", { name: "Submit" }));
 
-	expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+	expect(globalThis.fetch).not.toHaveBeenCalledWith(
+		`${API_BASE}/testhome/grocery`,
+		expect.objectContaining({
+			method: "POST",
+		})
+	);
 });
 
 test("clicking remove sends a DELETE request", async () => {
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce({
-			ok: true,
-			json: async () => [
-				{
-					_id: "grocery-1",
-					title: "Milk",
-					quantity: 2,
-					price: 4,
-					homeId: "home-1",
-					status: "PENDING",
-				},
-			],
-		})
-		.mockResolvedValueOnce({
-			ok: true,
-			json: async () => ({}),
-		}) as unknown as typeof fetch;
+	const fetchMock = vi.fn(
+		async (_url: RequestInfo | URL, options?: RequestInit) => {
+			if (options?.method === "DELETE") {
+				return {
+					ok: true,
+					json: async () => ({}),
+					text: async () => "",
+				} as unknown as Response;
+			}
+
+			return {
+				ok: true,
+				json: async () => [
+					{
+						_id: "grocery-1",
+						title: "Milk",
+						quantity: 2,
+						price: 4,
+						homeId: "home-1",
+						status: "PENDING",
+					},
+				],
+				text: async () => "",
+			} as unknown as Response;
+		}
+	);
+
+	globalThis.fetch = fetchMock as unknown as typeof fetch;
 
 	renderGroceryPageWithHistory();
 
@@ -340,17 +364,18 @@ test("clicking remove sends a DELETE request", async () => {
 
 	await user.click(screen.getByRole("button", { name: "-" }));
 
-	const trashButton = screen
-		.getAllByRole("button")
-		.find((button) => button.querySelector("svg[data-icon='trash-can']"));
+	const trashButton = screen.getAllByRole("button").find((button) => {
+		return button.querySelector("svg[data-icon='trash-can']");
+	});
 
-	expect(trashButton).toBeDefined();
+	if (!trashButton) {
+		throw new Error("Trash button was not found");
+	}
 
-	await user.click(trashButton as HTMLButtonElement);
+	await user.click(trashButton);
 
 	await waitFor(() => {
-		expect(globalThis.fetch).toHaveBeenNthCalledWith(
-			2,
+		expect(fetchMock).toHaveBeenCalledWith(
 			`${API_BASE}/testhome/grocery/grocery-1`,
 			{
 				method: "DELETE",
@@ -358,4 +383,6 @@ test("clicking remove sends a DELETE request", async () => {
 			}
 		);
 	});
+
+	expect(await screen.findByText("No Groceries")).toBeInTheDocument();
 });
