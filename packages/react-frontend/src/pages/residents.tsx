@@ -130,6 +130,7 @@ export default function Residents() {
 					/>
 				</Overlay>
 			)}
+
 			<div className="flex flex-col items-center justify-center">
 				<Header title="Residents" homeCode={homeCode} />
 				<Cards
@@ -146,7 +147,9 @@ export default function Residents() {
 						{ label: "Birthday", value: formatDob(user.DOB) || "" },
 						{
 							label: "Emergency Contact",
-							value: user.emergencyContact || "",
+							value: user.emergencyContact
+								? `${user.emergencyContact.name} (${user.emergencyContact.relationship}) - ${user.emergencyContact.phone}`
+								: "",
 						},
 						{ label: "Likes", value: user.likes?.join(", ") || "" },
 						{
@@ -169,6 +172,18 @@ export default function Residents() {
 						},
 						{ label: "Phone", value: user.phoneNumber || "" },
 						{ label: "Pronouns", value: user.pronouns || "" },
+						{ label: "Birthday", value: formatDob(user.DOB) || "" },
+						{
+							label: "Emergency Contact",
+							value: user.emergencyContact
+								? `${user.emergencyContact.name} (${user.emergencyContact.relationship}) - ${user.emergencyContact.phone}`
+								: "",
+						},
+						{ label: "Likes", value: user.likes?.join(", ") || "" },
+						{
+							label: "Dislikes",
+							value: user.dislikes?.join(", ") || "",
+						},
 					]}
 					emptyMessage="No guests found."
 					className="mx-auto justify-items-center"

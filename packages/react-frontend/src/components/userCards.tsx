@@ -34,10 +34,9 @@ export default function Cards<T>({
 		<div
 			className={`grid w-full gap-4 justify-center grid-cols-[repeat(auto-fit,minmax(18rem,24rem))] ${className}`}
 		>
-			{/* Have to do this for each item because details do not have unique ids */}
 			{items.map((item) => {
 				const details: CardDetailWithId[] = getDetails(item)
-					.filter((detail) => detail.value.trim() !== "")
+					.filter((detail) => detail.value !== "")
 					.map((detail, index) => ({
 						...detail,
 						id: `${getKey(item)}-${index}`,
@@ -59,14 +58,10 @@ export default function Cards<T>({
 							emptyMessage=""
 							renderItem={(detail) => (
 								<div className="flex flex-row gap-2">
-									{detail.value === "" ? null : (
-										<>
-											<span className="font-bold">
-												{detail.label}:
-											</span>
-											<span>{detail.value}</span>
-										</>
-									)}
+									<span className="font-bold">
+										{detail.label}:
+									</span>
+									<span>{detail.value}</span>
 								</div>
 							)}
 						/>
