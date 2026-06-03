@@ -1,4 +1,5 @@
-// import React from "react";
+// RuleCard.tsx
+
 import VotePanel from "./VotePanel";
 
 interface Vote {
@@ -13,11 +14,23 @@ interface Rule {
 	votes?: Vote[];
 }
 
+function formatStatus(status: Rule["status"]) {
+	const labels: Record<Rule["status"], string> = {
+		CONFIRMED: "Approved",
+		PENDING: "Pending",
+		REJECTED: "Rejected",
+		CANCELLED: "Cancelled",
+	};
+
+	return labels[status];
+}
+
 interface RuleCardProps {
 	rule: Rule;
 	voteId: string;
 	totalResidents: number;
-	onVote: (ruleId: string, vote: "YES" | "NO") => void;
+	onVote: (id: string, vote: "YES" | "NO") => void;
+	showVoting?: boolean;
 }
 
 export default function RuleCard({
@@ -25,36 +38,42 @@ export default function RuleCard({
 	voteId,
 	totalResidents,
 	onVote,
+	showVoting,
 }: RuleCardProps) {
-	const yes = rule.votes?.filter((v) => v.vote === "YES").length || 0;
-	const no = rule.votes?.filter((v) => v.vote === "NO").length || 0;
+	const votes = rule.votes ?? [];
 
-	const myVote = rule.votes?.find((v) => v.voteId === voteId)?.vote;
+	const yes = votes.filter((v) => v.vote === "YES").length;
+	const no = votes.filter((v) => v.vote === "NO").length;
 
-	const statusText =
-		rule.status === "CONFIRMED"
-			? "Approved"
-			: rule.status === "REJECTED"
-				? "Rejected"
-				: "Pending";
+	const myVote = votes.find((v) => String(v.voteId) === String(voteId))?.vote;
 
 	return (
-		<div className="flex justify-between items-start w-full">
-			<div className="flex-1">
-				<p className="text-lg">{rule.description}</p>
-				<p className="text-sm mt-2">{statusText}</p>
-				<p className="text-xs text-text/70 mt-1">
-					YES {yes} | NO {no} | Total Roommates {totalResidents}
-				</p>
+		<div className="grid grid-cols-[1fr_120px_auto_220px] items-center gap-4 w-full">
+			{/* RULE */}
+			<p className="text-lg font-bold truncate">{rule.description}</p>
+
+			{/* APPROVAL COUNT */}
+			<p className="text-sm text-text/70 italic text-center whitespace-nowrap">
+				{yes}/{totalResidents} Approve
+			</p>
+
+			{/* BUTTONS */}
+			<div className="flex justify-end">
+				{showVoting && (
+					<VotePanel
+						ruleId={rule._id}
+						yesCount={yes}
+						noCount={no}
+						onVote={onVote}
+						myVote={myVote}
+					/>
+				)}
 			</div>
 
-			<VotePanel
-				ruleId={rule._id}
-				myVote={myVote}
-				yesCount={yes}
-				noCount={no}
-				onVote={onVote}
-			/>
+			{/* STATUS */}
+			<p className="text-lg font-bold text-right whitespace-nowrap">
+				Status : {formatStatus(rule.status)}
+			</p>
 		</div>
 	);
 }
