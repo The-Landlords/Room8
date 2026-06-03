@@ -32,6 +32,7 @@ type AttributeSetter<T extends { settings: Record<string, any> }> =
 	| {
 			type: "select";
 			field: Extract<keyof T["settings"], string>;
+			layout: string;
 			options: { value: string; label: string }[];
 			placeholder?: never;
 	  }
@@ -171,16 +172,10 @@ export function InputField<T extends { settings: Record<string, any> }>({
 										},
 									}))
 								}
-								className="input-field"
+								className={`input-field${state.draft.settings[f.field] === opt.value ? "-selected" : ""} flex`}
 							>
 								<span>
-									{opt.label === "" ? "" : `${opt.label}:`}
-								</span>
-								<span className="toggle-text">
-									{state.draft.settings[f.field] ===
-										opt.value && (
-										<span className="h-3 w-3 rounded-full bg-text" />
-									)}
+									{opt.label === "" ? "" : `${opt.label}`}
 								</span>
 							</button>
 						));

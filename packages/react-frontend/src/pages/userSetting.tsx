@@ -12,43 +12,21 @@ function isValidPhone(phone: string) {
 }
 
 /* Force type-matching here so mapping works later on */
-type userVisibilityPreset = "everyone" | "roommates" | "private";
-type userVisibility = userVisibilityPreset | "custom";
+type userVisibility = "everyone" | "roommates" | "private";
 type homeVisibility = "PUBLIC" | "RESIDENT" | "PRIVATE";
 
 /* Defining the relations between visibilities here */
 /* Yes, this should be better structured. Make it a 'future' issue. */
-const UserToHome: Record<userVisibilityPreset, homeVisibility> = {
+const UserToHome: Record<userVisibility, homeVisibility> = {
 	everyone: "PUBLIC",
 	roommates: "RESIDENT",
 	private: "PRIVATE",
 } as const;
-const HomeToUser: Record<homeVisibility, userVisibilityPreset> = {
+const HomeToUser: Record<homeVisibility, userVisibility> = {
 	PUBLIC: "everyone",
 	RESIDENT: "roommates",
 	PRIVATE: "private",
 } as const;
-
-/* Helper function for setting global visibilies, automatically sets both the single-value scheduleVisibility, */
-/* and all associated values inside visibility: */
-function setUniformVisibility<
-	T extends {
-		settings: Record<string, string>;
-		visibility: Record<string, string>;
-	},
->(d: T, visibility: userVisibilityPreset): T {
-	const newVisibilities = Object.fromEntries(
-		Object.keys(d.visibility).map((k) => [k, UserToHome[visibility]])
-	);
-	return {
-		...d,
-		settings: {
-			...d.settings,
-			scheduleVisibility: visibility,
-		},
-		visibility: newVisibilities,
-	};
-}
 
 /* This should definitely go somewhere else */
 /* But I don't know where yet */
@@ -69,17 +47,19 @@ interface DraftProps {
 		textSize: string;
 		theme: string;
 		colorBlindMode: string;
-		scheduleVisibility: userVisibility;
+		personalVisibility: userVisibility;
+		emergencyVisibility: userVisibility;
+		interestsVisibility: userVisibility;
 	};
 	visibility: {
 		nameVisible: homeVisibility;
-		phoneVisible: homeVisibility;
+		allergensVisible: homeVisibility;
 		dobVisible: homeVisibility;
+		pronounsVisible: homeVisibility;
+		phoneVisible: homeVisibility;
+		emergencyContactVisible: homeVisibility;
 		likesVisible: homeVisibility;
 		dislikesVisible: homeVisibility;
-		emergencyContactVisible: homeVisibility;
-		allergensVisible: homeVisibility;
-		pronounsVisible: homeVisibility;
 	};
 }
 
@@ -92,16 +72,6 @@ const settingsFields: FieldsLayout<DraftProps> = {
 			{ type: "text", field: "fullName", placeholder: "Barry B. Benson" },
 		],
 	},
-	pronouns: {
-		label: "Pronouns",
-		layout: "horizonal",
-		fields: [{ type: "text", field: "pronouns", placeholder: "she/they" }],
-	},
-	DOB: {
-		label: "Birthday",
-		layout: "horizonal",
-		fields: [{ type: "date", field: "DOB" }],
-	},
 	allergens: {
 		label: "Allergens",
 		layout: "vertical",
@@ -110,6 +80,36 @@ const settingsFields: FieldsLayout<DraftProps> = {
 				type: "text",
 				field: "allergens",
 				placeholder: "pollen, dairy, etc.",
+			},
+		],
+	},
+	DOB: {
+		label: "Birthday",
+		layout: "horizonal",
+		fields: [{ type: "date", field: "DOB" }],
+	},
+	pronouns: {
+		label: "Pronouns",
+		layout: "horizonal",
+		fields: [{ type: "text", field: "pronouns", placeholder: "she/they" }],
+	},
+	phone: {
+		label: "Phone",
+		layout: "horizonal",
+		fields: [{ type: "text", field: "phone", placeholder: "+19998887777" }],
+	},
+	emergencyContact: {
+		label: "Emergency Contact",
+		layout: "vertical",
+		fields: [
+			{
+				type: "group",
+				field: "emergencyContact",
+				fields: [
+					{ field: "name", placeholder: "Adam Flayman" },
+					{ field: "phone", placeholder: "+15551990123" },
+					{ field: "relationship", placeholder: "Brother" },
+				],
 			},
 		],
 	},
@@ -132,26 +132,6 @@ const settingsFields: FieldsLayout<DraftProps> = {
 				type: "text",
 				field: "dislikes",
 				placeholder: "workouts, seafoods, etc.",
-			},
-		],
-	},
-	phone: {
-		label: "Phone",
-		layout: "horizonal",
-		fields: [{ type: "text", field: "phone", placeholder: "+19998887777" }],
-	},
-	emergencyContact: {
-		label: "Emergency Contact",
-		layout: "vertical",
-		fields: [
-			{
-				type: "group",
-				field: "emergencyContact",
-				fields: [
-					{ field: "name", placeholder: "Adam Flayman" },
-					{ field: "phone", placeholder: "+15551990123" },
-					{ field: "relationship", placeholder: "Brother" },
-				],
 			},
 		],
 	},
@@ -198,14 +178,47 @@ const settingsFields: FieldsLayout<DraftProps> = {
 			},
 		],
 	},
-	/* This one is unused as a custom, prettier button is preferred */
-	scheduleVisibility: {
-		label: "Who can see my schedule?",
+	/* These are for mapping visibility settings */
+	personalVisibility: {
+		label: "Who can see my personal details?",
 		layout: "vertical",
 		fields: [
 			{
 				type: "select",
-				field: "scheduleVisibility",
+				field: "personalVisibility",
+				layout: "horizontal",
+				options: [
+					{ value: "everyone", label: "Everyone" },
+					{ value: "roommates", label: "Only Roomates" },
+					{ value: "private", label: "No One (Private)" },
+				],
+			},
+		],
+	},
+	emergencyVisibility: {
+		label: "Who can see my Emergency Contact?",
+		layout: "vertical",
+		fields: [
+			{
+				type: "select",
+				field: "emergencyVisibility",
+				layout: "horizontal",
+				options: [
+					{ value: "everyone", label: "Everyone" },
+					{ value: "roommates", label: "Only Roomates" },
+					{ value: "private", label: "No One (Private)" },
+				],
+			},
+		],
+	},
+	interestsVisibility: {
+		label: "Who can see my interests?",
+		layout: "vertical",
+		fields: [
+			{
+				type: "select",
+				field: "interestsVisibility",
+				layout: "horizontal",
 				options: [
 					{ value: "everyone", label: "Everyone" },
 					{ value: "roommates", label: "Only Roomates" },
@@ -221,59 +234,38 @@ export default function UserSetting() {
 
 	// holds what the user is currently typing
 	const [draft, setDraft] = useState({
-		pronouns: "",
 		fullName: "",
-		DOB: "",
 		allergens: "",
-		likes: "",
-		dislikes: "",
+		DOB: "",
+		pronouns: "",
 		phone: "", // gets validated in post
 		emergencyContact: {
 			name: "",
 			phone: "",
 			relationship: "",
 		},
+		likes: "",
+		dislikes: "",
 		settings: {
 			textSize: "medium",
 			theme: "light",
 			colorBlindMode: "off",
-			scheduleVisibility: "roommates" as userVisibility,
+			personalVisibility: "roommates" as userVisibility,
+			emergencyVisibility: "roommates" as userVisibility,
+			interestsVisibility: "roommates" as userVisibility,
 		},
 		visibility: {
-			nameVisible: "RESIDENT" as homeVisibility,
-			phoneVisible: "RESIDENT" as homeVisibility,
+			nameVisible: "PUBLIC" as homeVisibility /* Unless we mess up */,
+			allergensVisible:
+				"PUBLIC" as homeVisibility /* These two should ALWAYS be 'PUBLIC' */,
 			dobVisible: "RESIDENT" as homeVisibility,
+			pronounsVisible: "RESIDENT" as homeVisibility,
+			phoneVisible: "RESIDENT" as homeVisibility,
+			emergencyContactVisible: "RESIDENT" as homeVisibility,
 			likesVisible: "RESIDENT" as homeVisibility,
 			dislikesVisible: "RESIDENT" as homeVisibility,
-			emergencyContactVisible: "RESIDENT" as homeVisibility,
-			allergensVisible: "RESIDENT" as homeVisibility,
-			pronounsVisible: "RESIDENT" as homeVisibility,
 		},
 	});
-
-	/* Every time visibility updates, check for congruence and update toggle */
-	/* Currently we don't do any changing on this page, but in case we add a dropdown to change it later... */
-	useEffect(() => {
-		setDraft((d) => {
-			const visibilities = Object.values(
-				d.visibility
-			) as homeVisibility[];
-			const defaultVisibility = visibilities[0];
-			const allMatch = Object.values(d.visibility).every(
-				(v) => v === defaultVisibility
-			);
-
-			return {
-				...d,
-				settings: {
-					...d.settings,
-					scheduleVisibility: allMatch
-						? HomeToUser[defaultVisibility]
-						: ("custom" as userVisibility),
-				},
-			};
-		});
-	}, [draft.visibility]);
 
 	const [user, setUser] = useState<any>(null);
 	const [, setError] = useState("");
@@ -290,12 +282,10 @@ export default function UserSetting() {
 			.then((data) => {
 				setUser(data);
 				setDraft({
-					pronouns: data?.pronouns ?? "",
 					fullName: data?.fullName ?? "",
-					DOB: data?.DOB ? String(data.DOB).slice(0, 10) : "",
 					allergens: (data?.allergens ?? []).join(", "),
-					likes: (data?.likes ?? []).join(", "),
-					dislikes: (data?.dislikes ?? []).join(", "),
+					DOB: data?.DOB ? String(data.DOB).slice(0, 10) : "",
+					pronouns: data?.pronouns ?? "",
 					phone: data?.phone ?? "",
 					emergencyContact: {
 						name: data?.emergencyContact?.name ?? "",
@@ -303,39 +293,53 @@ export default function UserSetting() {
 						relationship:
 							data?.emergencyContact?.relationship ?? "",
 					},
+					likes: (data?.likes ?? []).join(", "),
+					dislikes: (data?.dislikes ?? []).join(", "),
 					settings: {
 						textSize: data?.settings?.textSize ?? "medium",
 						theme: data?.settings?.theme ?? "light",
 						colorBlindMode: data?.settings?.colorBlindMode ?? "off",
-						scheduleVisibility:
-							data?.settings?.scheduleVisibility ??
-							("roommates" as userVisibility),
+						personalVisibility:
+							HomeToUser[
+								(data?.visibility?.dobVisible ??
+									"RESIDENT") as homeVisibility
+							],
+						emergencyVisibility:
+							HomeToUser[
+								(data?.visibility?.emergencyContactVisible ??
+									"RESIDENT") as homeVisibility
+							],
+						interestsVisibility:
+							HomeToUser[
+								(data?.visibility?.likesVisible ??
+									"RESIDENT") as homeVisibility
+							],
 					},
 					visibility: {
 						nameVisible:
 							data?.visibility?.nameVisible ??
-							("RESIDDENT" as homeVisibility),
-						phoneVisible:
-							data?.visibility?.phoneVisible ??
-							("RESIDDENT" as homeVisibility),
-						dobVisible:
-							data?.visibility?.dobVisible ??
-							("RESIDDENT" as homeVisibility),
-						likesVisible:
-							data?.visibility?.likesVisible ??
-							("RESIDDENT" as homeVisibility),
-						dislikesVisible:
-							data?.visibility?.dislikesVisible ??
-							("RESIDDENT" as homeVisibility),
-						emergencyContactVisible:
-							data?.visibility?.emergencyContactVisible ??
-							("RESIDDENT" as homeVisibility),
+							("PUBLIC" as homeVisibility),
 						allergensVisible:
 							data?.visibility?.allergensVisible ??
-							("RESIDDENT" as homeVisibility),
+							("PUBLIC" as homeVisibility),
+						dobVisible:
+							data?.visibility?.dobVisible ??
+							("RESIDENT" as homeVisibility),
 						pronounsVisible:
 							data?.visibility?.pronounsVisible ??
-							("RESIDDENT" as homeVisibility),
+							("RESIDENT" as homeVisibility),
+						phoneVisible:
+							data?.visibility?.phoneVisible ??
+							("RESIDENT" as homeVisibility),
+						emergencyContactVisible:
+							data?.visibility?.emergencyContactVisible ??
+							("RESIDENT" as homeVisibility),
+						likesVisible:
+							data?.visibility?.likesVisible ??
+							("RESIDENT" as homeVisibility),
+						dislikesVisible:
+							data?.visibility?.dislikesVisible ??
+							("RESIDENT" as homeVisibility),
 					},
 				});
 			})
@@ -363,6 +367,18 @@ export default function UserSetting() {
 			allergens: toList(draft.allergens),
 			likes: toList(draft.likes),
 			dislikes: toList(draft.dislikes),
+			visibility: {
+				nameVisible: "PUBLIC" as homeVisibility /* Unless we mess up */,
+				allergensVisible:
+					"PUBLIC" as homeVisibility /* These two should ALWAYS be 'PUBLIC' */,
+				dobVisible: UserToHome[draft.settings.personalVisibility],
+				pronounsVisible: UserToHome[draft.settings.personalVisibility],
+				phoneVisible: UserToHome[draft.settings.personalVisibility],
+				emergencyContactVisible:
+					UserToHome[draft.settings.emergencyVisibility],
+				likesVisible: UserToHome[draft.settings.interestsVisibility],
+				dislikesVisible: UserToHome[draft.settings.interestsVisibility],
+			},
 		};
 
 		try {
@@ -461,15 +477,33 @@ export default function UserSetting() {
 			<main className="flex-1 flex justify-center px-6 py-10">
 				<div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10">
 					{/* LEFT COLUMN */}
-					<div className="md:order-1 w-full min-w-0 animate-floatUp">
+					<div className="md:order-1 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
+						{/*COLUMN MEMBERS*/}
 						<div className="bubble">
-							{/*COLUMN HEADER*/}
-							<h2 className="bubble-header">Personal Info</h2>
-
-							{/*COLUMN MEMBERS*/}
+							{/*HEADER*/}
+							<h2 className="bubble-header">General</h2>
 							<div className="space-y-5">
 								<InputField
 									fieldName={settingsFields.fullName}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.allergens}
+									state={{ draft, setDraft }}
+								/>
+								<p className="flex justify-center w-full text-text">
+									This information will be public to both
+									residents and guests.
+								</p>
+							</div>
+						</div>
+
+						<div className="bubble">
+							{/*HEADER*/}
+							<h2 className="bubble-header">Personal</h2>
+							<div className="space-y-5">
+								<InputField
+									fieldName={settingsFields.DOB}
 									state={{ draft, setDraft }}
 								/>
 								<InputField
@@ -477,19 +511,61 @@ export default function UserSetting() {
 									state={{ draft, setDraft }}
 								/>
 								<InputField
-									fieldName={settingsFields.DOB}
+									fieldName={settingsFields.phone}
+									state={{ draft, setDraft }}
+								/>
+								{draft.phone.length > 0 &&
+									!phoneRegex.test(draft.phone) && (
+										<p className="text-sm text-red-500">
+											Use E.164 format (e.g. +14155552671)
+										</p>
+									)}
+								<InputField
+									fieldName={
+										settingsFields.personalVisibility
+									}
+									state={{ draft, setDraft }}
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* MIDDLE COLUMN */}
+					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
+						{/*COLUMN MEMBERS*/}
+						<div className="bubble">
+							{/*HEADER*/}
+							<h2 className="bubble-header">Emergency</h2>
+							<div className="space-y-5">
+								<InputField
+									fieldName={settingsFields.emergencyContact}
 									state={{ draft, setDraft }}
 								/>
 								<InputField
-									fieldName={settingsFields.allergens}
+									fieldName={
+										settingsFields.emergencyVisibility
+									}
 									state={{ draft, setDraft }}
 								/>
+							</div>
+						</div>
+
+						<div className="bubble">
+							{/*HEADER*/}
+							<h2 className="bubble-header">Interests</h2>
+							<div className="space-y-5">
 								<InputField
 									fieldName={settingsFields.likes}
 									state={{ draft, setDraft }}
 								/>
 								<InputField
 									fieldName={settingsFields.dislikes}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={
+										settingsFields.interestsVisibility
+									}
 									state={{ draft, setDraft }}
 								/>
 							</div>
@@ -500,7 +576,7 @@ export default function UserSetting() {
 					<div className="md:order-3 w-full min-w-0 animate-floatUp">
 						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="bubble-header">Display Settings</h2>
+							<h2 className="bubble-header">Display</h2>
 
 							<div className="space-y-5">
 								<InputField
@@ -515,99 +591,6 @@ export default function UserSetting() {
 									fieldName={settingsFields.colorBlindMode}
 									state={{ draft, setDraft }}
 								/>
-							</div>
-						</div>
-					</div>
-
-					{/* MIDDLE COLUMN */}
-					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
-						<div className="bubble">
-							{/*HEADER*/}
-							<h2 className="bubble-header">Emergency Info</h2>
-
-							<div className="space-y-5">
-								<InputField
-									fieldName={settingsFields.phone}
-									state={{ draft, setDraft }}
-								/>
-								{draft.phone.length > 0 &&
-									!phoneRegex.test(draft.phone) && (
-										<p className="text-sm text-red-500">
-											Use E.164 format (e.g. +14155552671)
-										</p>
-									)}
-								<InputField
-									fieldName={settingsFields.emergencyContact}
-									state={{ draft, setDraft }}
-								/>
-							</div>
-						</div>
-
-						<div className="bubble">
-							{/*HEADER*/}
-							<h2 className="bubble-header">
-								Who can see
-								<br />
-								my schedule?
-							</h2>
-
-							{/*CLICKABLE ROWS */}
-							<div className="space-y-5">
-								{/* Un-pretty version of the below button */}
-								{/* <InputField fieldName={settingsFields.scheduleVisibility} state={{draft, setDraft}}/> */}
-								<button
-									type="button"
-									onClick={() =>
-										setDraft((d) =>
-											setUniformVisibility(d, "everyone")
-										)
-									}
-									className="input-field"
-								>
-									<span>Everyone</span>
-									<span className="toggle-text">
-										{draft.settings.scheduleVisibility ===
-											"everyone" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
-									</span>
-								</button>
-
-								<button
-									type="button"
-									onClick={() =>
-										setDraft((d) =>
-											setUniformVisibility(d, "roommates")
-										)
-									}
-									className="input-field"
-								>
-									<span>Only roommates</span>
-									<span className="toggle-text">
-										{draft.settings.scheduleVisibility ===
-											"roommates" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
-									</span>
-								</button>
-
-								<button
-									type="button"
-									onClick={() =>
-										setDraft((d) =>
-											setUniformVisibility(d, "private")
-										)
-									}
-									className="input-field"
-								>
-									<span>No one (private)</span>
-									<span className="toggle-text">
-										{draft.settings.scheduleVisibility ===
-											"private" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
-									</span>
-								</button>
 							</div>
 						</div>
 					</div>
