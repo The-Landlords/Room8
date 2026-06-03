@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sniglet:wght@400;700&display=swap");
 @import "tailwindcss";
 
 body {
@@ -11,6 +12,7 @@ body {
 	--color-secondary: #def0f9;
 	--color-accent: #f7ffe3;
 	--font-primary: "Inter", sans-serif;
+	--font-title: "Sniglet", cursive;
 	--font-secondary: "Gowun Dodum", sans-serif;
 }
 
@@ -23,6 +25,11 @@ body {
 	}
 	.header-wrapper {
 		@apply relative flex items-center justify-center px-6 pt-8 w-full;
+	}
+	.header-title {
+		@apply font-title text-text text-6xl font-bold;
+		-webkit-text-stroke: 8px var(--color-primary);
+		paint-order: stroke fill;
 	}
 	.dashboard-card {
 		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 relative flex flex-col gap-2;
@@ -52,7 +59,7 @@ body {
 		animation: floatUp 0.5s ease-out forwards;
 	}
 	.background-house {
-		@apply bg-secondary/70  bg-[url('/assets/housebgtemp.jpeg')] bg-cover  min-h-screen flex flex-col;
+		@apply  bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
 	}
 	.overlay-backdrop {
 		@apply fixed z-50 inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center;

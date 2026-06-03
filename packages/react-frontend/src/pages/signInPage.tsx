@@ -47,9 +47,25 @@ export default function SignInPage() {
 	};
 
 	return (
-		<div className="background-house flex items-center justify-center">
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[30%]">
-				<h1 className="header mb-4">Sign In</h1>
+		<div className="background-house flex flex-col items-center">
+			<div className="flex flex-col items-center gap-0">
+				<img
+					src="/assets/HouseTop.png"
+					alt="Roof"
+					className="w-140 h-32 -mb-7"
+				/>
+				<div className="flex flex-row items-center  gap-1.5">
+					<h1 className="header-title">Room8</h1>
+					<img
+						src="/assets/Logo.PNG"
+						alt="Logo"
+						className="w-35 h-30"
+					/>
+				</div>
+			</div>
+
+			<div className="panel flex flex-col items-center animate-floatUp min-w-[28%]">
+				<h1 className="header pb-8">Sign In</h1>
 
 				<form
 					onSubmit={handleSignIn}
@@ -78,7 +94,7 @@ export default function SignInPage() {
 						Sign In
 					</button>
 
-					<p className="text-sm text-center mt-2">
+					<p className="text-sm text-primary font-secondary text-center mt-2">
 						Don&apos;t have an account?{" "}
 						<Link to="/signup" className="text-blue-500">
 							Sign Up

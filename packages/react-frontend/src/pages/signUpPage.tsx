@@ -50,8 +50,24 @@ export default function SignInPage() {
 	};
 
 	return (
-		<div className="background-house flex items-center justify-center">
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[60%]">
+		<div className="background-house flex flex-col items-center">
+			<div className="flex flex-col items-center gap-0">
+				<img
+					src="/assets/HouseTop.png"
+					alt="Roof"
+					className="w-140 h-32 -mb-7"
+				/>
+				<div className="flex flex-row items-center  gap-1.5">
+					<h1 className="header-title">Room8</h1>
+					<img
+						src="/assets/Logo.PNG"
+						alt="Logo"
+						className="w-35 h-30"
+					/>
+				</div>
+			</div>
+
+			<div className="panel flex flex-col items-center animate-floatUp min-w-[28%]">
 				<h1 className="header mb-4">Sign Up</h1>
 
 				<form
@@ -64,7 +80,7 @@ export default function SignInPage() {
 						placeholder="Username"
 						value={username}
 						onChange={(e) => setUsername(e.target.value)}
-						className="input-field  w-full"
+						className="input-field self-center w-full"
 					/>
 
 					{/* password */}
@@ -73,7 +89,7 @@ export default function SignInPage() {
 						placeholder="Password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						className="input-field list-item w-full"
+						className="input-field self-center w-full"
 					/>
 					{/* full name */}
 					<input
@@ -81,7 +97,7 @@ export default function SignInPage() {
 						placeholder="Full Name"
 						value={fullName}
 						onChange={(e) => setFullName(e.target.value)}
-						className="input-field list-item w-full"
+						className="input-field self-center w-full"
 					/>
 
 					{/* sign in */}
