@@ -1,0 +1,60 @@
+name: Cypress E2E Tests
+
+on:
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    cypress:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Install Root Dependencies
+              run: npm install
+            - name: Install concurrently
+              run: npm install -g concurrently
+
+            - name: Install Backend Dependencies
+              run: npm install --prefix packages/express_backend
+
+            - name: Install Frontend Dependencies
+              run: npm install --prefix packages/react-frontend
+
+            - name: Install Cypress system dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    xvfb \
+                    libgtk2.0-0 \
+                    libgtk-3-0 \
+                    libgbm-dev \
+                    libnotify-dev \
+                    libnss3 \
+                    libxss1 \
+                    libasound2t64 || sudo apt-get install -y libasound2
+
+
+            - name: Run Cypress E2E
+              run: |
+                npx concurrently --kill-others --success first -c green,magenta \
+                  "npm run dev" \
+                  "npx cypress run --e2e"
+
+            - name: Cleanup
+              if: always()
+              run: pkill node || true
+
+            #  - name: Cypress run
+            #    uses: cypress-io/github-action@v6
+            #    with:
+            #      working-directory: packages/react-frontend
+            #      start: npm run dev -- --host 0.0.0.0
+            #      wait-on: http://localhost:5173
+            #      browser: chrome
