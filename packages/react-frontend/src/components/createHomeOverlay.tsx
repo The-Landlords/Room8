@@ -252,7 +252,7 @@ export default function CreateHomeOverlay({ onBack, onAdd }: CreateHomeProps) {
 			<input
 				type="text"
 				placeholder="Home Name"
-				className="input-field"
+				className="input-field self-start"
 				onChange={(e) => setName(e.target.value)}
 			/>
 			<h2 className="header-thirdary">Home Address : </h2>

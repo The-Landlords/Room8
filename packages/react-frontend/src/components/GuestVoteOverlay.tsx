@@ -1,4 +1,4 @@
-import List from "./list";
+import RuleList from "./rulesList";
 
 type Guest = {
 	_id: string;
@@ -7,32 +7,31 @@ type Guest = {
 
 type GuestVoteOverlayProps = {
 	guests: Guest[];
-	homeCode: string;
 	username: string;
 };
 
-export default function GuestVoteOverlay({
-	guests,
-	homeCode,
-}: GuestVoteOverlayProps) {
+export default function GuestVoteOverlay({ guests }: GuestVoteOverlayProps) {
 	return (
 		<div className="overlay">
 			<h2>Vote on Guest Ascencion</h2>
 			<div>
-				<List
-					item=""
+				<RuleList
 					items={guests}
 					handleAddClick={() => {}}
-					handleRemoveClick={() => {}}
-					getKey={(guests: Guest) => guests._id}
-					renderItem={(guest: Guest) => (
-						<div>
-							<p>{guest.fullName}</p>
-							<button className="button">Yes</button>
+					handleRemoveClick={(guest) => guest._id}
+					handleVoteClick={() => {}}
+					getKey={(guest) => guest._id}
+					className="panel pb-6"
+					renderItem={(guest) => (
+						<div className="flex items-center text-primary justify-between w-full">
+							<span>{guest.fullName}</span>
+							<div>
+								<button className="button mr-2">Approve</button>
+								<button className="button">Reject</button>
+							</div>
 						</div>
 					)}
-					homeCode={homeCode ? [homeCode] : undefined}
-				></List>
+				/>
 			</div>
 		</div>
 	);

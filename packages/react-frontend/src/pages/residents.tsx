@@ -123,11 +123,7 @@ export default function Residents() {
 					isOpen={openVotePanel}
 					onClose={() => setOpenVotePanel(false)}
 				>
-					<GuestVoteOverlay
-						guests={guests}
-						homeCode={homeCode || ""}
-						username={""}
-					/>
+					<GuestVoteOverlay guests={guests} username={""} />
 				</Overlay>
 			)}
 

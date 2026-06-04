@@ -59,7 +59,7 @@ body {
 		animation: floatUp 0.5s ease-out forwards;
 	}
 	.background-house {
-		@apply  bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
+		@apply bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
 	}
 	.overlay-backdrop {
 		@apply fixed z-50 inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center;
@@ -70,42 +70,66 @@ body {
 	.button {
 		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
 	}
+	.button-selected {
+		@apply bg-accent text-primary border-2 border-primary;
+	}
+	/* Keep the typed input transparent so the parent background shows */
+	.settings-input-field:focus-within .underlined-input {
+		@apply bg-transparent text-primary border-primary;
+	}
+	.settings-input-field {
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-white p-3 text-primary;
+		@apply flex items-center flex-col;
+		@apply transition-colors duration-200;
+	}
+	.settings-input-label {
+		@apply relative flex items-center justify-center w-full min-h-10;
+	}
+
+	/* When the user clicks/types inside a settings input, transition the wrapper */
+	.settings-input-field:focus-within {
+		@apply bg-accent text-primary border-primary ring-2 ring-primary/50;
+	}
+
+	.underlined-input {
+		@apply w-full max-w-xs bg-transparent border-b border-primary outline-none text-primary;
+		@apply transition-colors duration-200;
+	}
 	.settings-background {
 		@apply min-h-screen flex flex-col;
 		background-color: #efe7df;
 	}
-	/* Title of input field */
-	.input-field {
-		@apply w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
-	}
+
 	/* Highlighted Title of input field */
 	.input-field-selected {
-		@apply w-full bg-primary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
+		@apply w-full bg-accent text-primary border-4 border-primary font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
 	}
-	/* Underlined text input field */
-	.underlined-input {
-		@apply w-full bg-transparent border-b border-text outline-none;
-	}
+
 	/* 'Toggle' text */
 	.toggle-text {
 		@apply h-6 w-6 rounded-full border-2 border-text flex items-center justify-center;
 	}
 	/* Bubble background (on most text blocks) */
 	.bubble {
-		@apply bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
+	}
+	.bubble-contents {
+		@apply gap-5 flex flex-col gap-4 items-center w-full;
 	}
 	/* Heading text used inside bubbles */
 	.bubble-header {
-		@apply font-primary text-text text-3xl text-center mb-6 leading-tight;
+		@apply font-primary text-primary text-3xl text-center mb-6 leading-tight;
 	}
-    
+
 	.header-thirdary {
 		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
 	}
-    
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary/40 bg-white p-3 text-primary;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-white self-center p-3 text-primary justify-between;
+		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
+	}
+	.input-field .underlined-input {
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }
