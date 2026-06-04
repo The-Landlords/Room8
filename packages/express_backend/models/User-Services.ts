@@ -32,7 +32,13 @@ function encryptProfileFields(data: any) {
 	}
 
 	if (updateData.DOB) {
-		updateData.DOB = encryptField(new Date(updateData.DOB).toISOString());
+		const parsedDOB = new Date(updateData.DOB);
+
+		if (Number.isNaN(parsedDOB.getTime())) {
+			throw new Error("Invalid date of birth");
+		}
+
+		updateData.DOB = encryptField(parsedDOB.toISOString());
 	}
 
 	return updateData;
@@ -56,9 +62,12 @@ function decryptProfileFields(user: any) {
 }
 // CREATE
 export async function createUser(userData: any) {
+	// Signup only creates username/password.
+	// Profile fields like phone, DOB, and emergencyContact.phone
+	// are encrypted later through updateUserByUsername/updateUserById.
 	const hashPassword = await bcrypt.hash(userData.password, SALT_ROUNDS);
 
-	//hash new updated password
+	// Store the hashed password instead of the plain password.
 	return User.create({
 		...userData,
 		password: hashPassword,
@@ -93,10 +102,12 @@ export async function updateUserById(
 		);
 	}
 
-	return User.findByIdAndUpdate(userId, updateData, {
+	const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
 		returnDocument: "after",
 		runValidators: true,
 	});
+
+	return updatedUser ? decryptProfileFields(updatedUser) : null;
 }
 
 export function getUsersByHomeAndRelation(
@@ -130,10 +141,12 @@ export async function updateUserByUsername(username: string, data: any) {
 		);
 	}
 
-	return User.findOneAndUpdate({ username }, updateData, {
+	const updatedUser = await User.findOneAndUpdate({ username }, updateData, {
 		returnDocument: "after",
 		runValidators: true,
 	});
+
+	return updatedUser ? decryptProfileFields(updatedUser) : null;
 }
 
 // DELETE
