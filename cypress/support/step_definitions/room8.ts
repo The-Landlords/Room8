@@ -97,6 +97,14 @@ function listItemContaining(text: string) {
 	return cy.contains("li", text);
 }
 
+function clickRemoveButtonInListItem(text: string) {
+	listItemContaining(text)
+		.scrollIntoView()
+		.within(() => {
+			cy.get("button.iconWrapper.safe").should("be.visible").click();
+		});
+}
+
 function shouldShowHomeHeader(name: string) {
 	cy.contains("h1", getPage(name).title).should("be.visible");
 }
@@ -246,10 +254,11 @@ When("I update the event title to {string}", (title: string) => {
 
 When("I open event delete mode", () => {
 	cy.contains("button", "-").click();
+	cy.contains("button", "Cancel").should("be.visible");
 });
 
 When("I choose to remove the event {string}", (title: string) => {
-	listItemContaining(title).find("button").click();
+	clickRemoveButtonInListItem(title);
 });
 
 When("I confirm event removal", () => {
@@ -509,11 +518,14 @@ Then("I should see the updated event", () => {
 });
 
 Then("I should see the remove event confirmation", () => {
-	cy.contains("Are you sure you want to remove testing?").should(
-		"be.visible"
+	cy.contains("h1", "Are you sure you want to remove").should("be.visible");
+	cy.contains("h1", mockEvents[0].title).should("be.visible");
+	cy.contains(".overlay-content", "Are you sure you want to remove").within(
+		() => {
+			cy.contains("button", "Cancel").should("be.visible");
+			cy.contains("button", "Remove").should("be.visible");
+		}
 	);
-	cy.contains("button", "Cancel").should("be.visible");
-	cy.contains("button", "Remove").should("be.visible");
 });
 
 Then("I should not see the removed event", () => {
