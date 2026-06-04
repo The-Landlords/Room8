@@ -267,30 +267,6 @@ export default function UserSetting() {
 		},
 	});
 
-	/* Every time visibility updates, check for congruence and update toggle */
-	/* Currently we don't do any changing on this page, but in case we add a dropdown to change it later... */
-	useEffect(() => {
-		setDraft((d) => {
-			const visibilities = Object.values(
-				d.visibility
-			) as homeVisibility[];
-			const defaultVisibility = visibilities[0];
-			const allMatch = Object.values(d.visibility).every(
-				(v) => v === defaultVisibility
-			);
-
-			return {
-				...d,
-				settings: {
-					...d.settings,
-					scheduleVisibility: allMatch
-						? HomeToUser[defaultVisibility]
-						: ("custom" as userVisibility),
-				},
-			};
-		});
-	}, [draft.visibility]);
-
 	const [user, setUser] = useState<any>(null);
 	const [, setError] = useState("");
 
