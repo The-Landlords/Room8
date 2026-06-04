@@ -12,6 +12,8 @@ Room8 is a housing app designed to help roommates organize chores, events, groce
 
 [![CI Testing](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/CI.yml?style=for-the-badge&label=CI+Testing&logo=github)](https://github.com/The-Landlords/Room8/actions/workflows/CI.yml)
 
+[![Cypress e2e Testing](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/CI.yml?style=for-the-badge&label=Cypress-e2e-Testing&logo=github)](https://github.com/The-Landlords/Room8/actions/workflows/cypress.yml)
+
 ### Installation
 
 Clone the repo, ensure node is installed, and run the following:

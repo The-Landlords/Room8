@@ -6,3 +6,4 @@ coverage/*
 packages/express_backend/node_modules
 packages/express_backend/coverage/*
 packages/express_backend/dist/*
+/cypress/screenshots

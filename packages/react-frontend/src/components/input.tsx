@@ -32,6 +32,7 @@ type AttributeSetter<T extends { settings: Record<string, any> }> =
 	| {
 			type: "select";
 			field: Extract<keyof T["settings"], string>;
+			layout: string;
 			options: { value: string; label: string }[];
 			placeholder?: never;
 	  }
@@ -74,7 +75,7 @@ export function InputField<T extends { settings: Record<string, any> }>({
 		/* Standard 'input-field' class for all inputs */
 		<div className="input-field">
 			{/* Flex layout determined by AttributeFieldProps.layout, rest fixed as part of input-field */}
-			<label
+			<div
 				className={`flex${fieldName.layout === "vertical" ? " flex-col" : ""} items-center justify-between w-full`}
 			>
 				{/* If AttributeFieldProps.label left blank, no header line will be printed */}
@@ -171,16 +172,10 @@ export function InputField<T extends { settings: Record<string, any> }>({
 										},
 									}))
 								}
-								className="input-field"
+								className={`input-field${state.draft.settings[f.field] === opt.value ? "-selected" : ""} flex`}
 							>
 								<span>
-									{opt.label === "" ? "" : `${opt.label}:`}
-								</span>
-								<span className="toggle-text">
-									{state.draft.settings[f.field] ===
-										opt.value && (
-										<span className="h-3 w-3 rounded-full bg-text" />
-									)}
+									{opt.label === "" ? "" : `${opt.label}`}
 								</span>
 							</button>
 						));
@@ -215,7 +210,7 @@ export function InputField<T extends { settings: Record<string, any> }>({
 						);
 					}
 				})}
-			</label>
+			</div>
 		</div>
 	);
 }
