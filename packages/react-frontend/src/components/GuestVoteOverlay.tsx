@@ -118,7 +118,6 @@ export default function GuestVoteOverlay({ homeCode }: Props) {
 		}
 	}
 
-	// ✅ FIX: do NOT hide REJECTED anymore
 	const visible = ascensions;
 
 	function getGuestName(guestId: Ascension["guestId"]) {
