@@ -27,15 +27,6 @@ export default function GroceryPage() {
 
 	const { username = "", homeCode = "" } = useParams();
 
-	function formatGrocery(grocery: Grocery) {
-		const priceText =
-			grocery.price === undefined
-				? ""
-				: ` - $${grocery.price.toFixed(2)}`;
-
-		return `${grocery.title} - Qty: ${grocery.quantity}${priceText}`;
-	}
-
 	function resetGroceryForm() {
 		setQuantity("1");
 		setPrice("");
@@ -152,7 +143,7 @@ export default function GroceryPage() {
 				<input
 					type="number"
 					placeholder="Quantity"
-					className="input"
+					className="input-field"
 					value={quantity}
 					min="1"
 					step="1"
@@ -162,7 +153,7 @@ export default function GroceryPage() {
 				<input
 					type="number"
 					placeholder="Price, optional"
-					className="input"
+					className="input-field"
 					value={price}
 					min="0"
 					step="0.01"
@@ -180,9 +171,19 @@ export default function GroceryPage() {
 				addMinus={true}
 				emptyMessage="No Groceries"
 				renderItem={(grocery) => (
-					<div className="flex items-center justify-between w-full">
-						<span className="flex flex-row gap-4">
-							{formatGrocery(grocery)}
+					<div className="flex items-center w-full gap-4">
+						<span className="flex-1 text-left truncate">
+							{grocery.title}
+						</span>
+
+						<span className="flex-1 text-center">
+							Qty: {grocery.quantity}
+						</span>
+
+						<span className="flex-1 text-right">
+							{grocery.price === undefined
+								? ""
+								: `$${grocery.price.toFixed(2)}`}
 						</span>
 					</div>
 				)}
