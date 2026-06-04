@@ -295,9 +295,9 @@ test("changing display settings saves updated settings", async () => {
 	});
 
 	const interestsSection = screen
-		.getByText("Who can see my interests?")
+		.getByText("Who can see my interests:")
 		.closest("div");
-
+	expect(interestsSection).not.toBeNull();
 	fireEvent.click(
 		within(interestsSection!).getByRole("button", { name: "Everyone" })
 	);

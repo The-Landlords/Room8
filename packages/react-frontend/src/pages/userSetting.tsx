@@ -180,7 +180,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 	},
 	/* These are for mapping visibility settings */
 	personalVisibility: {
-		label: "Who can see my personal details?",
+		label: "Who can see my personal details",
 		layout: "vertical",
 		fields: [
 			{
@@ -196,7 +196,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 		],
 	},
 	emergencyVisibility: {
-		label: "Who can see my Emergency Contact?",
+		label: "Who can see my emergency contact",
 		layout: "vertical",
 		fields: [
 			{
@@ -212,7 +212,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 		],
 	},
 	interestsVisibility: {
-		label: "Who can see my interests?",
+		label: "Who can see my interests",
 		layout: "vertical",
 		fields: [
 			{

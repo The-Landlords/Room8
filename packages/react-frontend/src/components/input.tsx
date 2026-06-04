@@ -75,7 +75,7 @@ export function InputField<T extends { settings: Record<string, any> }>({
 		/* Standard 'input-field' class for all inputs */
 		<div className="input-field">
 			{/* Flex layout determined by AttributeFieldProps.layout, rest fixed as part of input-field */}
-			<label
+			<div
 				className={`flex${fieldName.layout === "vertical" ? " flex-col" : ""} items-center justify-between w-full`}
 			>
 				{/* If AttributeFieldProps.label left blank, no header line will be printed */}
@@ -210,7 +210,7 @@ export function InputField<T extends { settings: Record<string, any> }>({
 						);
 					}
 				})}
-			</label>
+			</div>
 		</div>
 	);
 }
