@@ -1,6 +1,5 @@
 import { Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
 import {
-	FRONTEND_URL,
 	TESTUSER5,
 	mockChores,
 	mockEvents,
@@ -79,12 +78,18 @@ function expectPath(path: string) {
 
 function openTestHomePage(name: string) {
 	const page = getPage(name);
+	const isCalendarPage =
+		name.toLowerCase() === "calendar" || name.toLowerCase() === "events";
 
-	if (name.toLowerCase() === "calendar" || name.toLowerCase() === "events") {
+	if (isCalendarPage) {
 		cy.clock(new Date("2026-05-29T12:00:00").getTime(), ["Date"]);
 	}
 
 	visitWithMockApi(page.path);
+
+	if (isCalendarPage) {
+		cy.wait("@getEvents");
+	}
 }
 
 function bodyOf(request: { body: unknown }) {
@@ -95,6 +100,12 @@ function bodyOf(request: { body: unknown }) {
 
 function listItemContaining(text: string) {
 	return cy.contains("li", text);
+}
+
+function buttonWithExactText(text: string) {
+	return cy
+		.get("button")
+		.filter((_index, element) => element.textContent?.trim() === text);
 }
 
 function clickRemoveButtonInListItem(text: string) {
@@ -253,8 +264,10 @@ When("I update the event title to {string}", (title: string) => {
 });
 
 When("I open event delete mode", () => {
-	cy.contains("button", "-").click();
-	cy.contains("button", "Cancel").should("be.visible");
+	buttonWithExactText("-").first().should("be.visible").click();
+	listItemContaining(mockEvents[0].title)
+		.find("button.iconWrapper.safe")
+		.should("be.visible");
 });
 
 When("I choose to remove the event {string}", (title: string) => {
