@@ -1,6 +1,4 @@
-// import React from "react";
-
-// import { useState } from "react";
+import { useState } from "react";
 
 /*component is to add a new home based off a given code*/
 import { API_BASE } from "../config";
@@ -16,32 +14,45 @@ export default function RemoveHomeOverlay({
 	onCancel,
 	homeRemove,
 }: RemoveHomeProps) {
+	const [willDeleteHome, setWillDeleteHome] = useState(false);
+
 	async function removeHome() {
 		console.log("connecting home to user!");
 
 		const promise = await fetch(
-			`${API_BASE}/relate/me/${homeRemove.homeName}`,
+			`${API_BASE}/relate/me/${homeRemove.homeCode}`,
 			{
 				method: "PATCH",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirmDeleteHome: willDeleteHome }),
 			}
 		);
 		return promise;
 	}
 	async function handleRemoveHome() {
-		removeHome()
-			.then((res) => (res?.ok ? res.json() : undefined))
-			.then((json) => {
-				onRemove(json);
-			})
-			.catch((error) => console.error("Error removing home:", error));
+		const res = await removeHome();
+
+		if (res.status === 409) {
+			const json = await res.json();
+			if (json.willDeleteHome) {
+				setWillDeleteHome(true);
+				return;
+			}
+		}
+
+		if (res.ok) {
+			const json = await res.json();
+			onRemove(json);
+		}
 	}
 
 	return (
 		<div className="flex flex-col gap-2 animate-floatUp">
 			<h1 className="header-secondary self-center">
-				Are you sure you want to remove {homeRemove.homeName}?
+				{willDeleteHome
+					? `You are the last member of ${homeRemove.homeName}. Leaving will delete this home. Are you sure you would like to continue?`
+					: `Are you sure you want to remove ${homeRemove.homeName}?`}
 			</h1>
 			<div className="flex flex-row gap-4 self-center">
 				<button

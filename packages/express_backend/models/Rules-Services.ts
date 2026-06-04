@@ -57,3 +57,7 @@ export function removeRuleById(ruleId: mongoose.Types.ObjectId) {
 export function getApprovedRulesByHome(homeId: mongoose.Types.ObjectId) {
 	return Rule.find({ homeId: homeId, status: "CONFIRMED" });
 }
+
+export function deleteRulesByHomeId(homeId: mongoose.Types.ObjectId) {
+	return Rule.deleteMany({ homeId: homeId });
+}
