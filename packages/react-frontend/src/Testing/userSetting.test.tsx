@@ -5,6 +5,7 @@ import {
 	fireEvent,
 	render,
 	screen,
+	within,
 } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom/vitest";
@@ -94,13 +95,13 @@ function makeUser(overrides: Partial<User> = {}): User {
 		},
 		visibility: {
 			nameVisible: "PUBLIC",
-			phoneVisible: "PRIVATE",
+			allergensVisible: "PUBLIC",
 			dobVisible: "PRIVATE",
+			pronounsVisible: "PRIVATE",
+			phoneVisible: "PRIVATE",
+			emergencyContactVisible: "PRIVATE",
 			likesVisible: "PRIVATE",
 			dislikesVisible: "PRIVATE",
-			emergencyContactVisible: "PRIVATE",
-			allergensVisible: "PUBLIC",
-			pronounsVisible: "PRIVATE",
 		},
 		...overrides,
 	};
@@ -293,7 +294,13 @@ test("changing display settings saves updated settings", async () => {
 		target: { value: "protanopia" },
 	});
 
-	fireEvent.click(screen.getByRole("button", { name: "Everyone" }));
+	const interestsSection = screen
+		.getByText("Who can see my interests:")
+		.closest("div");
+	expect(interestsSection).not.toBeNull();
+	fireEvent.click(
+		within(interestsSection!).getByRole("button", { name: "Everyone" })
+	);
 
 	await act(async () => {
 		fireEvent.click(screen.getByRole("button", { name: "Save Profile" }));
@@ -315,7 +322,7 @@ test("changing display settings saves updated settings", async () => {
 		expect.objectContaining({
 			textSize: "large",
 			colorBlindMode: "protanopia",
-			scheduleVisibility: "everyone",
+			interestsVisibility: "everyone",
 		})
 	);
 });

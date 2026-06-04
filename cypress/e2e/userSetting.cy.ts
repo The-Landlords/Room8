@@ -17,8 +17,8 @@ describe("User settings", () => {
 			TESTUSER5.phone
 		);
 		cy.get("select").first().should("have.value", "medium");
-		cy.contains("Display Settings").should("be.visible");
-		cy.contains("Emergency Info").should("be.visible");
+		cy.contains("Display").should("be.visible");
+		cy.contains("Emergency").should("be.visible");
 	});
 
 	it("saves profile changes and returns to home spaces", () => {
