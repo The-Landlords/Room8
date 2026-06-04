@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { API_BASE } from "../config";
+import { InputField } from "../components/input";
+import type { FieldsLayout } from "../components/input";
 
 const phoneRegex = /^\+?[1-9]\d{1,10}$/;
 
@@ -9,28 +11,259 @@ function isValidPhone(phone: string) {
 	return phoneRegex.test(phone);
 }
 
+/* Force type-matching here so mapping works later on */
+type userVisibility = "everyone" | "roommates" | "private";
+type homeVisibility = "PUBLIC" | "RESIDENT" | "PRIVATE";
+
+/* Defining the relations between visibilities here */
+/* Yes, this should be better structured. Make it a 'future' issue. */
+const UserToHome: Record<userVisibility, homeVisibility> = {
+	everyone: "PUBLIC",
+	roommates: "RESIDENT",
+	private: "PRIVATE",
+} as const;
+const HomeToUser: Record<homeVisibility, userVisibility> = {
+	PUBLIC: "everyone",
+	RESIDENT: "roommates",
+	PRIVATE: "private",
+} as const;
+
+/* This should definitely go somewhere else */
+/* But I don't know where yet */
+interface DraftProps {
+	pronouns: string;
+	fullName: string;
+	DOB: string;
+	allergens: string;
+	likes: string;
+	dislikes: string;
+	phone: string;
+	emergencyContact: {
+		name: string;
+		phone: string;
+		relationship: string;
+	};
+	settings: {
+		textSize: string;
+		theme: string;
+		colorBlindMode: string;
+		personalVisibility: userVisibility;
+		emergencyVisibility: userVisibility;
+		interestsVisibility: userVisibility;
+	};
+	visibility: {
+		nameVisible: homeVisibility;
+		allergensVisible: homeVisibility;
+		dobVisible: homeVisibility;
+		pronounsVisible: homeVisibility;
+		phoneVisible: homeVisibility;
+		emergencyContactVisible: homeVisibility;
+		likesVisible: homeVisibility;
+		dislikesVisible: homeVisibility;
+	};
+}
+
+/* Defining the layout to be called below */
+const settingsFields: FieldsLayout<DraftProps> = {
+	fullName: {
+		label: "Name",
+		layout: "horizonal",
+		fields: [
+			{ type: "text", field: "fullName", placeholder: "Barry B. Benson" },
+		],
+	},
+	allergens: {
+		label: "Allergens",
+		layout: "vertical",
+		fields: [
+			{
+				type: "text",
+				field: "allergens",
+				placeholder: "pollen, dairy, etc.",
+			},
+		],
+	},
+	DOB: {
+		label: "Birthday",
+		layout: "horizonal",
+		fields: [{ type: "date", field: "DOB" }],
+	},
+	pronouns: {
+		label: "Pronouns",
+		layout: "horizonal",
+		fields: [{ type: "text", field: "pronouns", placeholder: "she/they" }],
+	},
+	phone: {
+		label: "Phone",
+		layout: "horizonal",
+		fields: [{ type: "text", field: "phone", placeholder: "+19998887777" }],
+	},
+	emergencyContact: {
+		label: "Emergency Contact",
+		layout: "vertical",
+		fields: [
+			{
+				type: "group",
+				field: "emergencyContact",
+				fields: [
+					{ field: "name", placeholder: "Adam Flayman" },
+					{ field: "phone", placeholder: "+15551990123" },
+					{ field: "relationship", placeholder: "Brother" },
+				],
+			},
+		],
+	},
+	likes: {
+		label: "Likes",
+		layout: "vertical",
+		fields: [
+			{
+				type: "text",
+				field: "likes",
+				placeholder: "concerts, movies, etc.",
+			},
+		],
+	},
+	dislikes: {
+		label: "Dislikes",
+		layout: "vertical",
+		fields: [
+			{
+				type: "text",
+				field: "dislikes",
+				placeholder: "workouts, seafoods, etc.",
+			},
+		],
+	},
+	textSize: {
+		label: "Text Size",
+		layout: "horizontal",
+		fields: [
+			{
+				type: "dropdown",
+				field: "textSize",
+				options: [
+					{ value: "small", label: "Small" },
+					{ value: "medium", label: "Medium" },
+					{ value: "large", label: "Large" },
+				],
+			},
+		],
+	},
+	theme: {
+		label: "Theme",
+		layout: "horizonal",
+		fields: [
+			{
+				type: "toggle",
+				field: "theme",
+				onName: "light",
+				offName: "dark",
+			},
+		],
+	},
+	colorBlindMode: {
+		label: "Color-Blind Mode",
+		layout: "horizonal",
+		fields: [
+			{
+				type: "dropdown",
+				field: "colorBlindMode",
+				options: [
+					{ value: "off", label: "Off" },
+					{ value: "protanopia", label: "Protanopia" },
+					{ value: "deuteranopia", label: "Deuteranopia" },
+					{ value: "tritanopia", label: "Tritanopia" },
+				],
+			},
+		],
+	},
+	/* These are for mapping visibility settings */
+	personalVisibility: {
+		label: "Who can see my personal details",
+		layout: "vertical",
+		fields: [
+			{
+				type: "select",
+				field: "personalVisibility",
+				layout: "horizontal",
+				options: [
+					{ value: "everyone", label: "Everyone" },
+					{ value: "roommates", label: "Only Roomates" },
+					{ value: "private", label: "No One (Private)" },
+				],
+			},
+		],
+	},
+	emergencyVisibility: {
+		label: "Who can see my emergency contact",
+		layout: "vertical",
+		fields: [
+			{
+				type: "select",
+				field: "emergencyVisibility",
+				layout: "horizontal",
+				options: [
+					{ value: "everyone", label: "Everyone" },
+					{ value: "roommates", label: "Only Roomates" },
+					{ value: "private", label: "No One (Private)" },
+				],
+			},
+		],
+	},
+	interestsVisibility: {
+		label: "Who can see my interests",
+		layout: "vertical",
+		fields: [
+			{
+				type: "select",
+				field: "interestsVisibility",
+				layout: "horizontal",
+				options: [
+					{ value: "everyone", label: "Everyone" },
+					{ value: "roommates", label: "Only Roomates" },
+					{ value: "private", label: "No One (Private)" },
+				],
+			},
+		],
+	},
+};
+
 export default function UserSetting() {
 	const navigate = useNavigate();
 
 	// holds what the user is currently typing
 	const [draft, setDraft] = useState({
-		pronouns: "",
 		fullName: "",
-		DOB: "",
 		allergens: "",
-		likes: "",
-		dislikes: "",
+		DOB: "",
+		pronouns: "",
 		phone: "", // gets validated in post
 		emergencyContact: {
 			name: "",
 			phone: "",
 			relationship: "",
 		},
+		likes: "",
+		dislikes: "",
 		settings: {
 			textSize: "medium",
 			theme: "light",
 			colorBlindMode: "off",
-			scheduleVisibility: "roommates", // default
+			personalVisibility: "roommates" as userVisibility,
+			emergencyVisibility: "roommates" as userVisibility,
+			interestsVisibility: "roommates" as userVisibility,
+		},
+		visibility: {
+			nameVisible: "PUBLIC" as homeVisibility /* Unless we mess up */,
+			allergensVisible:
+				"PUBLIC" as homeVisibility /* These two should ALWAYS be 'PUBLIC' */,
+			dobVisible: "RESIDENT" as homeVisibility,
+			pronounsVisible: "RESIDENT" as homeVisibility,
+			phoneVisible: "RESIDENT" as homeVisibility,
+			emergencyContactVisible: "RESIDENT" as homeVisibility,
+			likesVisible: "RESIDENT" as homeVisibility,
+			dislikesVisible: "RESIDENT" as homeVisibility,
 		},
 	});
 
@@ -49,12 +282,10 @@ export default function UserSetting() {
 			.then((data) => {
 				setUser(data);
 				setDraft({
-					pronouns: data?.pronouns ?? "",
 					fullName: data?.fullName ?? "",
-					DOB: data?.DOB ? String(data.DOB).slice(0, 10) : "",
 					allergens: (data?.allergens ?? []).join(", "),
-					likes: (data?.likes ?? []).join(", "),
-					dislikes: (data?.dislikes ?? []).join(", "),
+					DOB: data?.DOB ? String(data.DOB).slice(0, 10) : "",
+					pronouns: data?.pronouns ?? "",
 					phone: data?.phone ?? "",
 					emergencyContact: {
 						name: data?.emergencyContact?.name ?? "",
@@ -62,12 +293,53 @@ export default function UserSetting() {
 						relationship:
 							data?.emergencyContact?.relationship ?? "",
 					},
+					likes: (data?.likes ?? []).join(", "),
+					dislikes: (data?.dislikes ?? []).join(", "),
 					settings: {
 						textSize: data?.settings?.textSize ?? "medium",
 						theme: data?.settings?.theme ?? "light",
 						colorBlindMode: data?.settings?.colorBlindMode ?? "off",
-						scheduleVisibility:
-							data?.settings?.scheduleVisibility ?? "roommates",
+						personalVisibility:
+							HomeToUser[
+								(data?.visibility?.dobVisible ??
+									"RESIDENT") as homeVisibility
+							],
+						emergencyVisibility:
+							HomeToUser[
+								(data?.visibility?.emergencyContactVisible ??
+									"RESIDENT") as homeVisibility
+							],
+						interestsVisibility:
+							HomeToUser[
+								(data?.visibility?.likesVisible ??
+									"RESIDENT") as homeVisibility
+							],
+					},
+					visibility: {
+						nameVisible:
+							data?.visibility?.nameVisible ??
+							("PUBLIC" as homeVisibility),
+						allergensVisible:
+							data?.visibility?.allergensVisible ??
+							("PUBLIC" as homeVisibility),
+						dobVisible:
+							data?.visibility?.dobVisible ??
+							("RESIDENT" as homeVisibility),
+						pronounsVisible:
+							data?.visibility?.pronounsVisible ??
+							("RESIDENT" as homeVisibility),
+						phoneVisible:
+							data?.visibility?.phoneVisible ??
+							("RESIDENT" as homeVisibility),
+						emergencyContactVisible:
+							data?.visibility?.emergencyContactVisible ??
+							("RESIDENT" as homeVisibility),
+						likesVisible:
+							data?.visibility?.likesVisible ??
+							("RESIDENT" as homeVisibility),
+						dislikesVisible:
+							data?.visibility?.dislikesVisible ??
+							("RESIDENT" as homeVisibility),
 					},
 				});
 			})
@@ -95,6 +367,18 @@ export default function UserSetting() {
 			allergens: toList(draft.allergens),
 			likes: toList(draft.likes),
 			dislikes: toList(draft.dislikes),
+			visibility: {
+				nameVisible: "PUBLIC" as homeVisibility /* Unless we mess up */,
+				allergensVisible:
+					"PUBLIC" as homeVisibility /* These two should ALWAYS be 'PUBLIC' */,
+				dobVisible: UserToHome[draft.settings.personalVisibility],
+				pronounsVisible: UserToHome[draft.settings.personalVisibility],
+				phoneVisible: UserToHome[draft.settings.personalVisibility],
+				emergencyContactVisible:
+					UserToHome[draft.settings.emergencyVisibility],
+				likesVisible: UserToHome[draft.settings.interestsVisibility],
+				dislikesVisible: UserToHome[draft.settings.interestsVisibility],
+			},
 		};
 
 		try {
@@ -193,416 +477,120 @@ export default function UserSetting() {
 			<main className="flex-1 flex justify-center px-6 py-10">
 				<div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10">
 					{/* LEFT COLUMN */}
-					<div className="md:order-1 w-full min-w-0 animate-floatUp">
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
-							{/*COLUMN HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6">
-								Personal Info
-							</h2>
-
-							{/*COLUMN MEMBERS*/}
-							<div className="space-y-6">
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Name:</span>
-										<input
-											value={draft.fullName}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													fullName: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="Barry B. Benson"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Pronouns:</span>
-										<input
-											value={draft.pronouns}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													pronouns: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., she/they"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">
-											Birthday ! :
-										</span>
-										<input
-											type="date"
-											value={draft.DOB}
-											onChange={(e) => {
-												console.log(e.target.value);
-												setDraft((d) => ({
-													...d,
-													DOB: e.target.value,
-												}));
-											}}
-											className="bg-transparent border-b border-text outline-none"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Allergens:</span>
-										<input
-											type="text" // need to split input by comma before post
-											value={draft.allergens}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													allergens: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., pollen, dairy"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Likes:</span>
-										<input
-											type="text" // need to split input by comma before post
-											value={draft.likes}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													likes: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., concerts, movies"
-										/>
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Dislikes:</span>
-										<input
-											type="text" // need to split input by comma before post
-											value={draft.dislikes}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													dislikes: e.target.value,
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="e.g., workouts, seafood"
-										/>
-									</label>
-								</div>
+					<div className="md:order-1 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
+						{/*COLUMN MEMBERS*/}
+						<div className="bubble">
+							{/*HEADER*/}
+							<h2 className="bubble-header">General</h2>
+							<div className="space-y-5">
+								<InputField
+									fieldName={settingsFields.fullName}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.allergens}
+									state={{ draft, setDraft }}
+								/>
+								<p className="flex justify-center w-full text-text">
+									This information will be public to both
+									residents and guests.
+								</p>
 							</div>
 						</div>
-					</div>
 
-					{/* RIGHT COLUMN */}
-					<div className="md:order-3 w-full min-w-0 animate-floatUp">
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6">
-								Display Settings
-							</h2>
-
+							<h2 className="bubble-header">Personal</h2>
 							<div className="space-y-5">
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Text Size:</span>
-										<select
-											value={draft.settings.textSize}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													settings: {
-														...d.settings,
-														textSize:
-															e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-										>
-											<option value="small">Small</option>
-											<option value="medium">
-												Medium
-											</option>
-											<option value="large">Large</option>
-										</select>
-									</label>
-								</div>
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5 flex items-center justify-between">
-									<span>Theme</span>
-
-									<button
-										type="button"
-										onClick={() =>
-											setDraft((d) => ({
-												...d,
-												settings: {
-													...d.settings,
-													theme:
-														d.settings.theme ===
-														"light"
-															? "dark"
-															: "light",
-												},
-											}))
-										}
-										className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
-											draft.settings.theme === "light"
-												? "bg-yellow-400 justify-end" // light mode (right)
-												: "bg-gray-800 justify-start" // dark mode (left)
-										}`}
-									>
-										<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
-									</button>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">
-											Color-blind mode:
-										</span>
-										<select
-											value={
-												draft.settings.colorBlindMode
-											}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													settings: {
-														...d.settings,
-														colorBlindMode:
-															e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-										>
-											<option value="off">Off</option>
-											<option value="protanopia">
-												Protanopia
-											</option>
-											<option value="deuteranopia">
-												Deuteranopia
-											</option>
-											<option value="tritanopia">
-												Tritanopia
-											</option>
-										</select>
-									</label>
-								</div>
+								<InputField
+									fieldName={settingsFields.DOB}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.pronouns}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.phone}
+									state={{ draft, setDraft }}
+								/>
+								{draft.phone.length > 0 &&
+									!phoneRegex.test(draft.phone) && (
+										<p className="text-sm text-red-500">
+											Use E.164 format (e.g. +14155552671)
+										</p>
+									)}
+								<InputField
+									fieldName={
+										settingsFields.personalVisibility
+									}
+									state={{ draft, setDraft }}
+								/>
 							</div>
 						</div>
 					</div>
 
 					{/* MIDDLE COLUMN */}
 					<div className="md:order-2 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						{/*COLUMN MEMBERS*/}
+						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6">
-								Emergency Info
-							</h2>
-
+							<h2 className="bubble-header">Emergency</h2>
 							<div className="space-y-5">
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									<label className="block">
-										<span className="mr-3">Phone:</span>
-										<input
-											value={draft.phone}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													phone: e.target.value.replace(
-														/[^\d+]/g,
-														""
-													),
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="+19998887777"
-										/>
-										{draft.phone.length > 0 &&
-											!phoneRegex.test(draft.phone) && (
-												<p className="text-sm text-red-500">
-													Use E.164 format (e.g.
-													+14155552671)
-												</p>
-											)}
-									</label>
-								</div>
-
-								<div className="bg-secondary text-text font-secondary text-1xl rounded-2xl px-8 py-5">
-									{/* Emergency: {user?.emergencyContact?.name}{" "}
-									{user?.emergencyContact?.phone} */}
-									<label className="block">
-										<span className="mr-3">
-											Emergency Contact:
-										</span>
-										<input
-											value={draft.emergencyContact.name}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													emergencyContact: {
-														...d.emergencyContact,
-														name: e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="Adam Flayman"
-										/>
-
-										<input
-											value={draft.emergencyContact.phone}
-											onChange={(e) => {
-												const raw =
-													e.target.value.replace(
-														/[^\d+]/g,
-														""
-													);
-												const cleaned =
-													raw[0] === "+"
-														? "+" +
-															raw
-																.slice(1)
-																.replace(
-																	/\+/g,
-																	""
-																)
-														: raw.replace(
-																/\+/g,
-																""
-															);
-
-												setDraft((d) => ({
-													...d,
-													emergencyContact: {
-														...d.emergencyContact,
-														phone: cleaned,
-													},
-												}));
-											}}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="+12224446666"
-										/>
-
-										<input
-											value={
-												draft.emergencyContact
-													.relationship
-											}
-											onChange={(e) =>
-												setDraft((d) => ({
-													...d,
-													emergencyContact: {
-														...d.emergencyContact,
-														relationship:
-															e.target.value,
-													},
-												}))
-											}
-											className="bg-transparent border-b border-text outline-none"
-											placeholder="Brother"
-										/>
-									</label>
-								</div>
+								<InputField
+									fieldName={settingsFields.emergencyContact}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={
+										settingsFields.emergencyVisibility
+									}
+									state={{ draft, setDraft }}
+								/>
 							</div>
 						</div>
 
-						<div className="bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0">
+						<div className="bubble">
 							{/*HEADER*/}
-							<h2 className="font-primary text-text text-3xl text-center mb-6 leading-tight">
-								Who can see
-								<br />
-								my schedule?
-							</h2>
-
-							{/*CLICKABLE ROWS */}
+							<h2 className="bubble-header">Interests</h2>
 							<div className="space-y-5">
-								<button
-									type="button"
-									onClick={() =>
-										setDraft((d) => ({
-											...d,
-											settings: {
-												...d.settings,
-												scheduleVisibility: "everyone",
-											},
-										}))
+								<InputField
+									fieldName={settingsFields.likes}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.dislikes}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={
+										settingsFields.interestsVisibility
 									}
-									className="w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between"
-								>
-									<span>Everyone</span>
-									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
-										{draft.settings.scheduleVisibility ===
-											"everyone" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
-									</span>
-								</button>
+									state={{ draft, setDraft }}
+								/>
+							</div>
+						</div>
+					</div>
 
-								<button
-									type="button"
-									onClick={() =>
-										setDraft((d) => ({
-											...d,
-											settings: {
-												...d.settings,
-												scheduleVisibility: "roommates",
-											},
-										}))
-									}
-									className="w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between"
-								>
-									<span>Only roommates</span>
-									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
-										{draft.settings.scheduleVisibility ===
-											"roommates" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
-									</span>
-								</button>
+					{/* RIGHT COLUMN */}
+					<div className="md:order-3 w-full min-w-0 animate-floatUp">
+						<div className="bubble">
+							{/*HEADER*/}
+							<h2 className="bubble-header">Display</h2>
 
-								<button
-									type="button"
-									onClick={() =>
-										setDraft((d) => ({
-											...d,
-											settings: {
-												...d.settings,
-												scheduleVisibility: "private",
-											},
-										}))
-									}
-									className="w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between"
-								>
-									<span>No one (private)</span>
-									<span className="h-6 w-6 rounded-full border-2 border-text flex items-center justify-center">
-										{draft.settings.scheduleVisibility ===
-											"private" && (
-											<span className="h-3 w-3 rounded-full bg-text" />
-										)}
-									</span>
-								</button>
+							<div className="space-y-5">
+								<InputField
+									fieldName={settingsFields.textSize}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.theme}
+									state={{ draft, setDraft }}
+								/>
+								<InputField
+									fieldName={settingsFields.colorBlindMode}
+									state={{ draft, setDraft }}
+								/>
 							</div>
 						</div>
 					</div>

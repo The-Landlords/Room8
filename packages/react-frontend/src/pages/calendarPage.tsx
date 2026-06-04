@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import List from "../components/list";
+
 import Overlay from "../components/overlay";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faClock,
@@ -23,6 +23,7 @@ export default function CalendarPage() {
 	const [addState, setAddState] = useState("Base");
 	const [eventDelete, setEventDelete] = useState<any>();
 	const { homeCode } = useParams();
+	const navigate = useNavigate();
 	const [eventEdit, setEventEdit] = useState<any>(null);
 	const [showUpcoming, setShowUpcoming] = useState(true);
 	const [showPast, setShowPast] = useState(false);
