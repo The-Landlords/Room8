@@ -28,20 +28,6 @@ const HomeToUser: Record<homeVisibility, userVisibility> = {
 	PRIVATE: "private",
 } as const;
 
-/* Helper function for setting global visibilies, automatically sets both the single-value scheduleVisibility, */
-/* and all associated values inside visibility: */
-function setUniformVisibility<T extends {settings: Record<string,string>, visibility: Record<string,string>}>(d : T, visibility : userVisibilityPreset) : T {
-	const newVisibilities = Object.fromEntries(Object.keys(d.visibility).map((k) => [k, UserToHome[visibility]]));
-	return {
-		...d,
-		settings: {
-			...d.settings,
-			scheduleVisibility: visibility
-		},
-		visibility: newVisibilities,
-	};
-}
-
 /* This should definitely go somewhere else */
 /* But I don't know where yet */
 interface DraftProps {
@@ -285,14 +271,21 @@ export default function UserSetting() {
 	/* Currently we don't do any changing on this page, but in case we add a dropdown to change it later... */
 	useEffect(() => {
 		setDraft((d) => {
-			const visibilities = Object.values(d.visibility) as homeVisibility[];
+			const visibilities = Object.values(
+				d.visibility
+			) as homeVisibility[];
 			const defaultVisibility = visibilities[0];
-			const allMatch = Object.values(d.visibility).every((v) => v === defaultVisibility);
+			const allMatch = Object.values(d.visibility).every(
+				(v) => v === defaultVisibility
+			);
 
 			return {
-				...d,settings: {
+				...d,
+				settings: {
 					...d.settings,
-					scheduleVisibility: allMatch ? HomeToUser[defaultVisibility] : "custom" as userVisibility,
+					scheduleVisibility: allMatch
+						? HomeToUser[defaultVisibility]
+						: ("custom" as userVisibility),
 				},
 			};
 		});
