@@ -90,8 +90,15 @@ app.use("/", relationRouter);
 app.use("/", authRouter);
 app.use("/", guestAscensionRouter);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+app.use(
+	"/api-docs",
+	swaggerUi.serve,
+	swaggerUi.setup(swaggerDocument, {
+		swaggerOptions: {
+			withCredentials: true,
+		},
+	})
+);
 app.get("/", (req: Request, res: Response) => {
 	const username = req.session.username || "User not logged in";
 	res.send(`${username}, Welcome to this page!`);

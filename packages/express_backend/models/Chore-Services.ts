@@ -27,3 +27,7 @@ export function updateChore(choreId: mongoose.Types.ObjectId, data: any) {
 export function getUncompletedChoresByHome(homeId: mongoose.Types.ObjectId) {
 	return Chore.find({ homeId: homeId, isCompleted: false });
 }
+
+export function deleteChoresByHomeId(homeId: mongoose.Types.ObjectId) {
+	return Chore.deleteMany({ homeId });
+}

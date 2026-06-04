@@ -62,6 +62,12 @@ export function addResidentToHome(
 	);
 }
 
+//used to check if homes are empty
+export async function countUsersByCode(homeCode: string) {
+	const home = await getHomeByCode(homeCode);
+	return home?.userIds.length ?? null;
+}
+
 // commenting for coverage
 // export function addMember(user: string) {
 // 	//FIXME this will be changed to user Schema, users should store Home id's
