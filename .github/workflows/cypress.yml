@@ -43,8 +43,9 @@ jobs:
 
             - name: Run Cypress E2E
               run: |
-                npx concurrently --kill-others --success first -c green,magenta \
-                  "npm run dev" \
+                  npx start-server-and-test \
+                  "npm -w packages/react-frontend run dev -- --host 127.0.0.1" \
+                  http://localhost:5173 \
                   "npx cypress run --e2e"
 
             - name: Cleanup
