@@ -1066,11 +1066,17 @@
 						"description": "Internal Server Error"
 					}
 				}
-			}
-		},
-		"/relate/me": {
-			"get": {
+			},
+			"patch": {
 				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "OK"
@@ -1084,23 +1090,18 @@
 					"404": {
 						"description": "Not Found"
 					},
+					"409": {
+						"description": "Conflict"
+					},
 					"500": {
 						"description": "Internal Server Error"
 					}
 				}
 			}
 		},
-		"/relate/me/{homeName}": {
-			"patch": {
+		"/relate/me": {
+			"get": {
 				"description": "",
-				"parameters": [
-					{
-						"name": "homeName",
-						"in": "path",
-						"required": true,
-						"type": "string"
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "OK"

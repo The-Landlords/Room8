@@ -84,3 +84,7 @@ export function getUpcomingEventsByHome(homeId: mongoose.Types.ObjectId) {
 	const now = new Date();
 	return Event.find({ homeId, start: { $gte: now } }).sort({ start: 1 });
 }
+
+export function deleteEventsByHomeId(homeId: mongoose.Types.ObjectId) {
+	return Event.deleteMany({ homeId });
+}
