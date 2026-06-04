@@ -89,6 +89,7 @@ function openTestHomePage(name: string) {
 
 	if (isCalendarPage) {
 		cy.wait("@getEvents");
+		cy.contains(mockEvents[0].title).should("be.visible");
 	}
 }
 
@@ -106,6 +107,15 @@ function buttonWithExactText(text: string) {
 	return cy
 		.get("button")
 		.filter((_index, element) => element.textContent?.trim() === text);
+}
+
+function clickButtonWithExactText(text: string) {
+	buttonWithExactText(text)
+		.first()
+		.should("exist")
+		.then(($button) => {
+			($button[0] as HTMLButtonElement).click();
+		});
 }
 
 function clickRemoveButtonInListItem(text: string) {
@@ -264,7 +274,7 @@ When("I update the event title to {string}", (title: string) => {
 });
 
 When("I open event delete mode", () => {
-	buttonWithExactText("-").first().should("be.visible").click();
+	clickButtonWithExactText("-");
 	listItemContaining(mockEvents[0].title)
 		.find("button.iconWrapper.safe")
 		.should("be.visible");
