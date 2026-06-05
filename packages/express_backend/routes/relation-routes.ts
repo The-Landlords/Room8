@@ -18,6 +18,10 @@ import { deleteRulesByHomeId } from "../models/Rules-Services.js";
 import { deleteGroceryItemsByHomeId } from "../models/Grocery-Services.js";
 import { deleteChoresByHomeId } from "../models/Chore-Services.js";
 import { deleteEventsByHomeId } from "../models/Event-Services.js";
+import {
+	createGuestAscension,
+	getGuestAscensionByGuest,
+} from "../models/GuestAscension-Services.js";
 import mongoose from "mongoose";
 import { requireAuth } from "./userSessionAuth.js";
 
@@ -48,7 +52,9 @@ relationRouter.post(
 				return res.status(400).json({ error: "Invalid home code" });
 			}
 
-			const relationship = req.body.relationship.toUpperCase();
+			const relationship = String(req.body.relationship || "")
+				.toUpperCase()
+				.trim();
 
 			const h = await getHomeByCode(homecode);
 
@@ -78,10 +84,26 @@ relationRouter.post(
 					.status(400)
 					.json({ error: "Connection already exists" });
 			}
+
 			h.userIds.push({ userId: u._id, relationship: relationship });
-			await h.save();
 			u.homeIds.push({ homeId: h._id, relationship: relationship });
+
+			if (relationship === "GUEST") {
+				const existing = await getGuestAscensionByGuest(u._id, h._id);
+
+				if (!existing) {
+					await createGuestAscension({
+						homeId: h._id,
+						guestId: u._id,
+						status: "PENDING",
+						votes: [],
+					});
+				}
+			}
+
+			await h.save();
 			await u.save();
+
 			console.log("added relation");
 			res.status(200).json(h);
 		} catch (err) {
@@ -170,6 +192,7 @@ relationRouter.patch(
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
 			}
+
 			const willDeleteHome =
 				h.userIds.length === 1 &&
 				h.userIds.some((user) => user.userId.equals(u._id));
@@ -198,7 +221,9 @@ relationRouter.patch(
 					.status(404)
 					.json({ error: "Home not found for update" });
 			}
+
 			await h.save();
+
 			const updatedUser = await updateUserById(u._id, {
 				homeIds: removeOneHome,
 			});
@@ -207,6 +232,7 @@ relationRouter.patch(
 					.status(404)
 					.json({ error: "User not found for update" });
 			}
+
 			await u.save();
 
 			// ADD: here is where we shuld check whether a home is empty
@@ -218,9 +244,12 @@ relationRouter.patch(
 				await deleteGroceryItemsByHomeId(h._id);
 				await deleteChoresByHomeId(h._id);
 				await deleteEventsByHomeId(h._id);
+
 				// delete the home itself if there are no more users associated with it and no other data
 				await deleteHome(h._id);
+
 				console.log("Deleted home since there are no more residents");
+
 				return res.status(200).json({
 					_id: h._id.toString(),
 					homeCode: h.homeCode,
@@ -228,7 +257,7 @@ relationRouter.patch(
 					message: "Left home and deleted it",
 				});
 			} else {
-				res.status(200).json(h);
+				return res.status(200).json(h);
 			}
 		} catch (err) {
 			console.error(err);
@@ -246,7 +275,10 @@ relationRouter.patch(
 			console.log("Updating relation!");
 
 			const homename = req.params.homeName;
-			const newRelation = req.params.newRelation;
+			const newRelation = req.params.newRelation
+				.toString()
+				.toUpperCase()
+				.trim();
 
 			if (typeof homename !== "string") {
 				return res.status(400).json({ error: "Invalid home name" });
@@ -270,6 +302,7 @@ relationRouter.patch(
 			if (!u) {
 				return res.status(404).json({ error: "User not found" });
 			}
+
 			const updatedHome = await updateHome(h._id, {
 				userIds: h.userIds.map((user) =>
 					user.userId.equals(u._id)
@@ -277,12 +310,15 @@ relationRouter.patch(
 						: user
 				),
 			});
+
 			if (!updatedHome) {
 				return res
 					.status(404)
 					.json({ error: "Home not found for update" });
 			}
+
 			await h.save();
+
 			const updatedUser = await updateUserById(u._id, {
 				homeIds: u.homeIds.map((home) =>
 					home.homeId.equals(h._id)
@@ -290,11 +326,13 @@ relationRouter.patch(
 						: home
 				),
 			});
+
 			if (!updatedUser) {
 				return res
 					.status(404)
 					.json({ error: "User not found for update" });
 			}
+
 			await u.save();
 
 			res.status(200).json(h);
@@ -318,10 +356,12 @@ relationRouter.get(
 			}
 
 			let users = [];
+
 			users = await getUsersByHomeAndRelation(
 				h._id,
-				req.params.relation.toString()
+				req.params.relation.toString().toUpperCase()
 			);
+
 			res.status(200).json(users);
 		} catch (err) {
 			console.error(err);
@@ -335,6 +375,14 @@ relationRouter.get(
 	requireAuth,
 	async (req: Request, res: Response) => {
 		try {
+			if (
+				!mongoose.Types.ObjectId.isValid(req.params.homeId.toString())
+			) {
+				return res.status(400).json({
+					error: "Invalid home id",
+				});
+			}
+
 			const residents = await getUsersByHomeAndRelation(
 				new mongoose.Types.ObjectId(req.params.homeId.toString()),
 				"RESIDENT"

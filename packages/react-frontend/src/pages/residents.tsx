@@ -40,29 +40,58 @@ function formatDob(dob?: string): string {
 	return `${month} ${day}${ending}`;
 }
 
+type User = {
+	_id: string;
+	fullName: string;
+	allergens: string[];
+	likes: string[];
+	dislikes: string[];
+	phone?: string;
+	pronouns?: string;
+	DOB?: string;
+	emergencyContact?: {
+		name: string;
+		phone: string;
+		relationship: string;
+	};
+};
+
 export default function Residents() {
-	const [residents, setResidents] = useState<any[]>([]);
-	const [guests, setGuests] = useState<any[]>([]);
+	const [residents, setResidents] = useState<User[]>([]);
+	const [guests, setGuests] = useState<User[]>([]);
 	const [relationship, setRelationship] = useState<string>("");
+
 	const { homeCode } = useParams();
 
 	const [openVotePanel, setOpenVotePanel] = useState(false);
 
+	function normalizeUsers(data: any): User[] {
+		if (!Array.isArray(data)) return [];
+
+		return data
+			.filter((u) => u && u._id)
+			.map((u) => ({
+				_id: String(u._id),
+				fullName: String(u.fullName ?? "Unknown User"),
+				allergens: Array.isArray(u.allergens) ? u.allergens : [],
+				likes: Array.isArray(u.likes) ? u.likes : [],
+				dislikes: Array.isArray(u.dislikes) ? u.dislikes : [],
+			}));
+	}
+
 	async function fetchResidents() {
 		if (!homeCode) return;
 
-		fetch(`${API_BASE}/auth/residents/${homeCode}`, {
-			credentials: "include",
-		})
-			.then((res) => {
-				if (!res.ok) throw new Error("Residents not found ");
-				return res.json();
-			})
-			.then((data) => setResidents(data))
-			.catch((err) => {
-				console.error(err);
-				setResidents([]);
+		try {
+			const res = await fetch(`${API_BASE}/auth/residents/${homeCode}`, {
+				credentials: "include",
 			});
+
+			const data = await res.json();
+			setResidents(normalizeUsers(data));
+		} catch {
+			setResidents([]);
+		}
 	}
 
 	async function fetchGuests() {
@@ -73,57 +102,43 @@ export default function Residents() {
 				credentials: "include",
 			});
 
-			if (!res.ok) {
-				console.log("Guests not found for home code: " + homeCode);
-				setGuests([]);
-				return;
-			}
-
 			const data = await res.json();
-
-			if (Array.isArray(data)) {
-				setGuests(data);
-			} else {
-				setGuests([]);
-			}
-		} catch (err) {
-			console.error(err);
+			setGuests(normalizeUsers(data));
+		} catch {
 			setGuests([]);
 		}
 	}
+
 	async function fetchRelationship() {
 		if (!homeCode) return;
 
-		fetch(`${API_BASE}/auth/relationship/me/${homeCode}`, {
-			credentials: "include",
-		})
-			.then((res) => {
-				if (!res.ok)
-					console.log(
-						"Relationship not found for home code: " + homeCode
-					);
-				return res.json();
-			})
-			.then((data) => setRelationship(data.relationship))
-			.catch((err) => {
-				console.error(err);
-				setRelationship("");
-			});
-		console.log("Relationship: " + relationship);
+		try {
+			const res = await fetch(
+				`${API_BASE}/auth/relationship/me/${homeCode}`,
+				{ credentials: "include" }
+			);
+
+			const data = await res.json();
+			setRelationship(String(data?.relationship ?? ""));
+		} catch {
+			setRelationship("");
+		}
 	}
+
 	useEffect(() => {
-		fetchResidents().catch(console.error);
-		fetchGuests().catch(console.error);
-		fetchRelationship().catch(console.error);
+		fetchResidents();
+		fetchGuests();
+		fetchRelationship();
 	}, [homeCode]);
+
 	return (
 		<div className="flex flex-col">
-			{openVotePanel && (
+			{openVotePanel && homeCode && (
 				<Overlay
 					isOpen={openVotePanel}
 					onClose={() => setOpenVotePanel(false)}
 				>
-					<GuestVoteOverlay guests={guests} username={""} />
+					<GuestVoteOverlay homeCode={homeCode} />
 				</Overlay>
 			)}
 
@@ -138,7 +153,7 @@ export default function Residents() {
 							label: "Allergens",
 							value: user.allergens.join(", ") || "",
 						},
-						{ label: "Phone", value: user.phoneNumber || "" },
+						{ label: "Phone", value: user.phone || "" },
 						{ label: "Pronouns", value: user.pronouns || "" },
 						{ label: "Birthday", value: formatDob(user.DOB) || "" },
 						{
@@ -166,7 +181,7 @@ export default function Residents() {
 							label: "Allergens",
 							value: user.allergens.join(", ") || "",
 						},
-						{ label: "Phone", value: user.phoneNumber || "" },
+						{ label: "Phone", value: user.phone || "" },
 						{ label: "Pronouns", value: user.pronouns || "" },
 						{ label: "Birthday", value: formatDob(user.DOB) || "" },
 						{
