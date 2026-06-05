@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import List from "../components/list";
+import HomeSpaceList from "../components/homeList";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Overlay from "../components/overlay";
 import HomeAddOverlay from "../components/homeAddOverlay";
@@ -10,11 +10,19 @@ import { faUserGear, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import RemoveHomeOverlay from "../components/removeHomeOverlay";
 import { API_BASE } from "../config";
 
+type Home = {
+	_id: string;
+	homeCode: string;
+	homeName: string;
+	address: string;
+	relationship?: string;
+};
+
 export default function HomeList() {
-	const [homes, setHomes] = useState<any[]>([]);
+	const [homes, setHomes] = useState<Home[]>([]);
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
-	const [homeDelete, setHomeDelete] = useState<any | null>(null);
+	const [homeDelete, setHomeDelete] = useState<Home | null>(null);
 	const handleAddClick = () => {
 		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
@@ -25,8 +33,13 @@ export default function HomeList() {
 		setOverlayOpen(false);
 	};
 
-	async function handleAdd(data: any) {
-		setHomes((prev) => [...prev, data]);
+	async function handleAdd(data: any, relationship: string) {
+		const homeWithRelationship = {
+			...data,
+			relationship,
+		};
+
+		setHomes((prev) => [...prev, homeWithRelationship]);
 		handleClose();
 	}
 
@@ -61,20 +74,28 @@ export default function HomeList() {
 		fetchHomes().catch(console.error);
 	}, []);
 
-	const homeNames = homes?.map((h) => h.homeName);
-	// const homeLocations = homes?.map((h) => h.address);
-	const homeCodes = homes?.map((h) => h.homeCode);
+	function getRelationship(home: any): string {
+		const relationship = home.relationship;
+		if (relationship === "RESIDENT") return "RESIDENT";
+		if (relationship === "GUEST") return "GUEST";
+		return "";
+	}
+
 	return (
-		<div className="background-house flex flex-col items-center">
-			<h1 className="header">Home Spaces</h1>
-			<div className="iconWrapper">
-				<Link to={`/settings`}>
+		<div className=" flex flex-col items-center">
+			<header className="header-wrapper">
+				<h1 className="header text-center px-14 ">Home Spaces</h1>
+				<Link
+					to={`/settings`}
+					className="absolute right-6 top-8 aspect-square min-w-10 flex items-center justify-center p-2"
+				>
 					<FontAwesomeIcon
 						icon={faUserGear}
-						className="w-20 h-20 text-7xl"
+						className="button text-xl"
 					/>
 				</Link>
-			</div>
+			</header>
+
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
 				{addState == "Base" && (
 					<HomeAddOverlay
@@ -89,7 +110,7 @@ export default function HomeList() {
 							setAddState(data);
 						}}
 						onAdd={(data: any) => {
-							handleAdd(data);
+							handleAdd(data, "GUEST");
 						}}
 					/>
 				)}
@@ -99,7 +120,7 @@ export default function HomeList() {
 							setAddState(data);
 						}}
 						onAdd={(data: any) => {
-							handleAdd(data);
+							handleAdd(data, "RESIDENT");
 						}}
 					/>
 				)}
@@ -116,39 +137,28 @@ export default function HomeList() {
 					/>
 				)}
 			</Overlay>
-			{homeNames.length > 0 && (
-				<List
-					item="Home Spaces"
-					items={homes}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(home) => handleRemoveClick(home)}
-					homeCode={homeCodes}
-					getKey={(home) => home._id}
-					renderItem={(home) => (
+
+			<HomeSpaceList
+				className="panel pb-8"
+				items={homes}
+				handleAddClick={handleAddClick}
+				handleRemoveClick={(home) => handleRemoveClick(home)}
+				homeCode={(home) => home.homeCode}
+				getKey={(home) => home._id}
+				getRelationship={(home) => getRelationship(home)}
+				renderItem={(home) => (
+					<div>
+						<div>{home.homeName}</div>
 						<div>
-							<div>{home.homeName}</div>
-							<div>
-								<FontAwesomeIcon
-									icon={faMapPin}
-									className="text-sm"
-								/>
-								{home.address}
-							</div>
+							<FontAwesomeIcon
+								icon={faMapPin}
+								className="text-sm"
+							/>
+							{home.address}
 						</div>
-					)}
-				/>
-			)}
-			{homeNames.length == 0 && (
-				<List<string>
-					item="Home Spaces"
-					items={["No Homes available! Click below to add."]}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(name) => handleRemoveClick(name)}
-					homeCode={homeCodes}
-					getKey={(name) => name}
-					renderItem={(name) => <span>{name}</span>}
-				/>
-			)}
+					</div>
+				)}
+			/>
 		</div>
 	);
 }

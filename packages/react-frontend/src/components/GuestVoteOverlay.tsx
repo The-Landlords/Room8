@@ -4,11 +4,11 @@ import { API_BASE } from "../config";
 type Ascension = {
 	_id: string;
 	guestId:
-	| {
-		_id: string;
-		fullName: string;
-	}
-	| string;
+		| {
+				_id: string;
+				fullName: string;
+		  }
+		| string;
 
 	status: "PENDING" | "APPROVED" | "REJECTED";
 
@@ -69,17 +69,14 @@ export default function GuestVoteOverlay({ homeCode }: Props) {
 		setErrorMsg("");
 
 		try {
-			const res = await fetch(
-				`${API_BASE}/guest-ascension/${id}/vote`,
-				{
-					method: "POST",
-					credentials: "include",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ vote }),
-				}
-			);
+			const res = await fetch(`${API_BASE}/guest-ascension/${id}/vote`, {
+				method: "POST",
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ vote }),
+			});
 
 			const data = await res.json();
 
@@ -98,13 +95,10 @@ export default function GuestVoteOverlay({ homeCode }: Props) {
 
 	async function deleteAscension(id: string) {
 		try {
-			const res = await fetch(
-				`${API_BASE}/guest-ascension/${id}`,
-				{
-					method: "DELETE",
-					credentials: "include",
-				}
-			);
+			const res = await fetch(`${API_BASE}/guest-ascension/${id}`, {
+				method: "DELETE",
+				credentials: "include",
+			});
 
 			const data = await res.json();
 
@@ -127,24 +121,25 @@ export default function GuestVoteOverlay({ homeCode }: Props) {
 
 	return (
 		<div className="overlay">
-			<h2 className="text-lg font-semibold mb-3">
-				Guest Ascension Votes
-			</h2>
+			<h2 className="header-secondary">Guest Ascension Votes</h2>
 
-			{loading && <p>Loading...</p>}
+			{loading && (
+				<p className="text-primary font-secondary">Loading...</p>
+			)}
 			{errorMsg && <p className="text-red-500">{errorMsg}</p>}
 
 			{!loading && visible.length === 0 && (
-				<p>No requests</p>
+				<p className="text-primary font-secondary">No requests</p>
 			)}
 
 			<div className="flex flex-col gap-4">
 				{visible.map((a) => (
-					<div key={a._id} className="border p-3 rounded">
+					<div key={a._id} className="list-item p-3 rounded">
 						<p>Guest: {getGuestName(a.guestId)}</p>
 
 						<p>
-							Yes: {a.yesVotes} | No: {a.noVotes} | Total: {a.totalResidents}
+							Yes: {a.yesVotes} | No: {a.noVotes} | Total:{" "}
+							{a.totalResidents}
 						</p>
 
 						<p className="text-sm font-semibold">

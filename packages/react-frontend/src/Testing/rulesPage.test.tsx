@@ -46,77 +46,93 @@ function makeRule(overrides: Partial<Rule> = {}): Rule {
 	};
 }
 
-function okJson(data: unknown) {
+function jsonResponse(data: unknown) {
 	return {
 		ok: true,
 		json: async () => data,
-	};
+	} as Response;
 }
 
-function mockPageLoad(rules: Rule[]) {
-	return [
-		okJson({ _id: "home-1", homeName: "Test Home" }),
-		okJson({ count: 1 }),
-		okJson(rules),
-	];
-}
+function mockRulesFetch({
+	initialRules = [],
+	refreshedRules = initialRules,
+	voteRefreshRules = refreshedRules,
+	deleteVoteResponse = { deleted: true },
+}: {
+	initialRules?: Rule[];
+	refreshedRules?: Rule[];
+	voteRefreshRules?: Rule[];
+	deleteVoteResponse?: { deleted?: boolean };
+} = {}) {
+	let rulesGetCount = 0;
 
-function mockFetchWithRules(rules: Rule[]) {
-	const pageLoad = mockPageLoad(rules);
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
 
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce(pageLoad[0])
-		.mockResolvedValueOnce(pageLoad[1])
-		.mockResolvedValueOnce(pageLoad[2]) as unknown as typeof fetch;
-}
+		// Used by RulesPage.fetchMe.
+		if (url === `${API_BASE}/auth/me` && method === "GET") {
+			return jsonResponse({
+				_id: "test-vote-id",
+			});
+		}
 
-function mockFetchForAddingRule() {
-	const initialLoad = mockPageLoad([]);
-	const refreshLoad = mockPageLoad([makeRule()]);
+		// Used by Header and by RulesPage.fetchRules.
+		if (url === `${API_BASE}/homes/code/testhomecode` && method === "GET") {
+			return jsonResponse({
+				_id: "home-1",
+				homeName: "Test Home",
+			});
+		}
 
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce(initialLoad[0])
-		.mockResolvedValueOnce(initialLoad[1])
-		.mockResolvedValueOnce(initialLoad[2])
-		.mockResolvedValueOnce(okJson(makeRule()))
-		.mockResolvedValueOnce(refreshLoad[0])
-		.mockResolvedValueOnce(refreshLoad[1])
-		.mockResolvedValueOnce(refreshLoad[2]) as unknown as typeof fetch;
-}
+		// Used by RulesPage.fetchRules.
+		if (
+			url === `${API_BASE}/relate/home/home-1/residents` &&
+			method === "GET"
+		) {
+			return jsonResponse({
+				count: 1,
+			});
+		}
 
-function mockFetchForVotingRule() {
-	const initialLoad = mockPageLoad([makeRule()]);
-	const refreshLoad = mockPageLoad([
-		makeRule({
-			status: "CONFIRMED",
-			votes: [{ voteId: "test-vote-id", vote: "YES" }],
-		}),
-	]);
+		// Used by RulesPage.fetchRules.
+		if (
+			url === `${API_BASE}/homes/rules/testhomecode` &&
+			method === "GET"
+		) {
+			rulesGetCount += 1;
 
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce(initialLoad[0])
-		.mockResolvedValueOnce(initialLoad[1])
-		.mockResolvedValueOnce(initialLoad[2])
-		.mockResolvedValueOnce(okJson({}))
-		.mockResolvedValueOnce(refreshLoad[0])
-		.mockResolvedValueOnce(refreshLoad[1])
-		.mockResolvedValueOnce(refreshLoad[2]) as unknown as typeof fetch;
-}
+			if (rulesGetCount === 1) {
+				return jsonResponse(initialRules);
+			}
 
-function mockFetchForDeletedRule() {
-	const initialLoad = mockPageLoad([makeRule()]);
+			if (rulesGetCount === 2) {
+				return jsonResponse(refreshedRules);
+			}
 
-	globalThis.fetch = vi
-		.fn()
-		.mockResolvedValueOnce(initialLoad[0])
-		.mockResolvedValueOnce(initialLoad[1])
-		.mockResolvedValueOnce(initialLoad[2])
-		.mockResolvedValueOnce(
-			okJson({ deleted: true })
-		) as unknown as typeof fetch;
+			return jsonResponse(voteRefreshRules);
+		}
+
+		// Used by RulesPage.handleAdd.
+		if (url === `${API_BASE}/homes/rules` && method === "POST") {
+			return jsonResponse(makeRule());
+		}
+
+		// Used by RulesPage.handleVote.
+		if (url === `${API_BASE}/rules/rule-1/vote` && method === "POST") {
+			return jsonResponse({});
+		}
+
+		// Used by RulesPage.handleDeleteVote.
+		if (
+			url === `${API_BASE}/rules/rule-1/delete-vote` &&
+			method === "POST"
+		) {
+			return jsonResponse(deleteVoteResponse);
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
 }
 
 function getTrashButton() {
@@ -129,39 +145,8 @@ function getTrashButton() {
 	return trashButton as HTMLButtonElement;
 }
 
-function setupVoteIdStorage() {
-	const storage = new Map<string, string>();
-
-	Object.defineProperty(globalThis, "localStorage", {
-		value: {
-			getItem: vi.fn((key: string) => storage.get(key) ?? null),
-			setItem: vi.fn((key: string, value: string) => {
-				storage.set(key, value);
-			}),
-			removeItem: vi.fn((key: string) => {
-				storage.delete(key);
-			}),
-			clear: vi.fn(() => {
-				storage.clear();
-			}),
-		},
-		writable: true,
-		configurable: true,
-	});
-}
-
 beforeEach(() => {
-	setupVoteIdStorage();
-
-	Object.defineProperty(globalThis, "crypto", {
-		value: {
-			randomUUID: vi.fn(() => "test-vote-id"),
-		},
-		writable: true,
-		configurable: true,
-	});
-
-	mockFetchWithRules([]);
+	mockRulesFetch();
 });
 
 afterEach(() => {
@@ -170,15 +155,21 @@ afterEach(() => {
 });
 
 test("renders rules page with home name", async () => {
+	mockRulesFetch({
+		initialRules: [],
+	});
+
 	renderRulesPage();
 
-	expect(await screen.findByText("Rules for Test Home")).toBeInTheDocument();
+	expect(await screen.findByText(/Test Home.*Rules/i)).toBeInTheDocument();
 
 	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
 });
 
 test("renders rules fetched from backend", async () => {
-	mockFetchWithRules([makeRule()]);
+	mockRulesFetch({
+		initialRules: [makeRule()],
+	});
 
 	renderRulesPage();
 
@@ -190,9 +181,13 @@ test("renders rules fetched from backend", async () => {
 });
 
 test("clicking add opens the real add rule overlay", async () => {
+	mockRulesFetch({
+		initialRules: [],
+	});
+
 	renderRulesPage();
 
-	await screen.findByText("Rules for Test Home");
+	await screen.findByText(/Test Home.*Rules/i);
 
 	const user = userEvent.setup();
 
@@ -208,9 +203,13 @@ test("clicking add opens the real add rule overlay", async () => {
 });
 
 test("cancel closes the real add rule overlay", async () => {
+	mockRulesFetch({
+		initialRules: [],
+	});
+
 	renderRulesPage();
 
-	await screen.findByText("Rules for Test Home");
+	await screen.findByText(/Test Home.*Rules/i);
 
 	const user = userEvent.setup();
 
@@ -228,11 +227,14 @@ test("cancel closes the real add rule overlay", async () => {
 });
 
 test("adding a rule posts the rule and refreshes rules", async () => {
-	mockFetchForAddingRule();
+	mockRulesFetch({
+		initialRules: [],
+		refreshedRules: [makeRule()],
+	});
 
 	renderRulesPage();
 
-	await screen.findByText("Rules for Test Home");
+	await screen.findByText(/Test Home.*Rules/i);
 
 	const user = userEvent.setup();
 
@@ -250,7 +252,10 @@ test("adding a rule posts the rule and refreshes rules", async () => {
 			`${API_BASE}/homes/rules`,
 			expect.objectContaining({
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
 				body: JSON.stringify({
 					homeCode: "testhomecode",
 					description: "Quiet hours after 10pm",
@@ -269,7 +274,15 @@ test("adding a rule posts the rule and refreshes rules", async () => {
 });
 
 test("clicking yes vote posts vote and refreshes rules", async () => {
-	mockFetchForVotingRule();
+	mockRulesFetch({
+		initialRules: [makeRule()],
+		refreshedRules: [
+			makeRule({
+				status: "CONFIRMED",
+				votes: [{ voteId: "test-vote-id", vote: "YES" }],
+			}),
+		],
+	});
 
 	renderRulesPage();
 
@@ -288,7 +301,10 @@ test("clicking yes vote posts vote and refreshes rules", async () => {
 			`${API_BASE}/rules/rule-1/vote`,
 			expect.objectContaining({
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
 				body: JSON.stringify({
 					vote: "YES",
 				}),
@@ -300,7 +316,9 @@ test("clicking yes vote posts vote and refreshes rules", async () => {
 });
 
 test("clicking remove mode shows the real delete vote controls", async () => {
-	mockFetchWithRules([makeRule()]);
+	mockRulesFetch({
+		initialRules: [makeRule()],
+	});
 
 	renderRulesPage();
 
@@ -316,7 +334,9 @@ test("clicking remove mode shows the real delete vote controls", async () => {
 });
 
 test("cancel closes the real delete vote panel", async () => {
-	mockFetchWithRules([makeRule()]);
+	mockRulesFetch({
+		initialRules: [makeRule()],
+	});
 
 	renderRulesPage();
 
@@ -347,7 +367,12 @@ test("cancel closes the real delete vote panel", async () => {
 });
 
 test("delete vote removes rule when backend says deleted", async () => {
-	mockFetchForDeletedRule();
+	mockRulesFetch({
+		initialRules: [makeRule()],
+		deleteVoteResponse: {
+			deleted: true,
+		},
+	});
 
 	renderRulesPage();
 
@@ -372,7 +397,10 @@ test("delete vote removes rule when backend says deleted", async () => {
 			`${API_BASE}/rules/rule-1/delete-vote`,
 			expect.objectContaining({
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
 				body: JSON.stringify({
 					voteId: "test-vote-id",
 					vote: "YES",

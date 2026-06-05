@@ -16,10 +16,7 @@ import {
 	getUsersByHomeAndRelation,
 } from "../models/User-Services.js";
 
-import {
-	getHomeByCode,
-	getHomeById,
-} from "../models/Home-Services.js";
+import { getHomeByCode, getHomeById } from "../models/Home-Services.js";
 
 export const guestAscensionRouter = express.Router();
 
@@ -79,7 +76,9 @@ guestAscensionRouter.post(
 			);
 
 			if (existing) {
-				return res.status(400).json({ error: "Ascension already exists" });
+				return res
+					.status(400)
+					.json({ error: "Ascension already exists" });
 			}
 
 			const ascension = await createGuestAscension({
@@ -92,7 +91,9 @@ guestAscensionRouter.post(
 			return res.status(201).json(ascension);
 		} catch (err) {
 			console.error(err);
-			return res.status(500).json({ error: "Failed to create ascension request" });
+			return res
+				.status(500)
+				.json({ error: "Failed to create ascension request" });
 		}
 	}
 );
@@ -121,8 +122,10 @@ guestAscensionRouter.get(
 						votesArr
 					);
 
-					const yes = validVotes.filter(v => v.vote === "YES").length;
-					const no = validVotes.filter(v => v.vote === "NO").length;
+					const yes = validVotes.filter(
+						(v) => v.vote === "YES"
+					).length;
+					const no = validVotes.filter((v) => v.vote === "NO").length;
 					const total = await getResidentCount(home._id);
 
 					const newStatus = computeStatus(yes, no, total);
@@ -145,7 +148,10 @@ guestAscensionRouter.get(
 					return {
 						...a.toObject(),
 						guestId: guest
-							? { _id: String(guest._id), fullName: guest.fullName }
+							? {
+									_id: String(guest._id),
+									fullName: guest.fullName,
+								}
 							: String(a.guestId),
 						yesVotes: yes,
 						noVotes: no,
@@ -157,7 +163,9 @@ guestAscensionRouter.get(
 			return res.json(cleaned);
 		} catch (err) {
 			console.error(err);
-			return res.status(500).json({ error: "Failed to fetch ascensions" });
+			return res
+				.status(500)
+				.json({ error: "Failed to fetch ascensions" });
 		}
 	}
 );
@@ -198,18 +206,22 @@ guestAscensionRouter.post(
 				"RESIDENT"
 			);
 
-			if (!residents.some(r => String(r._id) === String(voterId))) {
-				return res.status(403).json({ error: "Only residents can vote" });
+			if (!residents.some((r) => String(r._id) === String(voterId))) {
+				return res
+					.status(403)
+					.json({ error: "Only residents can vote" });
 			}
 
 			if (String(voterId) === String(ascension.guestId)) {
-				return res.status(403).json({ error: "Guest cannot vote for themselves" });
+				return res
+					.status(403)
+					.json({ error: "Guest cannot vote for themselves" });
 			}
 
 			const votes = (ascension.votes ?? []) as any[];
 
 			const existing = votes.find(
-				v => String(v.voteId) === String(voterId)
+				(v) => String(v.voteId) === String(voterId)
 			);
 
 			if (existing) {
@@ -223,8 +235,8 @@ guestAscensionRouter.post(
 
 			const validVotes = await filterValidVotes(ascension.homeId, votes);
 
-			const yes = validVotes.filter(v => v.vote === "YES").length;
-			const no = validVotes.filter(v => v.vote === "NO").length;
+			const yes = validVotes.filter((v) => v.vote === "YES").length;
+			const no = validVotes.filter((v) => v.vote === "NO").length;
 
 			const total = residents.length;
 
@@ -240,7 +252,7 @@ guestAscensionRouter.post(
 					String(ascension.guestId)
 				);
 
-				const homeTarget = home.userIds.find(u =>
+				const homeTarget = home.userIds.find((u) =>
 					u.userId.equals(guestId)
 				);
 
@@ -253,7 +265,7 @@ guestAscensionRouter.post(
 				const user = await getUserById(guestId);
 
 				if (user) {
-					const userTarget = user.homeIds.find(h =>
+					const userTarget = user.homeIds.find((h) =>
 						h.homeId.equals(home._id)
 					);
 

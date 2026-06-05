@@ -43,9 +43,7 @@ test("renders empty home state", async () => {
 	renderHomeList();
 
 	expect(await screen.findByText("Home Spaces")).toBeInTheDocument();
-	expect(
-		await screen.findByText("No Homes available! Click below to add.")
-	).toBeInTheDocument();
+	expect(await screen.findByText("No Home Spaces")).toBeInTheDocument();
 	expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
 });
 
@@ -68,7 +66,7 @@ test("renders homes fetched from backend", async () => {
 test("clicking add opens the real home add options overlay", async () => {
 	renderHomeList();
 
-	await screen.findByText("No Homes available! Click below to add.");
+	await screen.findByText("No Home Spaces");
 
 	const user = userEvent.setup();
 	await user.click(screen.getByRole("button", { name: "+" }));

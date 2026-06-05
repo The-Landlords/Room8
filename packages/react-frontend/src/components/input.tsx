@@ -72,144 +72,158 @@ export function InputField<T extends { settings: Record<string, any> }>({
 	state: { draft: T; setDraft: React.Dispatch<React.SetStateAction<T>> };
 }) {
 	return (
-		/* Standard 'input-field' class for all inputs */
-		<div className="input-field">
-			{/* Flex layout determined by AttributeFieldProps.layout, rest fixed as part of input-field */}
+		/* Standard 'underlined-input' class for all inputs */
+		<div className="settings-input-field">
+			{/* Flex layout determined by AttributeFieldProps.layout, rest fixed as part of underlined-input */}
 			<div
-				className={`flex${fieldName.layout === "vertical" ? " flex-col" : ""} items-center justify-between w-full`}
+				className={`flex ${
+					fieldName.layout === "vertical" ? "flex-col" : "flex-row"
+				} "relative flex items-center justify-center w-full min-h-10"`}
 			>
 				{/* If AttributeFieldProps.label left blank, no header line will be printed */}
-				<span className="mr-3">
+				<span className="settings-input-field-label">
 					{fieldName.label === "" ? "" : `${fieldName.label}:`}
 				</span>
-				{fieldName.fields.map((f) => {
-					/* Both 'Text' and 'Date' fields are handled effectively the same */
-					if (f.type === "text" || f.type === "date") {
-						return (
-							<input
-								key={f.field}
-								type={f.type}
-								value={state.draft[f.field] as string}
-								onChange={(e) =>
-									state.setDraft((d) => ({
-										...d,
-										[f.field]: e.target.value,
-									}))
-								}
-								placeholder={f.placeholder}
-								className="underlined-input"
-							/>
-						);
-					}
-					/* Inside mapping of assumed 'text' style fields */
-					if (f.type === "group") {
-						const group = state.draft[f.field] as Record<
-							string,
-							string
-						>;
-						return f.fields.map((sub) => (
-							<input
-								key={sub.field}
-								value={group[sub.field]}
-								onChange={(e) =>
-									state.setDraft((d) => ({
-										...d,
-										[f.field]: {
-											...(d[f.field] as Record<
-												string,
-												string
-											>),
-											[sub.field]: e.target.value,
-										},
-									}))
-								}
-								placeholder={sub.placeholder}
-								className="underlined-input"
-							/>
-						));
-					}
-					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
-					if (f.type === "dropdown") {
-						const group = state.draft["settings"] as Record<
-							string,
-							string
-						>;
-						return (
-							<select
-								key={f.field}
-								value={group[f.field]}
-								onChange={(e) =>
-									state.setDraft((d) => ({
-										...d,
-										settings: {
-											...d.settings,
+				<div className="flex flex-col items-center justify-center gap-3 mx-auto">
+					{fieldName.fields.map((f) => {
+						/* Both 'Text' and 'Date' fields are handled effectively the same */
+						if (f.type === "text" || f.type === "date") {
+							return (
+								<input
+									key={f.field}
+									type={f.type}
+									value={state.draft[f.field] as string}
+									onChange={(e) =>
+										state.setDraft((d) => ({
+											...d,
 											[f.field]: e.target.value,
-										},
-									}))
-								}
-								className="bg-transparent border-b border-text outline-none"
-							>
-								{f.options.map((opt) => (
-									<option key={opt.value} value={opt.value}>
-										{opt.label}
-									</option>
-								))}
-							</select>
-						);
-					}
-					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
-					if (f.type === "select") {
-						return f.options.map((opt) => (
-							<button
-								key={opt.value}
-								type="button"
-								onClick={() =>
-									state.setDraft((d) => ({
-										...d,
-										settings: {
-											...d.settings,
-											[f.field]: opt.value,
-										},
-									}))
-								}
-								className={`input-field${state.draft.settings[f.field] === opt.value ? "-selected" : ""} flex`}
-							>
-								<span>
-									{opt.label === "" ? "" : `${opt.label}`}
-								</span>
-							</button>
-						));
-					}
-					/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
-					if (f.type === "toggle") {
-						return (
-							<button
-								key={f.field}
-								type="button"
-								onClick={() =>
-									state.setDraft((d) => ({
-										...d,
-										settings: {
-											...d.settings,
-											[f.field]:
-												d.settings[f.field] === f.onName
-													? f.offName
-													: f.onName,
-										},
-									}))
-								}
-								/* If we start using more toggles, we can export this class and color set somewhere */
-								className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
-									state.draft.settings[f.field] === f.onName
-										? "bg-yellow-400 justify-end" // light mode (right)
-										: "bg-gray-800 justify-start" // dark mode (left)
-								}`}
-							>
-								<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
-							</button>
-						);
-					}
-				})}
+										}))
+									}
+									placeholder={f.placeholder}
+									className="underlined-input"
+								/>
+							);
+						}
+						/* Inside mapping of assumed 'text' style fields */
+						if (f.type === "group") {
+							const group = state.draft[f.field] as Record<
+								string,
+								string
+							>;
+							return f.fields.map((sub) => (
+								<input
+									key={sub.field}
+									value={group[sub.field]}
+									onChange={(e) =>
+										state.setDraft((d) => ({
+											...d,
+											[f.field]: {
+												...(d[f.field] as Record<
+													string,
+													string
+												>),
+												[sub.field]: e.target.value,
+											},
+										}))
+									}
+									placeholder={sub.placeholder}
+									className="underlined-input"
+								/>
+							));
+						}
+						/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
+						if (f.type === "dropdown") {
+							const group = state.draft["settings"] as Record<
+								string,
+								string
+							>;
+							return (
+								<select
+									key={f.field}
+									value={group[f.field]}
+									onChange={(e) =>
+										state.setDraft((d) => ({
+											...d,
+											settings: {
+												...d.settings,
+												[f.field]: e.target.value,
+											},
+										}))
+									}
+									className="bg-transparent border-b border-text outline-none"
+								>
+									{f.options.map((opt) => (
+										<option
+											key={opt.value}
+											value={opt.value}
+										>
+											{opt.label}
+										</option>
+									))}
+								</select>
+							);
+						}
+						/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
+						if (f.type === "select") {
+							return f.options.map((opt) => (
+								<button
+									key={opt.value}
+									type="button"
+									onClick={() =>
+										state.setDraft((d) => ({
+											...d,
+											settings: {
+												...d.settings,
+												[f.field]: opt.value,
+											},
+										}))
+									}
+									className={`button ${
+										state.draft.settings[f.field] ===
+										opt.value
+											? "button-selected"
+											: ""
+									}`}
+								>
+									<span>
+										{opt.label === "" ? "" : `${opt.label}`}
+									</span>
+								</button>
+							));
+						}
+						/* WARNING: 'settings' is currently hard-coded in. Working on the generalization still */
+						if (f.type === "toggle") {
+							return (
+								<button
+									key={f.field}
+									type="button"
+									onClick={() =>
+										state.setDraft((d) => ({
+											...d,
+											settings: {
+												...d.settings,
+												[f.field]:
+													d.settings[f.field] ===
+													f.onName
+														? f.offName
+														: f.onName,
+											},
+										}))
+									}
+									/* If we start using more toggles, we can export this class and color set somewhere */
+									className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
+										state.draft.settings[f.field] ===
+										f.onName
+											? "bg-yellow-400 justify-end" // light mode (right)
+											: "bg-gray-800 justify-start" // dark mode (left)
+									}`}
+								>
+									<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
+								</button>
+							);
+						}
+					})}
+				</div>
 			</div>
 		</div>
 	);

@@ -2,11 +2,13 @@
 
 import { API_BASE } from "../config";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-import List from "../components/list";
 import RuleCard from "../components/RuleCard";
 import DeleteVotePanel from "../components/DeleteVotePanel";
+import RulesList from "../components/rulesList";
+import Overlay from "../components/overlay";
+import Header from "../components/header";
 
 interface Vote {
 	voteId: string;
@@ -24,7 +26,7 @@ interface Rule {
 
 export default function RulesPage() {
 	const [rules, setRules] = useState<Rule[]>([]);
-	const [homeName, setHomeName] = useState("");
+
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -35,8 +37,6 @@ export default function RulesPage() {
 	const [voteId, setVoteId] = useState("");
 
 	const { homeCode = "" } = useParams();
-
-	const navigate = useNavigate();
 
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -84,8 +84,6 @@ export default function RulesPage() {
 			}
 
 			const homeData = await homeRes.json();
-
-			setHomeName(homeData.homeName || "");
 
 			const residentRes = await fetch(
 				`${API_BASE}/relate/home/${homeData._id}/residents`,
@@ -214,31 +212,17 @@ export default function RulesPage() {
 	const selectedRule = rules.find((r) => r._id === deleteTarget);
 
 	return (
-		<div className="background-house min-h-screen flex flex-col">
-			<header className="flex justify-between px-6 pt-8">
-				<button
-					type="button"
-					onClick={() => navigate(-1)}
-					className="button"
-				>
-					← Back
-				</button>
+		<div className=" flex flex-col">
+			<Header title="Rules" homeCode={homeCode} />
 
-				<h1 className="header flex-1 text-center">
-					Rules for {homeName}
-				</h1>
-
-				<div className="w-[80px]" />
-			</header>
-
-			<main className="flex justify-center px-6 py-10 flex-1">
-				<List
-					item="Rules"
+			<main className="flex justify-center">
+				<RulesList
 					items={rules}
 					handleAddClick={() => setOverlayOpen(true)}
 					handleRemoveClick={(rule) => setDeleteTarget(rule._id)}
 					handleVoteClick={() => setShowVoting((prev) => !prev)}
 					getKey={(rule) => rule._id}
+					className="panel pb-6"
 					renderItem={(rule) => (
 						<RuleCard
 							rule={rule}
@@ -252,19 +236,25 @@ export default function RulesPage() {
 			</main>
 
 			{overlayOpen && (
-				<div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-					<div className="bg-white p-6 rounded-2xl w-[400px]">
-						<h2 className="text-xl mb-4">Add Rule</h2>
+				<Overlay
+					isOpen={overlayOpen}
+					onClose={() => setOverlayOpen(false)}
+				>
+					<div className="flex flex-col gap-4 animate-floatUp">
+						<h2 className="header-secondary self-center-safe">
+							Add Rule
+						</h2>
 
 						<textarea
 							ref={inputRef}
-							className="w-full border p-2 rounded"
+							className="input-field self-center-safe"
 							placeholder="e.g. Quiet hours after 10pm"
 						/>
 
-						<div className="flex justify-end gap-3 mt-4">
+						<div className="flex justify-center gap-3 mt-4">
 							<button
 								type="button"
+								className="button"
 								onClick={() => setOverlayOpen(false)}
 							>
 								Cancel
@@ -280,7 +270,7 @@ export default function RulesPage() {
 							</button>
 						</div>
 					</div>
-				</div>
+				</Overlay>
 			)}
 
 			{deleteTarget && (

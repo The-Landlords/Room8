@@ -19,8 +19,6 @@ import swaggerDocument from "./swagger-output.json" with { type: "json" };
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
-
-
 declare module "express-session" {
 	interface SessionData {
 		// page_views: number;
@@ -122,7 +120,7 @@ const connectDB = async () => {
 	if (!connection) {
 		console.log(
 			"MongoDB Connected" +
-			(url ? ` successfully` : " at default localhost")
+				(url ? ` successfully` : " at default localhost")
 		);
 		connection = await mongoose.connect(
 			url || "mongodb://localhost:27017/room8"

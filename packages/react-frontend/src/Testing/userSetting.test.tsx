@@ -15,7 +15,10 @@ import { API_BASE } from "../config";
 
 function renderUserSetting() {
 	return render(
-		<MemoryRouter initialEntries={["/settings/"]}>
+		<MemoryRouter
+			initialEntries={["/homelist", "/settings/"]}
+			initialIndex={1}
+		>
 			<Routes>
 				<Route path="/settings/" element={<UserSetting />} />
 				<Route path="/homelist" element={<div>Home List Page</div>} />
@@ -161,9 +164,7 @@ afterEach(() => {
 test("renders user settings page and loads user data", async () => {
 	await renderLoadedUserSetting();
 
-	expect(screen.getByText("User Settings")).toBeInTheDocument();
 	expect(screen.getByText(/Welcome\s+testuser/)).toBeInTheDocument();
-
 	expect(screen.getByDisplayValue("Test User")).toBeInTheDocument();
 	expect(screen.getByDisplayValue("he/him")).toBeInTheDocument();
 	expect(screen.getByDisplayValue("2000-01-15")).toBeInTheDocument();
@@ -179,7 +180,7 @@ test("renders user settings page and loads user data", async () => {
 test("clicking back navigates to home list page", async () => {
 	await renderLoadedUserSetting();
 
-	fireEvent.click(screen.getByRole("button", { name: "←" }));
+	fireEvent.click(screen.getByRole("button", { name: "← Back" }));
 
 	expect(screen.getByText("Home List Page")).toBeInTheDocument();
 });

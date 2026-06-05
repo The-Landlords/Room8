@@ -27,11 +27,6 @@ jobs:
             - name: Install dependencies
               run: npm ci
 
-            - name: Install Tailwind Linux native binding
-              run: |
-                  OXIDE_VERSION="$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version")"
-                  npm install --no-save --package-lock=false "@tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION}"
-
             - name: Build frontend
               run: npm -w packages/react-frontend run build
 

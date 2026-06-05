@@ -5,9 +5,7 @@ export function createGuestAscension(data: any) {
 	return GuestAscension.create(data);
 }
 
-export function getGuestAscensionById(
-	id: mongoose.Types.ObjectId
-) {
+export function getGuestAscensionById(id: mongoose.Types.ObjectId) {
 	return GuestAscension.findById(id);
 }
 
@@ -22,30 +20,19 @@ export function getGuestAscensionByGuest(
 	});
 }
 
-export function getGuestAscensionsByHome(
-	homeId: mongoose.Types.ObjectId
-) {
+export function getGuestAscensionsByHome(homeId: mongoose.Types.ObjectId) {
 	return GuestAscension.find({
 		homeId,
 	});
 }
 
-export function updateGuestAscension(
-	id: mongoose.Types.ObjectId,
-	data: any
-) {
-	return GuestAscension.findByIdAndUpdate(
-		id,
-		data,
-		{
-			returnDocument: "after",
-			runValidators: true,
-		}
-	);
+export function updateGuestAscension(id: mongoose.Types.ObjectId, data: any) {
+	return GuestAscension.findByIdAndUpdate(id, data, {
+		returnDocument: "after",
+		runValidators: true,
+	});
 }
 
-export function removeGuestAscension(
-	id: mongoose.Types.ObjectId
-) {
+export function removeGuestAscension(id: mongoose.Types.ObjectId) {
 	return GuestAscension.findByIdAndDelete(id);
 }

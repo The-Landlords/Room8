@@ -19,13 +19,13 @@ export default function VotePanel({
 
 	const yesClass =
 		myVote === "YES"
-			? "bg-green-500 text-white border-green-600"
-			: "bg-gray-200 hover:bg-gray-300";
+			? "bg-accent text-primary border-primary"
+			: "bg-secondary hover:bg-accent border-primary text-primary";
 
 	const noClass =
 		myVote === "NO"
-			? "bg-red-500 text-white border-red-600"
-			: "bg-gray-200 hover:bg-gray-300";
+			? "bg-accent text-primary border-primary"
+			: "bg-secondary hover:bg-accent border-primary text-primary";
 
 	return (
 		<div className="flex gap-2 items-center">

@@ -1,102 +1,136 @@
-@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Sriracha&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sniglet:wght@400;700&display=swap");
 @import "tailwindcss";
 
 body {
-	background-color: #f6f1ea;
+	background-color: #f4fbff;
 }
 @theme {
-	--color-text: #584945;
-	--color-primary: #b5a398;
-	--color-secondary: #f6f1ea;
-	--font-primary: "Sriracha", cursive;
+	--color-text: #ffffff;
+	--color-primary: #96c3e3;
+	--color-secondary: #def0f9;
+	--color-accent: #f7ffe3;
+	--font-primary: "Inter", sans-serif;
+	--font-title: "Sniglet", cursive;
 	--font-secondary: "Gowun Dodum", sans-serif;
 }
 
 @layer components {
 	.header {
-		@apply bg-primary/70 font-primary text-text text-4xl font-bold text-center p-4 rounded-lg shadow-md max-w-80;
+		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-text text-2xl font-semibold p-2  max-w-100;
+		@apply font-primary text-primary text-2xl pt-2;
+	}
+	.header-wrapper {
+		@apply relative flex items-center justify-center px-6 pt-8 w-full;
+	}
+	.header-title {
+		@apply font-title text-text text-6xl font-bold;
+		-webkit-text-stroke: 8px var(--color-primary);
+		paint-order: stroke fill;
+	}
+	.dashboard-card {
+		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 relative flex flex-col gap-2;
+		@apply w-full sm:w-80 xl:w-72;
 	}
 	.panel {
-		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-40 max-h-150 relative overflow-auto;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 pb-8 min-w-[80%] min-h-[30%] max-h-[40%] relative overflow-auto;
 	}
 	.panel-secondary {
-		@apply bg-primary/70 rounded-lg shadow-md p-6 m-4 min-w-300 min-h-100 max-h-150 relative overflow-auto;
+		@apply bg-primary flex flex-col gap-2 rounded-lg shadow-md p-6 m-4 min-w-[80%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
-	.list-container {
-		@apply bg-secondary/70 rounded-lg shadow-md p-6 m-4 min-w-20 min-h-100 max-h-150 relative overflow-auto;
+	.card {
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[40%] relative;
+	}
+
+	.panel-small {
+		@apply bg-secondary border-primary border-2 rounded-lg shadow-md p-6 m-4 min-w-[20%] min-h-[40%] max-h-[80%] relative overflow-auto;
 	}
 	.iconWrapper {
-		@apply opacity-70 self-end-safe hover:opacity-90 transition duration-200;
+		@apply opacity-70 self-end-safe hover:text-accent hover:opacity-100 transition duration-200;
 	}
 	.list-item {
-		@apply bg-primary/70 text-text font-secondary text-xl p-3 rounded-md shadow-sm mb-2;
+		@apply bg-primary/70 text-text font-secondary text-xl p-3 rounded-lg shadow-sm mb-2;
 	}
+
 	.animate-floatUp {
 		animation: floatUp 0.5s ease-out forwards;
 	}
 	.background-house {
-		@apply bg-secondary/70  bg-[url('/assets/housebgtemp.jpeg')] bg-cover  min-h-screen flex flex-col;
+		@apply bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
 	}
 	.overlay-backdrop {
 		@apply fixed z-50 inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center;
 	}
 	.overlay-content {
-		@apply bg-secondary/70 rounded-lg shadow-lg p-6 max-w-md w-full;
+		@apply bg-secondary rounded-lg shadow-lg p-6 max-w-md w-full;
 	}
 	.button {
-		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-md shadow-sm hover:bg-primary/90 transition-colors duration-150;
+		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
+	}
+	.button-selected {
+		@apply bg-accent text-primary border-2 border-primary;
+	}
+	/* Keep the typed input transparent so the parent background shows */
+	.settings-input-field:focus-within .underlined-input {
+		@apply bg-transparent text-primary border-primary;
+	}
+	.settings-input-field {
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-white p-3 text-primary;
+		@apply flex items-center flex-col;
+		@apply transition-colors duration-200;
+	}
+	.settings-input-label {
+		@apply relative flex items-center justify-center w-full min-h-10;
+	}
+
+	/* When the user clicks/types inside a settings input, transition the wrapper */
+	.settings-input-field:focus-within {
+		@apply bg-accent text-primary border-primary ring-2 ring-primary/50;
+	}
+
+	.underlined-input {
+		@apply w-full max-w-xs bg-transparent border-b border-primary outline-none text-primary;
+		@apply transition-colors duration-200;
 	}
 	.settings-background {
 		@apply min-h-screen flex flex-col;
 		background-color: #efe7df;
 	}
-	/* Title of input field */
-	.input-field {
-		@apply w-full bg-secondary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
-	}
+
 	/* Highlighted Title of input field */
 	.input-field-selected {
-		@apply w-full bg-primary text-text font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
+		@apply w-full bg-accent text-primary border-4 border-primary font-secondary text-xl rounded-2xl px-8 py-5 flex items-center justify-between;
 	}
-	/* Underlined text input field */
-	.underlined-input {
-		@apply w-full bg-transparent border-b border-text outline-none;
-	}
+
 	/* 'Toggle' text */
 	.toggle-text {
 		@apply h-6 w-6 rounded-full border-2 border-text flex items-center justify-center;
 	}
 	/* Bubble background (on most text blocks) */
 	.bubble {
-		@apply bg-primary/70 rounded-2xl shadow-md p-6 w-full min-w-0;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
+	}
+	.bubble-contents {
+		@apply gap-5 flex flex-col gap-4 items-center w-full;
 	}
 	/* Heading text used inside bubbles */
 	.bubble-header {
-		@apply font-primary text-text text-3xl text-center mb-6 leading-tight;
+		@apply font-primary text-primary text-3xl text-center mb-6 leading-tight;
 	}
-    
+
 	.header-thirdary {
 		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
 	}
-    
 
-	.input {
-		@apply bg-secondary/70 text-text font-secondary text-sm p-3 rounded-md shadow-sm w-full;
+	.input-field {
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-white self-center p-3 text-primary justify-between;
+		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
-
-	.card {
-		@apply bg-primary/70 rounded-2xl p-6 flex gap-4 justify-between items-start shadow-sm;
-	}
-
-	.vote-yes {
-		@apply bg-green-500 text-white;
-	}
-
-	.vote-no {
-		@apply bg-red-500 text-white;
+	.input-field .underlined-input {
+		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }
 

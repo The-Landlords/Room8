@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { API_BASE } from "../config";
-import List from "../components/list";
+
 import AddOverlay from "../components/addOverlay";
+import Header from "../components/header";
+
+import BaseList from "../components/baseList";
 
 type Grocery = {
 	_id: string;
@@ -22,17 +25,7 @@ export default function GroceryPage() {
 	const [quantity, setQuantity] = useState("1");
 	const [price, setPrice] = useState("");
 
-	const navigate = useNavigate();
 	const { username = "", homeCode = "" } = useParams();
-
-	function formatGrocery(grocery: Grocery) {
-		const priceText =
-			grocery.price === undefined
-				? ""
-				: ` - $${grocery.price.toFixed(2)}`;
-
-		return `${grocery.title} - Qty: ${grocery.quantity}${priceText}`;
-	}
 
 	function resetGroceryForm() {
 		setQuantity("1");
@@ -134,19 +127,8 @@ export default function GroceryPage() {
 	}, [username, homeCode]);
 
 	return (
-		<div>
-			<div className="relative mb-4 pt-2">
-				<button
-					onClick={() => navigate(-1)}
-					className="button absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 text-2xl"
-				>
-					←
-				</button>
-
-				<div className="header mx-auto w-fit px-8 py-3 text-center">
-					Grocery
-				</div>
-			</div>
+		<div className="flex flex-col items-center-safe">
+			<Header title="Groceries" homeCode={homeCode} />
 
 			<AddOverlay
 				isOpen={showAddOverlay}
@@ -161,7 +143,7 @@ export default function GroceryPage() {
 				<input
 					type="number"
 					placeholder="Quantity"
-					className="input"
+					className="input-field"
 					value={quantity}
 					min="1"
 					step="1"
@@ -171,7 +153,7 @@ export default function GroceryPage() {
 				<input
 					type="number"
 					placeholder="Price, optional"
-					className="input"
+					className="input-field"
 					value={price}
 					min="0"
 					step="0.01"
@@ -179,18 +161,33 @@ export default function GroceryPage() {
 				/>
 			</AddOverlay>
 
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] max-h-[70vh] overflow-y-auto bg-primary/70 p-6">
-				<List
-					item="Grocery"
-					items={groceries}
-					handleAddClick={() => setShowAddOverlay(true)}
-					handleRemoveClick={handleRemoveGrocery}
-					getKey={(grocery) => grocery._id}
-					renderItem={(grocery) => (
-						<span>{formatGrocery(grocery)}</span>
-					)}
-				/>
-			</div>
+			<BaseList
+				title="Current Groceries"
+				items={groceries}
+				getKey={(grocery) => grocery._id}
+				handleAddClick={() => setShowAddOverlay(true)}
+				handleRemoveClick={(grocery) => handleRemoveGrocery(grocery)}
+				className="panel pb-6"
+				addMinus={true}
+				emptyMessage="No Groceries"
+				renderItem={(grocery) => (
+					<div className="flex items-center w-full gap-4">
+						<span className="flex-1 text-left truncate">
+							{grocery.title}
+						</span>
+
+						<span className="flex-1 text-center">
+							Qty: {grocery.quantity}
+						</span>
+
+						<span className="flex-1 text-right">
+							{grocery.price === undefined
+								? ""
+								: `$${grocery.price.toFixed(2)}`}
+						</span>
+					</div>
+				)}
+			/>
 		</div>
 	);
 }
