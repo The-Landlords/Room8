@@ -1,5 +1,7 @@
 // DeleteVotePanel.tsx
 
+import Overlay from "./overlay";
+
 interface Vote {
 	voteId: string;
 	vote: "YES" | "NO";
@@ -36,23 +38,23 @@ export default function DeleteVotePanel({
 	const isPending = deleteStatus === "PENDING" && !isRejected;
 
 	return (
-		<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-			<div className="bg-white p-6 rounded-2xl w-[400px] text-center">
-				<h2 className="text-lg mb-3">Vote to delete this rule</h2>
+		<Overlay isOpen={true} onClose={onCancel}>
+			<div className="text-center">
+				<h2 className="header-secondary">Vote to delete this rule</h2>
 
 				{isRejected && (
-					<p className="text-red-600 font-semibold mb-2">
+					<p className="text-primary font-primary mb-2">
 						Delete request rejected
 					</p>
 				)}
 
 				{isPending && (
-					<p className="text-yellow-600 mb-2">
+					<p className="text-primary font-primary">
 						Waiting for unanimous approval
 					</p>
 				)}
 
-				<p className="text-sm mb-5 text-text/70">
+				<p className="text-sm mb-5 text-primary font-secondary">
 					YES {yes} | NO {no} | Total Roommates {totalResidents}
 				</p>
 
@@ -63,8 +65,8 @@ export default function DeleteVotePanel({
 						onClick={() => onVote(ruleId, "YES")}
 						className={`button px-4 py-2 ${
 							myVote === "YES"
-								? "bg-green-500 text-white border-green-600"
-								: "bg-gray-200 hover:bg-gray-300"
+								? "bg-accent text-primary border-primary"
+								: "bg-secondary hover:bg-accent border-primary text-primary"
 						}`}
 					>
 						✓
@@ -76,8 +78,8 @@ export default function DeleteVotePanel({
 						onClick={() => onVote(ruleId, "NO")}
 						className={`button px-4 py-2 ${
 							myVote === "NO"
-								? "bg-red-500 text-white border-red-600"
-								: "bg-gray-200 hover:bg-gray-300"
+								? "bg-accent text-primary border-primary"
+								: "bg-secondary hover:bg-accent border-primary text-primary"
 						}`}
 					>
 						X
@@ -88,12 +90,12 @@ export default function DeleteVotePanel({
 					<button
 						type="button"
 						onClick={onCancel}
-						className="text-sm text-gray-600 hover:text-black transition"
+						className="button self-center"
 					>
 						Cancel
 					</button>
 				</div>
 			</div>
-		</div>
+		</Overlay>
 	);
 }

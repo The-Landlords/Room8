@@ -30,15 +30,100 @@ export const mockHome = {
 	homeCode: "ABC123",
 	homeName: "Test House",
 	address: "123 Main St",
+	relationship: "RESIDENT",
 };
 
 export const mockResidents = [
-	{ _id: "resident-1", fullName: "bob joe" },
-	{ _id: "resident-2", fullName: "Bar B Ben" },
-	{ _id: "resident-3", fullName: "mike ty" },
-	{ _id: "resident-4", fullName: "michael" },
-	{ _id: "resident-5", fullName: "rule" },
-	{ _id: "resident-6", fullName: "subway sandwitch" },
+	{
+		_id: "resident-1",
+		fullName: "bob joe",
+		allergens: ["peanuts"],
+		likes: ["board games"],
+		dislikes: ["late dishes"],
+		phone: "+15555550001",
+		pronouns: "he/him",
+		DOB: "1999-04-03",
+		emergencyContact: {
+			name: "Bobby Contact",
+			phone: "+15555551001",
+			relationship: "Sibling",
+		},
+	},
+	{
+		_id: "resident-2",
+		fullName: "Bar B Ben",
+		allergens: ["dairy"],
+		likes: ["gardening"],
+		dislikes: ["loud music"],
+		phone: "+15555550002",
+		pronouns: "they/them",
+		DOB: "2001-07-12",
+		emergencyContact: {
+			name: "Ben Contact",
+			phone: "+15555551002",
+			relationship: "Friend",
+		},
+	},
+	{
+		_id: "resident-3",
+		fullName: "mike ty",
+		allergens: [],
+		likes: ["movies"],
+		dislikes: ["trash duty"],
+		phone: "+15555550003",
+		pronouns: "he/him",
+		DOB: "2000-01-20",
+		emergencyContact: {
+			name: "Mike Contact",
+			phone: "+15555551003",
+			relationship: "Parent",
+		},
+	},
+	{
+		_id: "resident-4",
+		fullName: "michael",
+		allergens: ["shellfish"],
+		likes: ["running"],
+		dislikes: ["cold coffee"],
+		phone: "+15555550004",
+		pronouns: "he/they",
+		DOB: "1998-10-08",
+		emergencyContact: {
+			name: "Michael Contact",
+			phone: "+15555551004",
+			relationship: "Partner",
+		},
+	},
+	{
+		_id: "resident-5",
+		fullName: "rule",
+		allergens: [],
+		likes: ["quiet hours"],
+		dislikes: ["missed rent"],
+		phone: "+15555550005",
+		pronouns: "she/her",
+		DOB: "2002-02-14",
+		emergencyContact: {
+			name: "Rule Contact",
+			phone: "+15555551005",
+			relationship: "Friend",
+		},
+	},
+	{
+		_id: "resident-6",
+		fullName: "subway sandwitch",
+		allergens: ["gluten"],
+		likes: ["meal prep"],
+		dislikes: ["empty fridge"],
+		phone: "+15555550006",
+		pronouns: "they/them",
+		DOB: "1997-12-02",
+		emergencyContact: {
+			name: "Subway Contact",
+			phone: "+15555551006",
+			relationship: "Sibling",
+		},
+	},
 ];
 
 export const mockGuests = [TESTUSER5];
@@ -222,11 +307,23 @@ export function mockApiForTestUser5() {
 			end: "2026-09-30T09:00:00",
 			location: "Kitchen",
 		},
-	});
+	}).as("addEvent");
+	cy.intercept("PATCH", api("/events/*"), (req) => {
+		const body =
+			typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+		req.reply({
+			statusCode: 200,
+			body: {
+				_id: "event-1",
+				...body,
+			},
+		});
+	}).as("updateEvent");
 	cy.intercept("DELETE", api("/events/*"), {
 		statusCode: 200,
 		body: { message: "Event removed" },
-	});
+	}).as("deleteEvent");
 	cy.intercept("GET", api(`/${mockHome.homeCode}/chores`), {
 		statusCode: 200,
 		body: mockChores,
@@ -238,7 +335,7 @@ export function mockApiForTestUser5() {
 	cy.intercept("DELETE", api(`/${mockHome.homeCode}/chores/*`), {
 		statusCode: 200,
 		body: { message: "Chore removed" },
-	});
+	}).as("deleteChore");
 	cy.intercept("GET", api(`/${mockHome.homeCode}/grocery`), {
 		statusCode: 200,
 		body: mockGroceries,
@@ -257,11 +354,23 @@ export function mockApiForTestUser5() {
 	cy.intercept("DELETE", api(`/${mockHome.homeCode}/grocery/*`), {
 		statusCode: 200,
 		body: { message: "Grocery removed" },
-	});
+	}).as("deleteGrocery");
 	cy.intercept("GET", api(`/auth/homeDisplay/me/${mockHome.homeCode}`), {
 		statusCode: 200,
 		body: mockHomeDisplay,
 	}).as("getHomeDisplay");
+	cy.intercept("GET", api(`/guest-ascension/home/${mockHome.homeCode}`), {
+		statusCode: 200,
+		body: [
+			{
+				_id: "guest-ascension-1",
+				user: TESTUSER5,
+				fullName: TESTUSER5.fullName,
+				status: "PENDING",
+				votes: [],
+			},
+		],
+	}).as("getGuestAscensionRequests");
 }
 
 export function visitWithMockApi(path = "/") {

@@ -16,16 +16,11 @@ jobs:
               with:
                   node-version: "20"
 
-            - name: Install Root Dependencies
-              run: npm install
+            - name: Install workspace dependencies
+              run: npm ci
+
             - name: Install concurrently
               run: npm install -g concurrently
-
-            - name: Install Backend Dependencies
-              run: npm install --prefix packages/express_backend
-
-            - name: Install Frontend Dependencies
-              run: npm install --prefix packages/react-frontend
 
             - name: Install Cypress system dependencies
               run: |
@@ -40,11 +35,11 @@ jobs:
                     libxss1 \
                     libasound2t64 || sudo apt-get install -y libasound2
 
-
             - name: Run Cypress E2E
               run: |
-                npx concurrently --kill-others --success first -c green,magenta \
-                  "npm run dev" \
+                  npx start-server-and-test \
+                  "npm -w packages/react-frontend run dev -- --host 127.0.0.1" \
+                  http://localhost:5173 \
                   "npx cypress run --e2e"
 
             - name: Cleanup

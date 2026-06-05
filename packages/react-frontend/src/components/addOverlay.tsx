@@ -60,7 +60,7 @@ export default function AddOverlay({
 				<input
 					type="text"
 					placeholder={placeholder}
-					className="input"
+					className="input-field"
 					value={value}
 					required
 					onChange={(e) => setValue(e.target.value)}

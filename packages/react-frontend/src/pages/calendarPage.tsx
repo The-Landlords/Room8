@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import List from "../components/list";
+
 import Overlay from "../components/overlay";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faClock,
@@ -13,15 +13,17 @@ import AddEventOverlay from "../components/addEventOverlay";
 import RemoveEventOverlay from "../components/removeEventOverlay";
 import EditEventOverlay from "../components/EditEventOverlay";
 import { API_BASE } from "../config";
+import Header from "../components/header";
+import EventList from "../components/eventList";
 
 export default function CalendarPage() {
 	const [events, setEvents] = useState<any[]>([]);
-	const [homeName, setHomeName] = useState("");
+
 	const [overlayOpen, setOverlayOpen] = useState(false);
 	const [addState, setAddState] = useState("Base");
 	const [eventDelete, setEventDelete] = useState<any>();
 	const { homeCode } = useParams();
-	const navigate = useNavigate();
+
 	const [eventEdit, setEventEdit] = useState<any>(null);
 	const [showUpcoming, setShowUpcoming] = useState(true);
 	const [showPast, setShowPast] = useState(false);
@@ -75,8 +77,6 @@ export default function CalendarPage() {
 
 		const data = await homeObject.json();
 		const homeObjectId = data._id;
-
-		setHomeName(data.homeName);
 
 		fetch(`${API_BASE}/homeId/${homeObjectId}/events/`, {
 			credentials: "include",
@@ -149,16 +149,8 @@ export default function CalendarPage() {
 		</div>
 	);
 	return (
-		<div>
-			<button
-				type="button"
-				onClick={() => navigate(-1)}
-				className="button"
-			>
-				← Back
-			</button>
-			<h1 className="header">Events for {homeName}</h1>
-
+		<div className="flex flex-col items-center">
+			<Header title="Calendar" homeCode={homeCode} />
 			<Overlay isOpen={overlayOpen} onClose={() => handleClose()}>
 				{addState === "Add" && (
 					<AddEventOverlay
@@ -193,76 +185,90 @@ export default function CalendarPage() {
 					/>
 				)}
 			</Overlay>
+			<div className="flex flex-col items-center animate-floatUp min-w-[60%] p-6">
+				{upcomingEvents.length > 0 && (
+					<>
+						<button
+							type="button"
+							className="header-secondary"
+							onClick={() => setShowUpcoming((prev) => !prev)}
+						>
+							<span className="header-secondary self-start-safe">
+								Upcoming Events
+							</span>
+							<FontAwesomeIcon
+								icon={showUpcoming ? faCaretDown : faCaretRight}
+								className="ml-2 transition-transform duration-200"
+							/>
+						</button>
 
-			{upcomingEvents.length > 0 && (
-				<>
-					<button
-						type="button"
-						className="header-secondary"
-						onClick={() => setShowUpcoming((prev) => !prev)}
-					>
-						<span>Upcoming Events</span>
-						<FontAwesomeIcon
-							icon={showUpcoming ? faCaretDown : faCaretRight}
-							className="ml-2 transition-transform duration-200"
-						/>
-					</button>
+						{showUpcoming && (
+							<EventList
+								items={upcomingEvents}
+								handleAddClick={handleAddClick}
+								handleRemoveClick={(event) =>
+									handleRemoveClick(event)
+								}
+								handleEditClick={(event) =>
+									handleEditClick(event)
+								}
+								getKey={(event) => event._id}
+								renderItem={renderItem}
+								getEventId={(event) => event._id}
+								className="panel"
+							/>
+						)}
+					</>
+				)}
 
-					{showUpcoming && (
-						<List
-							item="Events"
-							items={upcomingEvents}
-							handleAddClick={handleAddClick}
-							handleRemoveClick={handleRemoveClick}
-							handleEditClick={handleEditClick}
-							getKey={(event) => event._id}
-							renderItem={renderItem}
-							eventIds={upcomingEvents.map((e) => e._id)}
-						/>
-					)}
-				</>
-			)}
+				{pastEvents.length > 0 && (
+					<>
+						<button
+							type="button"
+							className="header-secondary"
+							onClick={() => setShowPast((prev) => !prev)}
+						>
+							<span className="header-secondary self-start-safe">
+								Past Events
+							</span>
+							<FontAwesomeIcon
+								icon={showPast ? faCaretDown : faCaretRight}
+								className="ml-2 transition-transform duration-200"
+							/>
+						</button>
 
-			{pastEvents.length > 0 && (
-				<>
-					<button
-						type="button"
-						className="header-secondary"
-						onClick={() => setShowPast((prev) => !prev)}
-					>
-						<span>Past Events</span>
-						<FontAwesomeIcon
-							icon={showPast ? faCaretDown : faCaretRight}
-							className="ml-2 transition-transform duration-200"
-						/>
-					</button>
+						{showPast && (
+							<EventList
+								items={pastEvents}
+								handleAddClick={handleAddClick}
+								handleRemoveClick={(event) =>
+									handleRemoveClick(event)
+								}
+								handleEditClick={(event) =>
+									handleEditClick(event)
+								}
+								getKey={(event) => event._id}
+								renderItem={renderItem}
+								getEventId={(event) => event._id}
+								className="panel"
+							/>
+						)}
+					</>
+				)}
 
-					{showPast && (
-						<List
-							item="Events"
-							items={pastEvents}
-							handleAddClick={handleAddClick}
-							handleRemoveClick={handleRemoveClick}
-							handleEditClick={handleEditClick}
-							getKey={(event) => event._id}
-							renderItem={renderItem}
-							eventIds={pastEvents.map((e) => e._id)}
-						/>
-					)}
-				</>
-			)}
-
-			{events.length == 0 && (
-				<List<string>
-					item="Events"
-					items={["No Events available! Click below to add."]}
-					handleAddClick={handleAddClick}
-					handleRemoveClick={(event) => handleRemoveClick(event)}
-					handleEditClick={(event) => handleEditClick(event)}
-					getKey={(item) => item}
-					renderItem={(item) => <span>{item}</span>}
-				/>
-			)}
+				{events.length == 0 && (
+					<EventList
+						items={[]}
+						handleAddClick={handleAddClick}
+						getKey={(event) => event._id}
+						renderItem={renderItem}
+						getEventId={(event) => event._id}
+						className="panel"
+						handleRemoveClick={() => {}}
+						handleEditClick={() => {}}
+					/>
+				)}
+			</div>
 		</div>
 	);
 }

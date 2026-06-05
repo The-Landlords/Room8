@@ -417,59 +417,44 @@ export default function UserSetting() {
 	}
 
 	return (
-		<div className="settings-background">
-			{/* HEADER */}
-			<header className="w-full flex justify-center pt-8">
-				<h1 className="header">User Settings</h1>
+		<div>
+			<header className="header-wrapper">
+				{/* left controls */}
+				<div className="flex justify-start">
+					<button
+						type="button"
+						onClick={() => navigate(-1)}
+						className="button absolute left-6 top-8"
+					>
+						← Back
+					</button>
+				</div>
+				<h1 className="header text-center px-14 ">
+					Welcome {user?.username ?? "User"}
+				</h1>
+				<button
+					type="button"
+					onClick={handleSignOut}
+					className="absolute button max-h-[30%] min-w-[10%] max-w-[15%] right-6 top-8  flex items-center justify-center p-2"
+				>
+					Sign Out
+				</button>
 			</header>
 
 			{/* TOP BAR */}
 			<div className="w-full flex justify-center px-6 mt-8">
-				<div className="w-full max-w-6xl grid grid-cols-4 items-center gap-6">
-					{/* left controls */}
-					<div className="flex justify-start">
-						<button
-							type="button"
-							onClick={() => navigate(`/homelist`)}
-							className="button h-14 w-14 flex items-center justify-center rounded-xl"
-						>
-							←
-						</button>
-					</div>
-
-					{/* center welcome */}
-					<div className="flex justify-center">
-						<div className="bg-primary/70 h-14 px-8 flex items-center justify-center rounded-xl shadow-md">
-							<div className="font-primary text-text text-2xl">
-								Welcome {user?.username ?? "User"}
-							</div>
-						</div>
-					</div>
-
-					{/* right save */}
-					<div className="flex justify-end">
-						<button
-							type="button"
-							disabled={
-								draft.phone.length > 0 &&
-								!isValidPhone(draft.phone)
-							}
-							onClick={saveProfile}
-							className="button h-14 px-6 rounded-xl"
-						>
-							Save Profile
-						</button>
-					</div>
-					{/* right sign out */}
-					<div className="flex justify-end">
-						<button
-							type="button"
-							onClick={handleSignOut}
-							className="button h-14 px-6 rounded-xl"
-						>
-							Sign Out
-						</button>
-					</div>
+				{/* right save */}
+				<div className="flex justify-end">
+					<button
+						type="button"
+						disabled={
+							draft.phone.length > 0 && !isValidPhone(draft.phone)
+						}
+						onClick={saveProfile}
+						className="button h-14 px-6 rounded-xl"
+					>
+						Save Profile
+					</button>
 				</div>
 			</div>
 
@@ -477,12 +462,12 @@ export default function UserSetting() {
 			<main className="flex-1 flex justify-center px-6 py-10">
 				<div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10">
 					{/* LEFT COLUMN */}
-					<div className="md:order-1 w-full min-w-0 flex flex-col gap-10 animate-floatUp">
+					<div className="md:order-1 w-full min-w-0 flex flex-col items-center gap-10 animate-floatUp">
 						{/*COLUMN MEMBERS*/}
 						<div className="bubble">
 							{/*HEADER*/}
 							<h2 className="bubble-header">General</h2>
-							<div className="space-y-5">
+							<div className="bubble-contents">
 								<InputField
 									fieldName={settingsFields.fullName}
 									state={{ draft, setDraft }}
@@ -491,7 +476,7 @@ export default function UserSetting() {
 									fieldName={settingsFields.allergens}
 									state={{ draft, setDraft }}
 								/>
-								<p className="flex justify-center w-full text-text">
+								<p className="flex justify-center w-full text-primary">
 									This information will be public to both
 									residents and guests.
 								</p>
@@ -501,7 +486,7 @@ export default function UserSetting() {
 						<div className="bubble">
 							{/*HEADER*/}
 							<h2 className="bubble-header">Personal</h2>
-							<div className="space-y-5">
+							<div className="bubble-contents">
 								<InputField
 									fieldName={settingsFields.DOB}
 									state={{ draft, setDraft }}
@@ -536,7 +521,7 @@ export default function UserSetting() {
 						<div className="bubble">
 							{/*HEADER*/}
 							<h2 className="bubble-header">Emergency</h2>
-							<div className="space-y-5">
+							<div className="bubble-contents">
 								<InputField
 									fieldName={settingsFields.emergencyContact}
 									state={{ draft, setDraft }}
@@ -553,7 +538,7 @@ export default function UserSetting() {
 						<div className="bubble">
 							{/*HEADER*/}
 							<h2 className="bubble-header">Interests</h2>
-							<div className="space-y-5">
+							<div className="bubble-contents">
 								<InputField
 									fieldName={settingsFields.likes}
 									state={{ draft, setDraft }}
@@ -578,7 +563,7 @@ export default function UserSetting() {
 							{/*HEADER*/}
 							<h2 className="bubble-header">Display</h2>
 
-							<div className="space-y-5">
+							<div className="bubble-contents">
 								<InputField
 									fieldName={settingsFields.textSize}
 									state={{ draft, setDraft }}

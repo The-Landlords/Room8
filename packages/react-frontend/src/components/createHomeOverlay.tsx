@@ -7,9 +7,10 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import { Fill, Stroke, Style, Text } from "ol/style";
+import { Icon, Style } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
 import Zoom from "ol/control/Zoom";
+
 import { API_BASE } from "../config";
 
 /*Component is a form field to create a new home object */
@@ -35,6 +36,17 @@ export default function CreateHomeOverlay({ onBack, onAdd }: CreateHomeProps) {
 		lon: 0,
 		lat: 0,
 	});
+
+	const pinSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 384 512">
+	<path
+			fill="#F7FFE3"
+			stroke="#96C3E3"
+			stroke-width="20"
+			d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0z"
+		/>
+		<circle cx="192" cy="192" r="64" fill="#96C3E3"/>
+	</svg>`;
+
 	const generateRandomString = (length: number) => {
 		const chars =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -211,12 +223,12 @@ export default function CreateHomeOverlay({ onBack, onAdd }: CreateHomeProps) {
 		});
 
 		const markerStyle = new Style({
-			text: new Text({
-				text: "\uf3c5",
-				font: '900 30px "Font Awesome 5 Free"',
-				fill: new Fill({ color: "#b5a398" }),
-				stroke: new Stroke({ color: "#584945", width: 2 }),
-				textBaseline: "bottom",
+			image: new Icon({
+				src: `data:image/svg+xml;utf8,${encodeURIComponent(pinSvg)}`,
+				scale: 1,
+				anchor: [0.5, 1],
+				anchorXUnits: "fraction",
+				anchorYUnits: "fraction",
 			}),
 		});
 
@@ -228,21 +240,19 @@ export default function CreateHomeOverlay({ onBack, onAdd }: CreateHomeProps) {
 	}, [coords]);
 
 	return (
-		<div className="flex flex-col relative  max-h-150 overflow-auto gap-1 animate-floatUp">
+		<div className="flex flex-col relative max-h-150 overflow-auto gap-1 animate-floatUp">
 			<button
 				className="button self-start-safe w-15 "
 				onClick={() => onBack("Base")}
 			>
 				←
 			</button>
-			<h1 className="header-secondary self-center bg-primary/70 rounded-lg shadow-md">
-				Create Home
-			</h1>
-			<h2 className="header-thirdary">Home Name : </h2>
+			<h1 className="header-secondary self-center-safe">Create Home</h1>
+			<h2 className="header-secondary">Home Name : </h2>
 			<input
 				type="text"
 				placeholder="Home Name"
-				className="input"
+				className="input-field self-start"
 				onChange={(e) => setName(e.target.value)}
 			/>
 			<h2 className="header-thirdary">Home Address : </h2>
@@ -250,25 +260,25 @@ export default function CreateHomeOverlay({ onBack, onAdd }: CreateHomeProps) {
 				<input
 					type="text"
 					placeholder="Street"
-					className="input"
+					className="input-field"
 					onBlur={(e) => setStreet(e.target.value)}
 				/>
 				<input
 					type="text"
 					placeholder="City"
-					className="input"
+					className="input-field"
 					onBlur={(e) => setCity(e.target.value)}
 				/>
 				<input
 					type="text"
 					placeholder="State"
-					className="input"
+					className="input-field"
 					onBlur={(e) => setState(e.target.value)}
 				/>
 				<input
 					type="text"
 					placeholder="Postal Code"
-					className="input"
+					className="input-field"
 					onBlur={(e) => setPostalCode(e.target.value)}
 				/>
 			</div>

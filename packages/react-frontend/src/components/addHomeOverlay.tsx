@@ -54,7 +54,7 @@ export default function AddHomeOverlay({ onBack, onAdd }: AddHomeProps) {
 			<h1 className="header-secondary self-center">Add Home</h1>
 			<input
 				placeholder="Home Id"
-				className="input"
+				className="input-field self-center-safe"
 				onChange={(e) => setHomeCode(e.target.value)}
 			/>
 			{errorMsg && (

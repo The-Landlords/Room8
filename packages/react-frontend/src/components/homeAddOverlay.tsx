@@ -11,9 +11,7 @@ export default function HomeAddOverlay({ onPick }: HomeAddProps) {
 			>
 				Add Home
 			</button>
-			<p className=" font-secondary color-secondary italic self-center">
-				Or
-			</p>
+			<p className=" text-primary  italic self-center">Or</p>
 			<button
 				className="button self-center"
 				onClick={() => onPick("Create")}

@@ -1,289 +1,228 @@
 import { useState, useEffect } from "react";
-import List from "../components/list";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { API_BASE } from "../config";
 import GuestVoteOverlay from "../components/GuestVoteOverlay";
 import Overlay from "../components/overlay";
+import Cards from "../components/userCards";
+import Header from "../components/header";
+
+function formatDob(dob?: string): string {
+	if (!dob) return "";
+
+	const date = new Date(dob);
+
+	if (Number.isNaN(date.getTime())) return "";
+
+	const months = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
+
+	const month = months[date.getUTCMonth()];
+	const endings = ["th", "st", "nd", "rd"];
+	const dayNum = date.getUTCDate();
+	const ending =
+		dayNum % 10 <= 3 && dayNum % 100 !== 11
+			? endings[dayNum % 10]
+			: endings[0];
+	const day = String(date.getUTCDate()).padStart(2, "0");
+
+	return `${month} ${day}${ending}`;
+}
+
+type User = {
+	_id: string;
+	fullName: string;
+	allergens: string[];
+	likes: string[];
+	dislikes: string[];
+	phone?: string;
+	pronouns?: string;
+	DOB?: string;
+	emergencyContact?: {
+		name: string;
+		phone: string;
+		relationship: string;
+	};
+};
 
 export default function Residents() {
-	const [residents, setResidents] = useState<any[]>([]);
-	const [guests, setGuests] = useState<any[]>([]);
+	const [residents, setResidents] = useState<User[]>([]);
+	const [guests, setGuests] = useState<User[]>([]);
 	const [relationship, setRelationship] = useState<string>("");
+
 	const { homeCode } = useParams();
+
 	const [openVotePanel, setOpenVotePanel] = useState(false);
-	const navigate = useNavigate();
+
+	function normalizeUsers(data: any): User[] {
+		if (!Array.isArray(data)) return [];
+
+		return data
+			.filter((u) => u && u._id)
+			.map((u) => ({
+				_id: String(u._id),
+				fullName: String(u.fullName ?? "Unknown User"),
+				phone: String(u.phone ?? ""),
+				pronouns: String(u.pronouns ?? ""),
+				DOB: String(u.DOB ?? ""),
+				emergencyContact: u.emergencyContact
+					? {
+							name: String(u.emergencyContact.name ?? ""),
+							phone: String(u.emergencyContact.phone ?? ""),
+							relationship: String(
+								u.emergencyContact.relationship ?? ""
+							),
+						}
+					: undefined,
+				allergens: Array.isArray(u.allergens) ? u.allergens : [],
+				likes: Array.isArray(u.likes) ? u.likes : [],
+				dislikes: Array.isArray(u.dislikes) ? u.dislikes : [],
+			}));
+	}
+
 	async function fetchResidents() {
 		if (!homeCode) return;
 
-		fetch(`${API_BASE}/auth/residents/${homeCode}`, {
-			credentials: "include",
-		})
-			.then((res) => {
-				if (!res.ok) throw new Error("Residents not found ");
-				return res.json();
-			})
-			.then((data) => setResidents(data))
-			.catch((err) => {
-				console.error(err);
-				setResidents([]);
+		try {
+			const res = await fetch(`${API_BASE}/auth/residents/${homeCode}`, {
+				credentials: "include",
 			});
+
+			const data = await res.json();
+			setResidents(normalizeUsers(data));
+		} catch {
+			setResidents([]);
+		}
 	}
+
 	async function fetchGuests() {
 		if (!homeCode) return;
 
-		fetch(`${API_BASE}/auth/guests/me/${homeCode}`, {
-			credentials: "include",
-		})
-			.then((res) => {
-				if (!res.ok)
-					console.log("Guests not found for home code: " + homeCode);
-				return res.json();
-			})
-			.then((data) => setGuests(data))
-			.catch((err) => {
-				console.error(err);
-				setGuests([]);
+		try {
+			const res = await fetch(`${API_BASE}/auth/guests/me/${homeCode}`, {
+				credentials: "include",
 			});
+
+			const data = await res.json();
+			setGuests(normalizeUsers(data));
+		} catch {
+			setGuests([]);
+		}
 	}
+
 	async function fetchRelationship() {
 		if (!homeCode) return;
 
-		fetch(`${API_BASE}/auth/relationship/me/${homeCode}`, {
-			credentials: "include",
-		})
-			.then((res) => {
-				if (!res.ok)
-					console.log(
-						"Relationship not found for home code: " + homeCode
-					);
-				return res.json();
-			})
-			.then((data) => setRelationship(data.relationship))
-			.catch((err) => {
-				console.error(err);
-				setRelationship("");
-			});
-		console.log("Relationship: " + relationship);
+		try {
+			const res = await fetch(
+				`${API_BASE}/auth/relationship/me/${homeCode}`,
+				{ credentials: "include" }
+			);
+
+			const data = await res.json();
+			setRelationship(String(data?.relationship ?? ""));
+		} catch {
+			setRelationship("");
+		}
 	}
+
 	useEffect(() => {
-		fetchResidents().catch(console.error);
-		fetchGuests().catch(console.error);
-		fetchRelationship().catch(console.error);
+		fetchResidents();
+		fetchGuests();
+		fetchRelationship();
 	}, [homeCode]);
+
 	return (
 		<div className="flex flex-col">
-			<div className="flex justify-start">
-				<button
-					type="button"
-					onClick={() => navigate(`/homelist/`)}
-					className="button h-14 w-14 flex items-center justify-center rounded-xl"
-				>
-					←
-				</button>
-			</div>
-			{openVotePanel && (
+			{openVotePanel && homeCode && (
 				<Overlay
 					isOpen={openVotePanel}
 					onClose={() => setOpenVotePanel(false)}
 				>
-					<GuestVoteOverlay
-						guests={guests}
-						homeCode={homeCode || ""}
-						username={""}
-					/>
+					<GuestVoteOverlay homeCode={homeCode} />
 				</Overlay>
 			)}
-			<div className="flex flex-col items-center">
-				<h1 className="header ">Residents</h1>
-				<List
-					item=""
-					items={residents}
-					handleAddClick={() => {}}
-					handleRemoveClick={() => {}}
-					renderItem={(resident) => (
-						<div className="flex flex-row gap-4">
-							<h1 className="header-secondary">
-								{resident.fullName}
-							</h1>
-							{resident.allergens &&
-							resident.allergens.length > 0 ? (
-								<p>
-									Allergies:
-									{resident.allergens?.join(", ") || "None"}
-								</p>
-							) : (
-								<p />
-							)}
 
-							{resident.pronouns ? (
-								<div>
-									<p>
-										Dislikes: {resident.pronouns || "N/A"}
-									</p>
-								</div>
-							) : (
-								<p />
-							)}
-							{resident.DOB ? (
-								<div>
-									<p>
-										Date of Birth: {resident.DOB || "N/A"}
-									</p>
-								</div>
-							) : (
-								<p />
-							)}
-							{resident.likes ? (
-								<div>
-									<p>
-										Likes:{" "}
-										{resident.likes?.join(", ") || "N/A"}
-									</p>
-								</div>
-							) : (
-								<p />
-							)}
-							{resident.dislikes ? (
-								<div>
-									<p>
-										Dislikes:{" "}
-										{resident.dislikes?.join(", ") || "N/A"}
-									</p>
-								</div>
-							) : (
-								<p />
-							)}
-							{resident.emergencyContact ? (
-								<div>
-									<p>
-										Emergency Contact Name:{" "}
-										{resident.emergencyContact.name ||
-											"N/A"}
-									</p>
-									<p>
-										Emergency Contact Phone:{" "}
-										{resident.emergencyContact.phone ||
-											"N/A"}
-									</p>
-									<p>
-										Emergency Contact Relationship:{" "}
-										{resident.emergencyContact
-											.relationship || "N/A"}
-									</p>
-								</div>
-							) : (
-								<p />
-							)}
-						</div>
-					)}
-					getKey={(resident) => resident._id}
-					homeCode={homeCode ? [homeCode] : undefined}
+			<div className="flex flex-col items-center justify-center">
+				<Header title="Residents" homeCode={homeCode} />
+				<Cards
+					items={residents}
+					getKey={(user) => user._id}
+					getTitle={(user) => user.fullName}
+					getDetails={(user) => [
+						{
+							label: "Allergens",
+							value: user.allergens.join(", ") || "",
+						},
+						{ label: "Phone", value: user.phone || "" },
+						{ label: "Pronouns", value: user.pronouns || "" },
+						{ label: "Birthday", value: formatDob(user.DOB) || "" },
+						{
+							label: "Emergency Contact",
+							value: user.emergencyContact
+								? `${user.emergencyContact.name} (${user.emergencyContact.relationship}) - ${user.emergencyContact.phone}`
+								: "",
+						},
+						{ label: "Likes", value: user.likes?.join(", ") || "" },
+						{
+							label: "Dislikes",
+							value: user.dislikes?.join(", ") || "",
+						},
+					]}
 				/>
 			</div>
-			{guests.length > 0 ? (
-				<div className="flex flex-col items-center">
-					<h1 className="header ">Guests</h1>
-					<List
-						item="Guests"
-						items={guests}
-						handleAddClick={() => {}}
-						handleRemoveClick={() => {}}
-						renderItem={(guest) => (
-							<div className="flex flex-row gap-4">
-								<h1 className="header-secondary">
-									{guest.fullName}
-								</h1>
-								{guest.allergies &&
-								guest.allergies.length > 0 ? (
-									<p>
-										Allergies:{" "}
-										{guest.allergies.join(", ") || "None"}
-									</p>
-								) : (
-									<p />
-								)}
+			<div className="flex flex-col items-center justify-center gap-5">
+				<h1 className="header p-5">Guests</h1>
+				<Cards
+					items={guests}
+					getKey={(user) => user._id}
+					getTitle={(user) => user.fullName}
+					getDetails={(user) => [
+						{
+							label: "Allergens",
+							value: user.allergens.join(", ") || "",
+						},
+						{ label: "Phone", value: user.phone || "" },
+						{ label: "Pronouns", value: user.pronouns || "" },
+						{ label: "Birthday", value: formatDob(user.DOB) || "" },
+						{
+							label: "Emergency Contact",
+							value: user.emergencyContact
+								? `${user.emergencyContact.name} (${user.emergencyContact.relationship}) - ${user.emergencyContact.phone}`
+								: "",
+						},
+						{ label: "Likes", value: user.likes?.join(", ") || "" },
+						{
+							label: "Dislikes",
+							value: user.dislikes?.join(", ") || "",
+						},
+					]}
+					emptyMessage="No guests found."
+					className="mx-auto justify-items-center"
+				/>
 
-								{guest.pronouns ? (
-									<div>
-										<p>
-											Dislikes: {guest.pronouns || "N/A"}
-										</p>
-									</div>
-								) : (
-									<p />
-								)}
-								{guest.DOB ? (
-									<div>
-										<p>
-											Date of Birth: {guest.DOB || "N/A"}
-										</p>
-									</div>
-								) : (
-									<p />
-								)}
-								{guest.likes ? (
-									<div>
-										<p>
-											Likes:{" "}
-											{guest.likes?.join(", ") || "N/A"}
-										</p>
-									</div>
-								) : (
-									<p />
-								)}
-								{guest.dislikes ? (
-									<div>
-										<p>
-											Dislikes:{" "}
-											{guest.dislikes?.join(", ") ||
-												"N/A"}
-										</p>
-									</div>
-								) : (
-									<p />
-								)}
-								{guest.emergencyContact ? (
-									<div>
-										<p>
-											Emergency Contact Name:{" "}
-											{guest.emergencyContact.name ||
-												"N/A"}
-										</p>
-										<p>
-											Emergency Contact Phone:{" "}
-											{guest.emergencyContact.phone ||
-												"N/A"}
-										</p>
-										<p>
-											Emergency Contact Relationship:{" "}
-											{guest.emergencyContact
-												.relationship || "N/A"}
-										</p>
-									</div>
-								) : (
-									<p />
-								)}
-							</div>
-						)}
-						getKey={(guest) => guest._id}
-						homeCode={homeCode ? [homeCode] : undefined}
-					/>
-					{relationship === "RESIDENT" && (
-						<button
-							className="button"
-							onClick={() => {
-								setOpenVotePanel(true);
-							}}
-						>
-							Vote
-						</button>
-					)}
-				</div>
-			) : (
-				<p className="text-center mt-4">
-					No guests found for this home.
-				</p>
-			)}
+				{relationship === "RESIDENT" && guests.length != 0 && (
+					<button
+						className="button"
+						onClick={() => {
+							setOpenVotePanel(true);
+						}}
+					>
+						Vote
+					</button>
+				)}
+			</div>
 		</div>
 	);
 }

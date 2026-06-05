@@ -59,56 +59,64 @@ export default function AddEventOverlay({
 	}
 
 	return (
-		<form onSubmit={handleAddEvent} className="flex flex-col gap-4">
-			<h2>Add Event</h2>
+		<div>
+			<form
+				onSubmit={handleAddEvent}
+				className="flex flex-col gap-4 items-center-safe"
+			>
+				<h2 className="header-secondary">Add Event</h2>
 
-			<input
-				value={title}
-				onChange={(e) => setTitle(e.target.value)}
-				placeholder="Title"
-				className="font-secondary color-secondary"
-			/>
-			<input
-				value={description}
-				onChange={(e) => setDescription(e.target.value)}
-				placeholder="Description"
-				className="font-secondary color-secondary"
-			/>
+				<input
+					value={title}
+					onChange={(e) => setTitle(e.target.value)}
+					placeholder="Title"
+					className="input-field"
+				/>
+				<input
+					value={description}
+					onChange={(e) => setDescription(e.target.value)}
+					placeholder="Description"
+					className="input-field"
+				/>
 
-			<input
-				type="datetime-local"
-				value={start}
-				onChange={(e) => setStart(e.target.value)}
-				className="font-secondary color-secondary"
-			/>
+				<input
+					type="datetime-local"
+					value={start}
+					onChange={(e) => setStart(e.target.value)}
+					className="input-field"
+				/>
 
-			<input
-				type="datetime-local"
-				value={end}
-				min={start}
-				onChange={(e) => setEnd(e.target.value)}
-				className="font-secondary color-secondary"
-			/>
+				<input
+					type="datetime-local"
+					value={end}
+					min={start}
+					onChange={(e) => setEnd(e.target.value)}
+					className="input-field"
+				/>
 
-			<input
-				value={location}
-				onChange={(e) => setLocation(e.target.value)}
-				placeholder="Location"
-				className="font-secondary color-secondary"
-			/>
+				<input
+					value={location}
+					onChange={(e) => setLocation(e.target.value)}
+					placeholder="Location"
+					className="input-field"
+				/>
 
-			{errorMsg && (
-				<p className="text-red-500 text-sm text-center mt-2">
-					{errorMsg}
-				</p>
-			)}
-			{/* FIXME add status display bar of approval depending on persons in the house */}
+				{errorMsg && (
+					<p className="text-red-500 text-sm text-center mt-2">
+						{errorMsg}
+					</p>
+				)}
+				{/* FIXME add status display bar of approval depending on persons in the house */}
 
-			<div className="flex gap-2">
-				<button className="button self-center" onClick={handleAddEvent}>
-					Add Event
-				</button>
-			</div>
-		</form>
+				<div className="flex gap-2">
+					<button
+						className="button self-center"
+						onClick={handleAddEvent}
+					>
+						Add Event
+					</button>
+				</div>
+			</form>
+		</div>
 	);
 }

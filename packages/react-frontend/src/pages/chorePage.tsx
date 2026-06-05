@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import List from "../components/list";
+import { useParams } from "react-router-dom";
 import AddOverlay from "../components/addOverlay";
 import { API_BASE } from "../config";
+import Header from "../components/header";
+import BaseList from "../components/baseList";
 
 type Chore = {
 	_id: string;
@@ -14,7 +15,6 @@ export default function ChorePage() {
 	const [chores, setChores] = useState<Chore[]>([]);
 	const [showAddOverlay, setShowAddOverlay] = useState(false);
 	const { homeCode = "" } = useParams();
-	const navigate = useNavigate();
 
 	function formatChore(chore: Chore) {
 		return chore.assignedTo
@@ -92,34 +92,31 @@ export default function ChorePage() {
 
 	return (
 		<div>
-			<div className="relative mb-4 pt-2">
-				<button
-					onClick={() => navigate(-1)}
-					className="button absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 text-2xl"
-				>
-					←
-				</button>
-
-				<div className="header mx-auto w-fit px-8 py-3 text-center">
-					Chores
-				</div>
-			</div>
-
-			<div className="panel flex flex-col items-center animate-floatUp min-w-[380px] bg-primary/70 p-6">
-				<AddOverlay
-					isOpen={showAddOverlay}
-					title="Add Chore"
-					placeholder="enter text"
-					onSubmit={handleAddChore}
-					onClose={() => setShowAddOverlay(false)}
-				/>
-				<List
-					item="Chores"
+			<Header title="Chores" homeCode={homeCode} />
+			<AddOverlay
+				isOpen={showAddOverlay}
+				title="Add Chore"
+				placeholder="enter text"
+				onSubmit={handleAddChore}
+				onClose={() => setShowAddOverlay(false)}
+			/>
+			<div className="flex flex-col items-center animate-floatUp min-w-[60%] p-6">
+				<BaseList
+					title="Current Chores"
 					items={chores}
-					handleAddClick={() => setShowAddOverlay(true)}
-					handleRemoveClick={handleRemoveChore}
 					getKey={(chore) => chore._id}
-					renderItem={(chore) => <span>{formatChore(chore)}</span>}
+					handleAddClick={() => setShowAddOverlay(true)}
+					handleRemoveClick={(chore) => handleRemoveChore(chore)}
+					className="panel pb-6"
+					addMinus={true}
+					emptyMessage="No Chores"
+					renderItem={(chore) => (
+						<div className="flex items-center justify-between w-full">
+							<span className="flex flex-row gap-4">
+								{formatChore(chore)}
+							</span>
+						</div>
+					)}
 				/>
 			</div>
 		</div>
