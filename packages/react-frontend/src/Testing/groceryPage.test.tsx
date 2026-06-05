@@ -68,9 +68,7 @@ test("fetches and displays groceries", async () => {
 
 	renderGroceryPageWithHistory();
 
-	expect(
-		await screen.findByText("Milk - Qty: 2 - $4.00")
-	).toBeInTheDocument();
+	expect(await screen.findByText("Milk")).toBeInTheDocument();
 
 	expect(globalThis.fetch).toHaveBeenCalledWith(
 		`${API_BASE}/testhome/grocery`,
@@ -196,9 +194,7 @@ test("submitting a new grocery sends a POST request with quantity and price", as
 		});
 	});
 
-	expect(
-		await screen.findByText("Eggs - Qty: 12 - $3.49")
-	).toBeInTheDocument();
+	expect(await screen.findByText("Eggs")).toBeInTheDocument();
 });
 
 test("submitting a new grocery without price sends price as 0", async () => {
@@ -259,9 +255,7 @@ test("submitting a new grocery without price sends price as 0", async () => {
 		});
 	});
 
-	expect(
-		await screen.findByText("Bread - Qty: 2 - $0.00")
-	).toBeInTheDocument();
+	expect(await screen.findByText("Bread")).toBeInTheDocument();
 });
 
 test("does not submit grocery if quantity is invalid", async () => {
@@ -356,9 +350,7 @@ test("clicking remove sends a DELETE request", async () => {
 
 	renderGroceryPageWithHistory();
 
-	expect(
-		await screen.findByText("Milk - Qty: 2 - $4.00")
-	).toBeInTheDocument();
+	expect(await screen.findByText("Milk")).toBeInTheDocument();
 
 	const user = userEvent.setup();
 

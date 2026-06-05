@@ -109,7 +109,7 @@ export default function ChorePage() {
 					handleRemoveClick={(chore) => handleRemoveChore(chore)}
 					className="panel pb-6"
 					addMinus={true}
-					emptyMessage="No chores"
+					emptyMessage="No Chores"
 					renderItem={(chore) => (
 						<div className="flex items-center justify-between w-full">
 							<span className="flex flex-row gap-4">
