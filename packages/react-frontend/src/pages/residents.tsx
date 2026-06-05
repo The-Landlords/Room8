@@ -73,6 +73,18 @@ export default function Residents() {
 			.map((u) => ({
 				_id: String(u._id),
 				fullName: String(u.fullName ?? "Unknown User"),
+				phone: String(u.phone ?? ""),
+				pronouns: String(u.pronouns ?? ""),
+				DOB: String(u.DOB ?? ""),
+				emergencyContact: u.emergencyContact
+					? {
+							name: String(u.emergencyContact.name ?? ""),
+							phone: String(u.emergencyContact.phone ?? ""),
+							relationship: String(
+								u.emergencyContact.relationship ?? ""
+							),
+						}
+					: undefined,
 				allergens: Array.isArray(u.allergens) ? u.allergens : [],
 				likes: Array.isArray(u.likes) ? u.likes : [],
 				dislikes: Array.isArray(u.dislikes) ? u.dislikes : [],

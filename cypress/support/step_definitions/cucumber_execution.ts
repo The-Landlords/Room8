@@ -181,7 +181,8 @@ When("I use the page back button", () => {
 });
 
 When("I open guest voting", () => {
-	cy.contains("button", "Vote").click();
+	cy.contains("button", "Vote").scrollIntoView().should("be.visible").click();
+	cy.wait("@getGuestAscensionRequests");
 });
 
 When("I open the add rule dialog", () => {
@@ -432,15 +433,16 @@ Then("I should see residents and guests for the test home", () => {
 		cy.contains(resident.fullName).should("be.visible");
 	});
 	cy.contains(mockResidents[0].allergens[0]).should("be.visible");
-	cy.contains(mockResidents[0].phoneNumber).should("be.visible");
+	cy.contains(mockResidents[0].phone).should("be.visible");
 	cy.contains(mockGuests[0].fullName).should("be.visible");
 });
 
 Then("I should see guest voting controls", () => {
-	cy.contains("h2", "Vote on Guest Ascencion").should("be.visible");
+	cy.contains("h2", "Guest Ascension Votes").should("be.visible");
 	cy.contains(mockGuests[0].fullName).should("be.visible");
-	cy.contains("button", "Approve").should("be.visible");
-	cy.contains("button", "Reject").should("be.visible");
+	cy.contains("button", "YES").should("be.visible");
+	cy.contains("button", "NO").should("be.visible");
+	cy.contains("button", "Delete Request").should("be.visible");
 });
 
 Then("I should see the home's rules and statuses", () => {

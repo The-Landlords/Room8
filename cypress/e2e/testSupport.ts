@@ -12,7 +12,6 @@ export const TESTUSER5 = {
 	likes: [],
 	dislikes: [],
 	phone: "+15555555555",
-	phoneNumber: "+15555555555",
 	emergencyContact: {
 		name: "Emergency Contact",
 		phone: "+15555555556",
@@ -41,7 +40,7 @@ export const mockResidents = [
 		allergens: ["peanuts"],
 		likes: ["board games"],
 		dislikes: ["late dishes"],
-		phoneNumber: "+15555550001",
+		phone: "+15555550001",
 		pronouns: "he/him",
 		DOB: "1999-04-03",
 		emergencyContact: {
@@ -56,7 +55,7 @@ export const mockResidents = [
 		allergens: ["dairy"],
 		likes: ["gardening"],
 		dislikes: ["loud music"],
-		phoneNumber: "+15555550002",
+		phone: "+15555550002",
 		pronouns: "they/them",
 		DOB: "2001-07-12",
 		emergencyContact: {
@@ -71,7 +70,7 @@ export const mockResidents = [
 		allergens: [],
 		likes: ["movies"],
 		dislikes: ["trash duty"],
-		phoneNumber: "+15555550003",
+		phone: "+15555550003",
 		pronouns: "he/him",
 		DOB: "2000-01-20",
 		emergencyContact: {
@@ -86,7 +85,7 @@ export const mockResidents = [
 		allergens: ["shellfish"],
 		likes: ["running"],
 		dislikes: ["cold coffee"],
-		phoneNumber: "+15555550004",
+		phone: "+15555550004",
 		pronouns: "he/they",
 		DOB: "1998-10-08",
 		emergencyContact: {
@@ -101,7 +100,7 @@ export const mockResidents = [
 		allergens: [],
 		likes: ["quiet hours"],
 		dislikes: ["missed rent"],
-		phoneNumber: "+15555550005",
+		phone: "+15555550005",
 		pronouns: "she/her",
 		DOB: "2002-02-14",
 		emergencyContact: {
@@ -116,7 +115,7 @@ export const mockResidents = [
 		allergens: ["gluten"],
 		likes: ["meal prep"],
 		dislikes: ["empty fridge"],
-		phoneNumber: "+15555550006",
+		phone: "+15555550006",
 		pronouns: "they/them",
 		DOB: "1997-12-02",
 		emergencyContact: {
@@ -360,6 +359,18 @@ export function mockApiForTestUser5() {
 		statusCode: 200,
 		body: mockHomeDisplay,
 	}).as("getHomeDisplay");
+	cy.intercept("GET", api(`/guest-ascension/home/${mockHome.homeCode}`), {
+		statusCode: 200,
+		body: [
+			{
+				_id: "guest-ascension-1",
+				user: TESTUSER5,
+				fullName: TESTUSER5.fullName,
+				status: "PENDING",
+				votes: [],
+			},
+		],
+	}).as("getGuestAscensionRequests");
 }
 
 export function visitWithMockApi(path = "/") {
