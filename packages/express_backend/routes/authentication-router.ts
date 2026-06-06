@@ -16,8 +16,19 @@ import { getCurrentGroceryItemsByHome } from "../models/Grocery-Services.js";
 import { getHomeByCode } from "../models/Home-Services.js";
 import mongoose from "mongoose";
 import { requireAuth } from "./userSessionAuth.js";
+import { decryptField } from "../utils/encryption.js";
 
 export const authRouter = express.Router();
+
+function safeDecryptField(data: any): string {
+	if (!data) return "";
+
+	try {
+		return decryptField(data) ?? "";
+	} catch {
+		return "";
+	}
+}
 
 function filterResidents(residents: any[], userOneRelation: string) {
 	return residents.map((resident) => {
@@ -26,7 +37,7 @@ function filterResidents(residents: any[], userOneRelation: string) {
 			fullName: resident.fullName,
 			allergens: resident.allergens,
 			phone: canSee(resident.visibility.phoneVisible, userOneRelation)
-				? resident.phone
+				? safeDecryptField(resident.phone)
 				: undefined,
 			pronouns: canSee(
 				resident.visibility.pronounsVisible,
@@ -35,7 +46,7 @@ function filterResidents(residents: any[], userOneRelation: string) {
 				? resident.pronouns
 				: undefined,
 			DOB: canSee(resident.visibility.dobVisible, userOneRelation)
-				? resident.DOB
+				? safeDecryptField(resident.DOB)
 				: undefined,
 			likes: canSee(resident.visibility.likesVisible, userOneRelation)
 				? resident.likes
@@ -50,7 +61,12 @@ function filterResidents(residents: any[], userOneRelation: string) {
 				resident.visibility.emergencyContactVisible,
 				userOneRelation
 			)
-				? resident.emergencyContact
+				? {
+						...resident.emergencyContact,
+						phone: safeDecryptField(
+							resident.emergencyContact?.phone
+						),
+					}
 				: undefined,
 		};
 	});
@@ -63,7 +79,7 @@ function filterGuests(guests: any[], userOneRelation: string) {
 			fullName: guests.fullName,
 			allergens: guests.allergens,
 			phone: canSeeGuest(guests.visibility.phoneVisible, userOneRelation)
-				? guests.phone
+				? safeDecryptField(guests.phone)
 				: undefined,
 			pronouns: canSeeGuest(
 				guests.visibility.pronounsVisible,
@@ -72,7 +88,7 @@ function filterGuests(guests: any[], userOneRelation: string) {
 				? guests.pronouns
 				: undefined,
 			DOB: canSeeGuest(guests.visibility.dobVisible, userOneRelation)
-				? guests.DOB
+				? safeDecryptField(guests.DOB)
 				: undefined,
 			likes: canSeeGuest(guests.visibility.likesVisible, userOneRelation)
 				? guests.likes
@@ -87,7 +103,10 @@ function filterGuests(guests: any[], userOneRelation: string) {
 				guests.visibility.emergencyContactVisible,
 				userOneRelation
 			)
-				? guests.emergencyContact
+				? {
+						...guests.emergencyContact,
+						phone: safeDecryptField(guests.emergencyContact?.phone),
+					}
 				: undefined,
 		};
 	});
@@ -179,9 +198,7 @@ authRouter.get(
 
 		if (guests.length === 0) {
 			console.log("No guests found for home code: " + homeCode);
-			return res.status(404).json({
-				error: "No residents found for the provided home code",
-			});
+			return res.status(200).json([]);
 		}
 
 		const userOneRelationObject = await getUserHomeRelation(

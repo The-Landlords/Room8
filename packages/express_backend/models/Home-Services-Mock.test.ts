@@ -10,6 +10,8 @@ import {
 	getHomesByUserAndRelation,
 	getHomesByUser,
 	getHomeByName,
+	addResidentToHome,
+	countUsersByCode,
 } from "./Home-Services";
 
 import { Home } from "./Home";
@@ -173,6 +175,46 @@ test("Getting homes by user", async () => {
 	expect(fetched[1].userIds[0].userId.toString()).toBe(
 		homeData.userIds[0].userId.toString()
 	);
+});
+
+test("Adding a resident to a home", async () => {
+	const newUserId = new mongoose.Types.ObjectId();
+	const updatedDoc = new Home({
+		...homeData,
+		userIds: [
+			...homeData.userIds,
+			{
+				userId: newUserId,
+				relationship: "RESIDENT",
+			},
+		],
+	});
+	updatedDoc._id = homeId;
+	mockingoose(Home).toReturn(updatedDoc, "findOneAndUpdate");
+
+	const updated = await addResidentToHome(homeId, newUserId);
+
+	expect(updated).toBeDefined();
+	expect(updated?.userIds).toHaveLength(2);
+	expect(updated?.userIds[1].userId.toString()).toBe(newUserId.toString());
+	expect(updated?.userIds[1].relationship).toBe("RESIDENT");
+});
+
+test("countUsersByCode returns the number of users in a home", async () => {
+	const home = new Home(homeData);
+	mockingoose(Home).toReturn(home, "findOne");
+
+	const count = await countUsersByCode(home.homeCode);
+
+	expect(count).toBe(homeData.userIds.length);
+});
+
+test("countUsersByCode returns null when home does not exist", async () => {
+	mockingoose(Home).toReturn(null, "findOne");
+
+	const count = await countUsersByCode("missing-home-code");
+
+	expect(count).toBeNull();
 });
 
 test("Getting a home by name", async () => {

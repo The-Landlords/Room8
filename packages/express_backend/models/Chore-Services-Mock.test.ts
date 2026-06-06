@@ -9,6 +9,7 @@ import {
 	getUncompletedChoresByHome,
 	removeChoreById,
 	updateChore,
+	deleteChoresByHomeId,
 } from "./Chore-Services";
 
 const homeId = new mongoose.Types.ObjectId();
@@ -219,4 +220,13 @@ test("Get uncompleted chores by home ID", async () => {
 	expect(uncompletedChores[1].homeId.toString()).toBe(
 		choreData.homeId.toString()
 	);
+});
+
+test("Deleting chores by home ID", async () => {
+	mockingoose(Chore).toReturn({ deletedCount: 2 }, "deleteMany");
+
+	const result = await deleteChoresByHomeId(choreData.homeId);
+
+	expect(result).toBeDefined();
+	expect(result.deletedCount).toBe(2);
 });

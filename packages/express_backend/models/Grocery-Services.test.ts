@@ -21,6 +21,7 @@ import {
 	updateGroceryItemQuantity,
 	calculateTotalCostForHome,
 	calculateTotalCostForItem,
+	deleteGroceryItemsByHomeId,
 } from "./Grocery-Services";
 
 let g: any; // FIXME type this later
@@ -213,4 +214,20 @@ test("throws 'Item not found' when id does not exist", async () => {
 	await expect(calculateTotalCostForItem(fakeId)).rejects.toThrow(
 		"Item not found"
 	);
+});
+
+test("Deleting grocery items by home ID", async () => {
+	const homeId = groceryItem.homeId;
+
+	await createGroceryItem({
+		...groceryItem,
+		title: "Bread",
+		homeId,
+	});
+
+	const result = await deleteGroceryItemsByHomeId(homeId);
+	const groceries = await getGroceryItemsByHome(homeId);
+
+	expect(result.deletedCount).toBe(2);
+	expect(groceries).toHaveLength(0);
 });

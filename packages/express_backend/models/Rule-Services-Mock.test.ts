@@ -10,6 +10,7 @@ import {
 	updateRule,
 	removeRuleById,
 	getApprovedRulesByHome,
+	deleteRulesByHomeId,
 } from "./Rules-Services";
 import { Home } from "./Home";
 
@@ -39,15 +40,7 @@ test("Creating a rule item", async () => {
 });
 
 test("Creating a rule with home code fails for invalid home code", async () => {
-	mockingoose(Home).toReturn(null, "findOne"); // rewise mockinggoose to always return null for Home.findOne in this test
-
-	await expect(
-		createRule({ ...ruleData, homeCode: "MISSING" })
-	).rejects.toThrow("Home not found for code: MISSING");
-});
-
-test("Creating a rule with home code fails for invalid home code", async () => {
-	mockingoose(Home).toReturn(null, "findOne"); // rewise mockinggoose to always return null for Home.findOne in this test
+	mockingoose(Home).toReturn(null, "findOne");
 
 	await expect(
 		createRule({ ...ruleData, homeCode: "MISSING" })
@@ -95,6 +88,7 @@ test("Getting rules by home ID", async () => {
 	const descriptions = rules.map((x) => x.description).sort();
 	expect(descriptions).toEqual([rule1.description, rule2.description].sort());
 });
+
 test("Getting rules by home ID fails when given a nonexisting home code", async () => {
 	mockingoose(Home).toReturn(null, "findOne");
 
@@ -163,4 +157,13 @@ test("Fetching approved rules for a home", async () => {
 	expect(approvedRules).toBeDefined();
 	expect(approvedRules.length).toBe(1);
 	expect(approvedRules[0].description).toBe("Approved rule");
+});
+
+test("Deleting all rules by home ID", async () => {
+	mockingoose(Rule).toReturn({ deletedCount: 2 }, "deleteMany");
+
+	const result = await deleteRulesByHomeId(ruleData.homeId);
+
+	expect(result).toBeDefined();
+	expect(result.deletedCount).toBe(2);
 });

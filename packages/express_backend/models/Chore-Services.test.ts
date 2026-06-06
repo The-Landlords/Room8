@@ -18,6 +18,7 @@ import {
 	getChoresByHome,
 	removeChoreById,
 	updateChore,
+	deleteChoresByHomeId,
 } from "./Chore-Services";
 
 let c: any; // FIXME type this later
@@ -123,4 +124,26 @@ test("Updating an event", async () => {
 
 	expect(diff).toBeLessThan(1000); // 1 second
 	expect(fetched.homeId.toString()).toBe(homeId.toString());
+});
+
+test("Deleting chores by home ID", async () => {
+	const otherHomeId = new mongoose.Types.ObjectId();
+
+	await createChore({
+		...choreData,
+		title: "Delete Chore 1",
+		homeId: otherHomeId,
+	});
+
+	await createChore({
+		...choreData,
+		title: "Delete Chore 2",
+		homeId: otherHomeId,
+	});
+
+	const result = await deleteChoresByHomeId(otherHomeId);
+	const chores = await getChoresByHome(otherHomeId);
+
+	expect(result.deletedCount).toBe(2);
+	expect(chores).toHaveLength(0);
 });
