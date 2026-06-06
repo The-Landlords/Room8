@@ -108,7 +108,7 @@ const settingsFields: FieldsLayout<DraftProps> = {
 				fields: [
 					{ field: "name", placeholder: "Adam Flayman" },
 					{ field: "phone", placeholder: "+15551990123" },
-					{ field: "relationship", placeholder: "Brother" },
+					{ field: "relationship", placeholder: "Relationship" },
 				],
 			},
 		],
