@@ -11,6 +11,7 @@ import {
 	afterAll,
 	beforeEach,
 	afterEach,
+	jest,
 } from "@jest/globals";
 import {
 	createUser,
@@ -59,6 +60,7 @@ afterAll(async () => {
 
 // a dummy user instance is created before all
 beforeEach(async () => {
+	await User.deleteMany();
 	u = await createUser(dummyUser);
 	expect(u).toBeDefined();
 	if (!u) return;
@@ -66,6 +68,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+	jest.restoreAllMocks();
 	await User.deleteMany();
 });
 
@@ -263,6 +266,77 @@ test("Updating a user by username encrypts stored fields and returns decrypted f
 	);
 	expect(storedUser.emergencyContact.phone.iv).toBeDefined();
 	expect(storedUser.emergencyContact.phone.authTag).toBeDefined();
+});
+
+test("updateUserByUsername allows blank optional encrypted profile fields", async () => {
+	const updatedUser = await updateUserByUsername(u.username, {
+		phone: "",
+		DOB: "",
+		emergencyContact: {
+			name: "Test Contact",
+			phone: "",
+			relationship: "Parent",
+		},
+	});
+
+	expect(updatedUser).toBeDefined();
+	expect(updatedUser?.phone).toBe("");
+	expect(updatedUser?.DOB).toBe("");
+	expect(updatedUser?.emergencyContact.phone).toBe("");
+
+	const storedUser: any = await getUserByUsername(u.username);
+	if (!storedUser) return;
+
+	expect(storedUser.phone).toBeUndefined();
+	expect(storedUser.DOB).toBeUndefined();
+	expect(storedUser.emergencyContact.phone).toBeUndefined();
+	expect(storedUser.emergencyContact.name).toBe("Test Contact");
+	expect(storedUser.emergencyContact.relationship).toBe("Parent");
+});
+
+test("updateUserByUsername preserves emergency contact name and relationship when phone is blank", async () => {
+	const updatedUser = await updateUserByUsername(u.username, {
+		emergencyContact: {
+			name: "Honey Bear",
+			phone: "",
+			relationship: "Sibling",
+		},
+	});
+
+	expect(updatedUser).toBeDefined();
+	expect(updatedUser?.emergencyContact.name).toBe("Honey Bear");
+	expect(updatedUser?.emergencyContact.relationship).toBe("Sibling");
+	expect(updatedUser?.emergencyContact.phone).toBe("");
+
+	const storedUser: any = await getUserByUsername(u.username);
+	if (!storedUser) return;
+
+	expect(storedUser.emergencyContact.phone).toBeUndefined();
+	expect(storedUser.emergencyContact.name).toBe("Honey Bear");
+	expect(storedUser.emergencyContact.relationship).toBe("Sibling");
+});
+
+test("getUserSettingsById returns legacy plaintext profile fields without decrypting", async () => {
+	const plainUser = {
+		_id: new mongoose.Types.ObjectId(),
+		...dummyUser,
+		phone: "+15551234567",
+		DOB: "2000-01-01",
+		emergencyContact: {
+			name: "Test Contact",
+			phone: "+15559876543",
+			relationship: "Parent",
+		},
+	};
+
+	jest.spyOn(User, "findById").mockResolvedValueOnce(plainUser as any);
+
+	const settings = await getUserSettingsById(plainUser._id);
+
+	expect(settings).toBeDefined();
+	expect(settings?.phone).toBe("+15551234567");
+	expect(settings?.DOB).toBe("2000-01-01");
+	expect(settings?.emergencyContact.phone).toBe("+15559876543");
 });
 
 test("getUserSettingsById decrypts encrypted profile fields", async () => {

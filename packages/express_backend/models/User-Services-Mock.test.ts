@@ -4,7 +4,7 @@ process.env.FIELD_ENCRYPTION_KEY =
 import mockingoose from "mockingoose";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import { expect, test, beforeEach, jest } from "@jest/globals";
+import { expect, test, beforeEach, afterEach, jest } from "@jest/globals";
 import { User } from "./User";
 import {
 	createUser,
@@ -36,6 +36,10 @@ const dummyUser = {
 
 beforeEach(() => {
 	mockingoose.resetAll();
+});
+
+afterEach(() => {
+	jest.restoreAllMocks();
 });
 
 test("Creating a user", async () => {
@@ -173,6 +177,43 @@ test("Updating a user by ID hashes password when password is updated", async () 
 	expect(passwordMatches).toBe(true);
 });
 
+test("Updating a user by ID hashes password inside $set when update unsets blank profile fields", async () => {
+	const user = new User(dummyUser);
+	const updatedPassword = "newhoneypassword";
+	const updatedDoc = new User({
+		...dummyUser,
+		password: await bcrypt.hash(updatedPassword, 12),
+	});
+	updatedDoc._id = user._id;
+
+	const findByIdAndUpdateSpy = jest
+		.spyOn(User, "findByIdAndUpdate")
+		.mockResolvedValueOnce(updatedDoc as any);
+
+	const updated = await updateUserById(user._id, {
+		password: updatedPassword,
+		DOB: "",
+	});
+
+	expect(updated).toBeDefined();
+	expect(findByIdAndUpdateSpy).toHaveBeenCalledTimes(1);
+
+	const updateArg = findByIdAndUpdateSpy.mock.calls[0][1] as any;
+
+	expect(updateArg.$set).toBeDefined();
+	expect(updateArg.$unset).toEqual({ DOB: "" });
+	expect(updateArg.$set.password).toBeDefined();
+	expect(updateArg.$set.password).not.toBe(updatedPassword);
+	expect(updateArg.password).toBeUndefined();
+
+	const passwordMatches = await bcrypt.compare(
+		updatedPassword,
+		updateArg.$set.password
+	);
+
+	expect(passwordMatches).toBe(true);
+});
+
 test("Removing a user by ID", async () => {
 	const user = new User(dummyUser);
 	mockingoose(User).toReturn(user, "findOneAndDelete");
@@ -239,6 +280,43 @@ test("Updating a user by username hashes password when password is updated", asy
 	expect(passwordMatches).toBe(true);
 });
 
+test("Updating a user by username hashes password inside $set when update unsets blank profile fields", async () => {
+	const user = new User(dummyUser);
+	const updatedPassword = "newhoneypassword";
+	const updatedDoc = new User({
+		...dummyUser,
+		password: await bcrypt.hash(updatedPassword, 12),
+	});
+	updatedDoc._id = user._id;
+
+	const findOneAndUpdateSpy = jest
+		.spyOn(User, "findOneAndUpdate")
+		.mockResolvedValueOnce(updatedDoc as any);
+
+	const updated = await updateUserByUsername(user.username, {
+		password: updatedPassword,
+		DOB: "",
+	});
+
+	expect(updated).toBeDefined();
+	expect(findOneAndUpdateSpy).toHaveBeenCalledTimes(1);
+
+	const updateArg = findOneAndUpdateSpy.mock.calls[0][1] as any;
+
+	expect(updateArg.$set).toBeDefined();
+	expect(updateArg.$unset).toEqual({ DOB: "" });
+	expect(updateArg.$set.password).toBeDefined();
+	expect(updateArg.$set.password).not.toBe(updatedPassword);
+	expect(updateArg.password).toBeUndefined();
+
+	const passwordMatches = await bcrypt.compare(
+		updatedPassword,
+		updateArg.$set.password
+	);
+
+	expect(passwordMatches).toBe(true);
+});
+
 test("Updating a user by username returns decrypted phone, DOB, and emergency contact phone", async () => {
 	const { encryptField } = await import("../utils/encryption");
 	const user = new User(dummyUser);
@@ -269,6 +347,108 @@ test("Updating a user by username returns decrypted phone, DOB, and emergency co
 	expect(updated?.phone).toBe("+15551234567");
 	expect(updated?.DOB).toBe(new Date("2000-01-01").toISOString());
 	expect(updated?.emergencyContact.phone).toBe("+15559876543");
+});
+
+test("Updating a user by username allows blank optional encrypted profile fields", async () => {
+	const user = new User(dummyUser);
+	const updatedDoc = new User({
+		...dummyUser,
+		emergencyContact: {
+			name: "Test Contact",
+			relationship: "Parent",
+		},
+	});
+	updatedDoc._id = user._id;
+	mockingoose(User).toReturn(updatedDoc, "findOneAndUpdate");
+
+	const updated = await updateUserByUsername(user.username, {
+		phone: "",
+		DOB: "",
+		emergencyContact: {
+			name: "Test Contact",
+			phone: "",
+			relationship: "Parent",
+		},
+	});
+
+	expect(updated).toBeDefined();
+	expect(updated?.phone).toBe("");
+	expect(updated?.DOB).toBe("");
+	expect(updated?.emergencyContact.phone).toBe("");
+	expect(updated?.emergencyContact.name).toBe("Test Contact");
+	expect(updated?.emergencyContact.relationship).toBe("Parent");
+});
+
+test("Updating a user by username preserves emergency contact name and relationship when phone is blank", async () => {
+	const user = new User(dummyUser);
+	const updatedDoc = new User({
+		...dummyUser,
+		emergencyContact: {
+			name: "Honey Bear",
+			relationship: "Sibling",
+		},
+	});
+	updatedDoc._id = user._id;
+
+	const findOneAndUpdateSpy = jest
+		.spyOn(User, "findOneAndUpdate")
+		.mockResolvedValueOnce(updatedDoc as any);
+
+	const updated = await updateUserByUsername(user.username, {
+		emergencyContact: {
+			name: "Honey Bear",
+			phone: "",
+			relationship: "Sibling",
+		},
+	});
+
+	expect(updated).toBeDefined();
+	expect(findOneAndUpdateSpy).toHaveBeenCalledTimes(1);
+
+	const updateArg = findOneAndUpdateSpy.mock.calls[0][1] as any;
+
+	expect(updateArg.$set).toBeDefined();
+	expect(updateArg.$unset).toEqual({
+		"emergencyContact.phone": "",
+	});
+	expect(updateArg.$set.emergencyContact).toBeUndefined();
+	expect(updateArg.$set["emergencyContact.name"]).toBe("Honey Bear");
+	expect(updateArg.$set["emergencyContact.relationship"]).toBe("Sibling");
+	expect(updated?.emergencyContact.name).toBe("Honey Bear");
+	expect(updated?.emergencyContact.relationship).toBe("Sibling");
+	expect(updated?.emergencyContact.phone).toBe("");
+});
+
+test("Updating a user by username does not set emergency contact name or relationship when they are missing", async () => {
+	const user = new User(dummyUser);
+	const updatedDoc = new User({
+		...dummyUser,
+		emergencyContact: {},
+	});
+	updatedDoc._id = user._id;
+
+	const findOneAndUpdateSpy = jest
+		.spyOn(User, "findOneAndUpdate")
+		.mockResolvedValueOnce(updatedDoc as any);
+
+	const updated = await updateUserByUsername(user.username, {
+		emergencyContact: {
+			phone: "",
+		},
+	});
+
+	expect(updated).toBeDefined();
+	expect(findOneAndUpdateSpy).toHaveBeenCalledTimes(1);
+
+	const updateArg = findOneAndUpdateSpy.mock.calls[0][1] as any;
+
+	expect(updateArg.$set).toEqual({});
+	expect(updateArg.$unset).toEqual({
+		"emergencyContact.phone": "",
+	});
+	expect(updateArg.$set["emergencyContact.name"]).toBeUndefined();
+	expect(updateArg.$set["emergencyContact.relationship"]).toBeUndefined();
+	expect(updateArg.$set.emergencyContact).toBeUndefined();
 });
 
 test("updateUserByUsername rejects: invalid phone number", async () => {
@@ -356,12 +536,27 @@ test("getUserSettingsById decrypts encrypted profile fields", async () => {
 	expect(settings?.emergencyContact.phone).toBe("+15559876543");
 });
 
-test("getUserSettingsById returns null when user is not found", async () => {
-	mockingoose(User).toReturn(null, "findOne");
+test("getUserSettingsById returns legacy plaintext profile fields without decrypting", async () => {
+	const plainUser = {
+		_id: new mongoose.Types.ObjectId(),
+		...dummyUser,
+		phone: "+15551234567",
+		DOB: "2000-01-01",
+		emergencyContact: {
+			name: "Test Contact",
+			phone: "+15559876543",
+			relationship: "Parent",
+		},
+	};
 
-	const settings = await getUserSettingsById(new mongoose.Types.ObjectId());
+	jest.spyOn(User, "findById").mockResolvedValueOnce(plainUser as any);
 
-	expect(settings).toBeNull();
+	const settings = await getUserSettingsById(plainUser._id);
+
+	expect(settings).toBeDefined();
+	expect(settings?.phone).toBe("+15551234567");
+	expect(settings?.DOB).toBe("2000-01-01");
+	expect(settings?.emergencyContact.phone).toBe("+15559876543");
 });
 
 test("updateUserById decrypts fields when returned user is a plain object", async () => {
@@ -389,5 +584,32 @@ test("updateUserById decrypts fields when returned user is a plain object", asyn
 	expect(updated).toBeDefined();
 	expect(updated?.phone).toBe("+15551234567");
 	expect(updated?.DOB).toBe(new Date("2000-01-01").toISOString());
+	expect(updated?.emergencyContact.phone).toBe("+15559876543");
+});
+
+test("updateUserById returns legacy plaintext profile fields without decrypting", async () => {
+	const plainUser = {
+		_id: new mongoose.Types.ObjectId(),
+		...dummyUser,
+		phone: "+15551234567",
+		DOB: "2000-01-01",
+		emergencyContact: {
+			name: "Test Contact",
+			phone: "+15559876543",
+			relationship: "Parent",
+		},
+	};
+
+	jest.spyOn(User, "findByIdAndUpdate").mockResolvedValueOnce(
+		plainUser as any
+	);
+
+	const updated = await updateUserById(plainUser._id, {
+		fullName: "Barry B. Benson Jr.",
+	});
+
+	expect(updated).toBeDefined();
+	expect(updated?.phone).toBe("+15551234567");
+	expect(updated?.DOB).toBe("2000-01-01");
 	expect(updated?.emergencyContact.phone).toBe("+15559876543");
 });

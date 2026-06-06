@@ -8,11 +8,36 @@ const SALT_ROUNDS = 12;
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
-// helper function to encrypt profileFields
+function isEncryptedField(value: any) {
+	return (
+		value &&
+		typeof value === "object" &&
+		typeof value.encryptedData === "string" &&
+		typeof value.iv === "string" &&
+		typeof value.authTag === "string"
+	);
+}
+
+function decryptProfileField(value: any) {
+	if (!value) {
+		return "";
+	}
+
+	if (isEncryptedField(value)) {
+		return decryptField(value);
+	}
+
+	return value;
+}
+
 function encryptProfileFields(data: any) {
 	const updateData = { ...data };
+	const unsetData: Record<string, ""> = {};
 
-	if (updateData.phone) {
+	if (updateData.phone === "") {
+		unsetData.phone = "";
+		delete updateData.phone;
+	} else if (updateData.phone) {
 		if (!phoneRegex.test(updateData.phone)) {
 			throw new Error("Invalid phone number");
 		}
@@ -20,7 +45,21 @@ function encryptProfileFields(data: any) {
 		updateData.phone = encryptField(updateData.phone);
 	}
 
-	if (updateData.emergencyContact?.phone) {
+	if (updateData.emergencyContact?.phone === "") {
+		const emergencyContact = updateData.emergencyContact;
+
+		unsetData["emergencyContact.phone"] = "";
+		delete updateData.emergencyContact;
+
+		if (emergencyContact.name !== undefined) {
+			updateData["emergencyContact.name"] = emergencyContact.name;
+		}
+
+		if (emergencyContact.relationship !== undefined) {
+			updateData["emergencyContact.relationship"] =
+				emergencyContact.relationship;
+		}
+	} else if (updateData.emergencyContact?.phone) {
 		if (!phoneRegex.test(updateData.emergencyContact.phone)) {
 			throw new Error("Invalid emergency contact phone number");
 		}
@@ -31,7 +70,10 @@ function encryptProfileFields(data: any) {
 		};
 	}
 
-	if (updateData.DOB) {
+	if (updateData.DOB === "") {
+		unsetData.DOB = "";
+		delete updateData.DOB;
+	} else if (updateData.DOB) {
 		const parsedDOB = new Date(updateData.DOB);
 
 		if (Number.isNaN(parsedDOB.getTime())) {
@@ -41,22 +83,27 @@ function encryptProfileFields(data: any) {
 		updateData.DOB = encryptField(parsedDOB.toISOString());
 	}
 
+	if (Object.keys(unsetData).length > 0) {
+		return {
+			$set: updateData,
+			$unset: unsetData,
+		};
+	}
+
 	return updateData;
 }
 
-//helper function to decrypt profiles fields
+// helper function to decrypt profile fields
 function decryptProfileFields(user: any) {
 	const plainUser = user.toObject ? user.toObject() : user;
 
 	return {
 		...plainUser,
-		phone: plainUser.phone ? decryptField(plainUser.phone) : "",
-		DOB: plainUser.DOB ? decryptField(plainUser.DOB) : "",
+		phone: decryptProfileField(plainUser.phone),
+		DOB: decryptProfileField(plainUser.DOB),
 		emergencyContact: {
 			...plainUser.emergencyContact,
-			phone: plainUser.emergencyContact?.phone
-				? decryptField(plainUser.emergencyContact.phone)
-				: "",
+			phone: decryptProfileField(plainUser.emergencyContact?.phone),
 		},
 	};
 }
@@ -94,12 +141,17 @@ export async function updateUserById(
 ) {
 	const updateData = encryptProfileFields(data);
 
-	//hash new updated password
-	if (updateData.password) {
-		updateData.password = await bcrypt.hash(
-			updateData.password,
-			SALT_ROUNDS
-		);
+	// hash new updated password
+	const password = updateData.$set?.password ?? updateData.password;
+
+	if (password) {
+		const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+		if (updateData.$set) {
+			updateData.$set.password = hashedPassword;
+		} else {
+			updateData.password = hashedPassword;
+		}
 	}
 
 	const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
@@ -133,12 +185,17 @@ export async function getUserSettingsById(userId: mongoose.Types.ObjectId) {
 export async function updateUserByUsername(username: string, data: any) {
 	const updateData = encryptProfileFields(data);
 
-	//hash new updated password
-	if (updateData.password) {
-		updateData.password = await bcrypt.hash(
-			updateData.password,
-			SALT_ROUNDS
-		);
+	// hash new updated password
+	const password = updateData.$set?.password ?? updateData.password;
+
+	if (password) {
+		const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+		if (updateData.$set) {
+			updateData.$set.password = hashedPassword;
+		} else {
+			updateData.password = hashedPassword;
+		}
 	}
 
 	const updatedUser = await User.findOneAndUpdate({ username }, updateData, {
