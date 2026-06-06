@@ -15,6 +15,7 @@ import {
 	removeEventById,
 	updateEvent,
 	eventToICSData,
+	deleteEventsByHomeId,
 } from "./Event-Services";
 import { Event } from "./Event";
 import { config } from "dotenv";
@@ -230,4 +231,26 @@ test("eventToICSData rejects when stored event has invalid start/end values", as
 	});
 
 	await expect(eventToICSData(rawId)).rejects.toThrow();
+});
+
+test("Deleting events by home ID", async () => {
+	const otherHomeId = new mongoose.Types.ObjectId();
+
+	await createEvent({
+		...basicEventData,
+		title: "Delete Event 1",
+		homeId: otherHomeId,
+	});
+
+	await createEvent({
+		...basicEventData2,
+		title: "Delete Event 2",
+		homeId: otherHomeId,
+	});
+
+	const result = await deleteEventsByHomeId(otherHomeId);
+	const events = await getEventsByHome(otherHomeId);
+
+	expect(result.deletedCount).toBe(2);
+	expect(events).toHaveLength(0);
 });

@@ -220,6 +220,14 @@ test("Updating a user by username", async () => {
 	expect(updatedUser.pronouns).toBe(dummyUser.pronouns);
 });
 
+test("updateUserByUsername returns null when user does not exist", async () => {
+	const updatedUser = await updateUserByUsername("missinguser", {
+		fullName: "Missing User",
+	});
+
+	expect(updatedUser).toBeNull();
+});
+
 test("Updating a user by username encrypts stored fields and returns decrypted fields", async () => {
 	const updatedUser = await updateUserByUsername(u.username, {
 		phone: "+15551234567",
@@ -274,6 +282,14 @@ test("getUserSettingsById decrypts encrypted profile fields", async () => {
 	expect(settings.phone).toBe("+15551234567");
 	expect(settings.DOB).toBe(new Date("2000-01-01").toISOString());
 	expect(settings.emergencyContact.phone).toBe("+15559876543");
+});
+
+test("getUserSettingsById returns null when user does not exist", async () => {
+	const missingUserId = new mongoose.Types.ObjectId();
+
+	const settings = await getUserSettingsById(missingUserId);
+
+	expect(settings).toBeNull();
 });
 
 test("Deleting a user", async () => {

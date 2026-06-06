@@ -4,7 +4,7 @@ process.env.FIELD_ENCRYPTION_KEY =
 import mockingoose from "mockingoose";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import { expect, test, beforeEach } from "@jest/globals";
+import { expect, test, beforeEach, jest } from "@jest/globals";
 import { User } from "./User";
 import {
 	createUser,
@@ -133,6 +133,16 @@ test("Updating a user by ID without password does not hash password", async () =
 	expect(updated?.fullName).toBe("Barry B. Benson Jr.");
 });
 
+test("Updating a user by ID returns null when user is not found", async () => {
+	mockingoose(User).toReturn(null, "findOneAndUpdate");
+
+	const updated = await updateUserById(new mongoose.Types.ObjectId(), {
+		fullName: "Missing User",
+	});
+
+	expect(updated).toBeNull();
+});
+
 test("Updating a user by ID hashes password when password is updated", async () => {
 	const user = new User(dummyUser);
 	const updatedPassword = "newhoneypassword";
@@ -188,6 +198,16 @@ test("Updating a user by username without password does not hash password", asyn
 
 	expect(updated).toBeDefined();
 	expect(updated?.fullName).toBe("Barry B. Benson Sr.");
+});
+
+test("Updating a user by username returns null when user is not found", async () => {
+	mockingoose(User).toReturn(null, "findOneAndUpdate");
+
+	const updated = await updateUserByUsername("missinguser", {
+		fullName: "Missing User",
+	});
+
+	expect(updated).toBeNull();
 });
 
 test("Updating a user by username hashes password when password is updated", async () => {
@@ -334,4 +354,40 @@ test("getUserSettingsById decrypts encrypted profile fields", async () => {
 	expect(settings?.phone).toBe("+15551234567");
 	expect(settings?.DOB).toBe(new Date("2000-01-01").toISOString());
 	expect(settings?.emergencyContact.phone).toBe("+15559876543");
+});
+
+test("getUserSettingsById returns null when user is not found", async () => {
+	mockingoose(User).toReturn(null, "findOne");
+
+	const settings = await getUserSettingsById(new mongoose.Types.ObjectId());
+
+	expect(settings).toBeNull();
+});
+
+test("updateUserById decrypts fields when returned user is a plain object", async () => {
+	const { encryptField } = await import("../utils/encryption");
+	const plainUser = {
+		_id: new mongoose.Types.ObjectId(),
+		...dummyUser,
+		phone: encryptField("+15551234567"),
+		DOB: encryptField(new Date("2000-01-01").toISOString()),
+		emergencyContact: {
+			name: "Test Contact",
+			phone: encryptField("+15559876543"),
+			relationship: "Parent",
+		},
+	};
+
+	jest.spyOn(User, "findByIdAndUpdate").mockResolvedValueOnce(
+		plainUser as any
+	);
+
+	const updated = await updateUserById(plainUser._id, {
+		fullName: "Barry B. Benson Jr.",
+	});
+
+	expect(updated).toBeDefined();
+	expect(updated?.phone).toBe("+15551234567");
+	expect(updated?.DOB).toBe(new Date("2000-01-01").toISOString());
+	expect(updated?.emergencyContact.phone).toBe("+15559876543");
 });

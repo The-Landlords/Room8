@@ -10,6 +10,7 @@ import {
 	updateEvent,
 	eventToICSData,
 	getUpcomingEventsByHome,
+	deleteEventsByHomeId,
 } from "./Event-Services";
 import { createEvent as createIcsEvent } from "ics";
 const homeId = new mongoose.Types.ObjectId();
@@ -157,6 +158,15 @@ test("eventToICSData rejects when stored event has invalid start/end values", as
 	});
 
 	await expect(eventToICSData(badEvent._id)).rejects.toThrow();
+});
+
+test("Deleting events by home ID", async () => {
+	mockingoose(Event).toReturn({ deletedCount: 2 }, "deleteMany");
+
+	const result = await deleteEventsByHomeId(basicEventData.homeId);
+
+	expect(result).toBeDefined();
+	expect(result.deletedCount).toBe(2);
 });
 
 test("creates event with undefined description", async () => {

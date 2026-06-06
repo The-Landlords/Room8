@@ -13,6 +13,7 @@ import {
 	calculateTotalCostForItem,
 	updateGroceryItemQuantity,
 	getCurrentGroceryItemsByHome,
+	deleteGroceryItemsByHomeId,
 } from "./Grocery-Services";
 
 const homeId = new mongoose.Types.ObjectId();
@@ -165,4 +166,13 @@ test("Getting Current Groceries for a home", async () => {
 	expect(groceries).toBeDefined();
 	expect(groceries.length).toBe(1);
 	expect(groceries[0].title).toBe(grocery1.title);
+});
+
+test("Deleting grocery items by home ID", async () => {
+	mockingoose(Grocery).toReturn({ deletedCount: 2 }, "deleteMany");
+
+	const result = await deleteGroceryItemsByHomeId(groceryItem.homeId);
+
+	expect(result).toBeDefined();
+	expect(result.deletedCount).toBe(2);
 });
