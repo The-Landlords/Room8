@@ -18,6 +18,8 @@ import {
 	getHomesByUserAndRelation,
 	getHomesByUser,
 	getHomeByName,
+	addResidentToHome,
+	countUsersByCode,
 } from "./Home-Services";
 
 import { Home } from "./Home";
@@ -141,4 +143,32 @@ test("Getting homes by user", async () => {
 	expect(fetched.length).toBeGreaterThan(0);
 	expect(fetched[0]._id.toString()).toBe(h._id.toString());
 	expect(fetched[0].homeName).toBe(h.homeName);
+});
+
+test("Adding a resident to a home", async () => {
+	const newUserId = new mongoose.Types.ObjectId();
+
+	const updatedHome = await addResidentToHome(h._id, newUserId);
+
+	expect(updatedHome).toBeDefined();
+	expect(updatedHome?.userIds).toHaveLength(2);
+	expect(
+		updatedHome?.userIds.some(
+			(userHome: any) =>
+				userHome.userId.toString() === newUserId.toString() &&
+				userHome.relationship === "RESIDENT"
+		)
+	).toBe(true);
+});
+
+test("countUsersByCode returns the number of users in a home", async () => {
+	const count = await countUsersByCode(h.homeCode);
+
+	expect(count).toBe(1);
+});
+
+test("countUsersByCode returns null when home does not exist", async () => {
+	const count = await countUsersByCode("missing-home-code");
+
+	expect(count).toBeNull();
 });
