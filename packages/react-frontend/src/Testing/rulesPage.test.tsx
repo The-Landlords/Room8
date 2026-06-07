@@ -57,11 +57,13 @@ function mockRulesFetch({
 	initialRules = [],
 	refreshedRules = initialRules,
 	voteRefreshRules = refreshedRules,
+	residentResponse = { count: 1 },
 	deleteVoteResponse = { deleted: true },
 }: {
 	initialRules?: Rule[];
 	refreshedRules?: Rule[];
 	voteRefreshRules?: Rule[];
+	residentResponse?: { count?: number };
 	deleteVoteResponse?: { deleted?: boolean };
 } = {}) {
 	let rulesGetCount = 0;
@@ -90,9 +92,7 @@ function mockRulesFetch({
 			url === `${API_BASE}/relate/home/home-1/residents` &&
 			method === "GET"
 		) {
-			return jsonResponse({
-				count: 1,
-			});
+			return jsonResponse(residentResponse);
 		}
 
 		// Used by RulesPage.fetchRules.
@@ -412,4 +412,298 @@ test("delete vote removes rule when backend says deleted", async () => {
 	expect(
 		screen.queryByText("Quiet hours after 10pm")
 	).not.toBeInTheDocument();
+});
+
+test("shows error when home lookup fails while loading rules", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/auth/me` && method === "GET") {
+			return jsonResponse({ _id: "test-vote-id" });
+		}
+
+		if (url === `${API_BASE}/homes/code/testhomecode` && method === "GET") {
+			return {
+				ok: false,
+				json: async () => ({}),
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderRulesPage();
+
+	expect(await screen.findByText("Failed to load rules")).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("shows error when resident count lookup fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/auth/me` && method === "GET") {
+			return jsonResponse({ _id: "test-vote-id" });
+		}
+
+		if (url === `${API_BASE}/homes/code/testhomecode` && method === "GET") {
+			return jsonResponse({ _id: "home-1", homeName: "Test Home" });
+		}
+
+		if (
+			url === `${API_BASE}/relate/home/home-1/residents` &&
+			method === "GET"
+		) {
+			return {
+				ok: false,
+				json: async () => ({}),
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderRulesPage();
+
+	expect(await screen.findByText("Failed to load rules")).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("shows error when rules lookup fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/auth/me` && method === "GET") {
+			return jsonResponse({ _id: "test-vote-id" });
+		}
+
+		if (url === `${API_BASE}/homes/code/testhomecode` && method === "GET") {
+			return jsonResponse({ _id: "home-1", homeName: "Test Home" });
+		}
+
+		if (
+			url === `${API_BASE}/relate/home/home-1/residents` &&
+			method === "GET"
+		) {
+			return jsonResponse({ count: 1 });
+		}
+
+		if (
+			url === `${API_BASE}/homes/rules/testhomecode` &&
+			method === "GET"
+		) {
+			return {
+				ok: false,
+				json: async () => ({}),
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderRulesPage();
+
+	expect(await screen.findByText("Failed to load rules")).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("uses zero when resident count is missing", async () => {
+	mockRulesFetch({
+		initialRules: [makeRule()],
+		residentResponse: {},
+	});
+
+	renderRulesPage();
+
+	expect(
+		await screen.findByText("Quiet hours after 10pm")
+	).toBeInTheDocument();
+	expect(screen.getByText("0/0 Approve")).toBeInTheDocument();
+});
+
+test("non-array rules response renders an empty rules list", async () => {
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/auth/me` && method === "GET") {
+			return jsonResponse({ _id: "test-vote-id" });
+		}
+
+		if (url === `${API_BASE}/homes/code/testhomecode` && method === "GET") {
+			return jsonResponse({ _id: "home-1", homeName: "Test Home" });
+		}
+
+		if (
+			url === `${API_BASE}/relate/home/home-1/residents` &&
+			method === "GET"
+		) {
+			return jsonResponse({ count: 1 });
+		}
+
+		if (
+			url === `${API_BASE}/homes/rules/testhomecode` &&
+			method === "GET"
+		) {
+			return jsonResponse({ rules: [] });
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderRulesPage();
+
+	expect(await screen.findByText("No Rules")).toBeInTheDocument();
+});
+
+test("clicking add with an empty rule does not post", async () => {
+	mockRulesFetch({
+		initialRules: [],
+	});
+
+	renderRulesPage();
+
+	await screen.findByText(/Test Home.*Rules/i);
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+	await user.click(screen.getByRole("button", { name: "Add" }));
+
+	expect(globalThis.fetch).not.toHaveBeenCalledWith(
+		`${API_BASE}/homes/rules`,
+		expect.objectContaining({
+			method: "POST",
+		})
+	);
+});
+
+test("delete vote refreshes rules when backend does not delete the rule", async () => {
+	mockRulesFetch({
+		initialRules: [makeRule()],
+		deleteVoteResponse: {
+			deleted: false,
+		},
+		refreshedRules: [
+			makeRule({
+				deleteStatus: "PENDING",
+				deleteVotes: [{ voteId: "test-vote-id", vote: "YES" }],
+			}),
+		],
+	});
+
+	renderRulesPage();
+
+	expect(
+		await screen.findByText("Quiet hours after 10pm")
+	).toBeInTheDocument();
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "-" }));
+	await user.click(getTrashButton());
+
+	const yesButtons = screen.getAllByRole("button", { name: /yes/i });
+	await user.click(yesButtons[yesButtons.length - 1]);
+
+	expect(
+		await screen.findByText("Quiet hours after 10pm")
+	).toBeInTheDocument();
+	expect(
+		screen.getByText(/waiting for unanimous approval/i)
+	).toBeInTheDocument();
+});
+
+test("delete vote refreshes rules when request throws", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+	let rulesGetCount = 0;
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/auth/me` && method === "GET") {
+			return jsonResponse({ _id: "test-vote-id" });
+		}
+
+		if (url === `${API_BASE}/homes/code/testhomecode` && method === "GET") {
+			return jsonResponse({ _id: "home-1", homeName: "Test Home" });
+		}
+
+		if (
+			url === `${API_BASE}/relate/home/home-1/residents` &&
+			method === "GET"
+		) {
+			return jsonResponse({ count: 1 });
+		}
+
+		if (
+			url === `${API_BASE}/homes/rules/testhomecode` &&
+			method === "GET"
+		) {
+			rulesGetCount += 1;
+			return jsonResponse([
+				makeRule({
+					deleteVotes:
+						rulesGetCount > 1
+							? [{ voteId: "test-vote-id", vote: "NO" }]
+							: [],
+					deleteStatus: rulesGetCount > 1 ? "REJECTED" : "NONE",
+				}),
+			]);
+		}
+
+		if (
+			url === `${API_BASE}/rules/rule-1/delete-vote` &&
+			method === "POST"
+		) {
+			throw new Error("Delete vote failed");
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderRulesPage();
+
+	expect(
+		await screen.findByText("Quiet hours after 10pm")
+	).toBeInTheDocument();
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "-" }));
+	await user.click(getTrashButton());
+
+	const noButtons = screen.getAllByRole("button", { name: /no/i });
+	await user.click(noButtons[noButtons.length - 1]);
+
+	expect(
+		await screen.findByText("Delete request rejected")
+	).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
 });

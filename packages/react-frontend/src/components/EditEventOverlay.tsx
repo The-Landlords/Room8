@@ -43,16 +43,18 @@ export default function EditEventOverlay({
 	async function handleEditEvent(e: React.FormEvent) {
 		e.preventDefault();
 
-		const startDate = new Date(start);
-		const endDate = new Date(end);
+		// Validation removed as it is not possible to select an end time before start time in current GUI set up
+		// const startDate = new Date(start);
+		// const endDate = new Date(end);
 
-		if (startDate >= endDate) {
-			alert("Start time must be before end time.");
-			return;
-		}
+		// if (startDate >= endDate) {
+		// 	alert("Start time must be before end time.");
+		// 	return;
+		// }
 
 		if (!eventEdit?._id) {
-			throw new Error("Missing event id");
+			console.error("Missing event id", eventEdit);
+			return;
 		}
 
 		const res = await fetch(`${API_BASE}/events/${eventEdit._id}`, {
@@ -72,7 +74,8 @@ export default function EditEventOverlay({
 		const data = await res.json();
 
 		if (!res.ok) {
-			throw new Error(data.error || "Failed to edit event");
+			console.error(data.error || "Failed to edit event");
+			return;
 		}
 
 		onEdit(data);

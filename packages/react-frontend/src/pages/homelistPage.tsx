@@ -24,11 +24,9 @@ export default function HomeList() {
 	const [addState, setAddState] = useState("Base");
 	const [homeDelete, setHomeDelete] = useState<Home | null>(null);
 	const handleAddClick = () => {
-		console.log("Add!" + overlayOpen);
 		setOverlayOpen(true);
 	};
 	const handleClose = () => {
-		console.log("Closed!");
 		setAddState("Base");
 		setOverlayOpen(false);
 	};
@@ -50,7 +48,6 @@ export default function HomeList() {
 
 	async function handleRemoveClick(data: any) {
 		if (!data) return;
-		console.log("Remove " + data);
 		setHomeDelete(data);
 		setAddState("Remove");
 		setOverlayOpen(true);

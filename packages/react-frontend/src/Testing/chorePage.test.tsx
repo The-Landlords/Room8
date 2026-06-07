@@ -264,3 +264,154 @@ test("clicking remove sends a DELETE request and removes the chore from the page
 		expect(screen.queryByText("Take out trash")).not.toBeInTheDocument();
 	});
 });
+
+test("displays assigned chore text", async () => {
+	mockChoreFetch({
+		chores: [
+			{
+				_id: "chore-1",
+				title: "Sweep",
+				assignedTo: "Alex",
+			},
+		],
+	});
+
+	renderChorePageWithHistory();
+
+	expect(await screen.findByText("Sweep (Alex)")).toBeInTheDocument();
+});
+
+test("shows empty chores when chore fetch fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input) => {
+		const url = String(input);
+
+		if (url === `${API_BASE}/homes/code/testhome`) {
+			return jsonResponse({
+				_id: "home-1",
+				homeName: "Test Home",
+			});
+		}
+
+		return {
+			ok: false,
+			json: async () => ({}),
+		} as Response;
+	}) as unknown as typeof fetch;
+
+	renderChorePageWithHistory();
+
+	expect(await screen.findByText("No Chores")).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("keeps chore list empty when add chore request fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/homes/code/testhome`) {
+			return jsonResponse({
+				_id: "home-1",
+				homeName: "Test Home",
+			});
+		}
+
+		if (url === `${API_BASE}/testhome/chores` && method === "GET") {
+			return jsonResponse([]);
+		}
+
+		if (url === `${API_BASE}/testhome/chores` && method === "POST") {
+			return {
+				ok: false,
+				json: async () => ({}),
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderChorePageWithHistory();
+
+	await screen.findByText("No Chores");
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+	await user.type(screen.getByPlaceholderText("enter text"), "Wash dishes");
+	await user.click(screen.getByRole("button", { name: "Submit" }));
+
+	await waitFor(() =>
+		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error))
+	);
+
+	expect(screen.getByText("No Chores")).toBeInTheDocument();
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("keeps chore when delete request fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/homes/code/testhome`) {
+			return jsonResponse({
+				_id: "home-1",
+				homeName: "Test Home",
+			});
+		}
+
+		if (url === `${API_BASE}/testhome/chores` && method === "GET") {
+			return jsonResponse([
+				{
+					_id: "chore-1",
+					title: "Take out trash",
+					homeId: "home-1",
+				},
+			]);
+		}
+
+		if (
+			url === `${API_BASE}/testhome/chores/chore-1` &&
+			method === "DELETE"
+		) {
+			return {
+				ok: false,
+				json: async () => ({}),
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderChorePageWithHistory();
+
+	expect(await screen.findByText("Take out trash")).toBeInTheDocument();
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "-" }));
+	await user.click(getTrashButton());
+
+	await waitFor(() =>
+		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error))
+	);
+
+	expect(screen.getByText("Take out trash")).toBeInTheDocument();
+
+	consoleErrorSpy.mockRestore();
+});

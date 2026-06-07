@@ -344,3 +344,49 @@ test("fetch failure still shows generic fallback welcome", async () => {
 
 	consoleErrorSpy.mockRestore();
 });
+
+test("missing optional user fields fall back to blank and default settings", async () => {
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
+		ok: true,
+		json: async () => ({
+			username: "partialuser",
+		}),
+	}) as unknown as typeof fetch;
+
+	await renderLoadedUserSetting();
+
+	expect(screen.getByText(/Welcome\s+partialuser/)).toBeInTheDocument();
+	expect(screen.getByDisplayValue("Medium")).toBeInTheDocument();
+	expect(screen.getByDisplayValue("Off")).toBeInTheDocument();
+	expect(screen.getAllByDisplayValue("")).not.toHaveLength(0);
+});
+
+test("save profile failure stays on settings page", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi
+		.fn()
+		.mockResolvedValueOnce({
+			ok: true,
+			json: async () => makeUser(),
+		})
+		.mockResolvedValueOnce({
+			ok: false,
+			json: async () => ({}),
+		}) as unknown as typeof fetch;
+
+	await renderLoadedUserSetting();
+
+	await act(async () => {
+		fireEvent.click(screen.getByRole("button", { name: "Save Profile" }));
+		await flushPromises();
+	});
+
+	expect(screen.getByText(/Welcome\s+testuser/)).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+	expect(window.alert).not.toHaveBeenCalled();
+
+	consoleErrorSpy.mockRestore();
+});
