@@ -4,36 +4,39 @@
 @import "tailwindcss";
 
 body {
-	background-color: #f4fbff;
+	/* Default values */
+	--theme-background: #f4fbff;
 	--theme-text: #ffffff;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
+	font-size: 16px;
+	background-color: var(--theme-background);
 }
 /* These settings are the same as default */
 body[data-theme="light"][data-colorblind="off"] {
-	background-color: #f4fbff;
+	--theme-background: #f4fbff;
 	--theme-text: #ffffff;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
 }
 body[data-theme="light"][data-colorblind="protanopia"] {
-	background-color: #fafaff;
+	--theme-background: #fafaff;
 	--theme-text: #ffffff;
 	--theme-primary: #bfbfe3;
 	--theme-secondary: #eeeef9;
 	--theme-accent: #fefee3;
 }
 body[data-theme="light"][data-colorblind="deuteranopia"] {
-	background-color: #f9f9ff;
+	--theme-background: #f9f9ff;
 	--theme-text: #ffffff;
 	--theme-primary: #b7b7e3;
 	--theme-secondary: #ebebf9;
 	--theme-accent: #fdfde3;
 }
 body[data-theme="light"][data-colorblind="tritanopia"] {
-	background-color: #f3fcfb;
+	--theme-background: #f3fcfb;
 	--theme-text: #ffffff;
 	--theme-primary: #8ec8c4;
 	--theme-secondary: #dcf2f0;
@@ -41,39 +44,49 @@ body[data-theme="light"][data-colorblind="tritanopia"] {
 }
 
 body[data-theme="dark"][data-colorblind="off"] {
-	background-color: #1f2937;
+	--theme-background: #1f2937;
 	--theme-text: #f9fafb;
 	--theme-primary: #6bb5e3;
 	--theme-secondary: #3e6a8a;
 	--theme-accent: #84a35c;
 }
 body[data-theme="dark"][data-colorblind="protanopia"] {
-	background-color: #282837;
+	--theme-background: #282837;
 	--theme-text: #fafafb;
 	--theme-primary: #afafe3;
 	--theme-secondary: #66668a;
 	--theme-accent: #a0a05c;
 }
 body[data-theme="dark"][data-colorblind="deuteranopia"] {
-	background-color: #262637;
+	--theme-background: #262637;
 	--theme-text: #fafafb;
 	--theme-primary: #a4a4e4;
 	--theme-secondary: #60608b;
 	--theme-accent: #9b9b5d;
 }
 body[data-theme="dark"][data-colorblind="tritanopia"] {
-	background-color: #1b2b2a;
+	--theme-background: #1b2b2a;
 	--theme-text: #f9fafa;
 	--theme-primary: #58bdb7;
 	--theme-secondary: #31706c;
 	--theme-accent: #8d9c9a;
 }
 
+body[data-text-size="small"] {
+	font-size: 12px;
+}
+body[data-text-size="medium"] {
+	font-size: 16px;
+}
+body[data-text-size="large"] {
+	font-size: 20px;
+}
+
 @theme {
-	--color-text: (var: --theme-text);
-	--color-primary: (var: --theme-primary);
-	--color-secondary: (var: --theme-secondary);
-	--color-accent: (var: --theme-accent);
+	--color-text: var(--theme-text);
+	--color-primary: var(--theme-primary);
+	--color-secondary: var(--theme-secondary);
+	--color-accent: var(--theme-accent);
 	--font-primary: "Inter", sans-serif;
 	--font-title: "Sniglet", cursive;
 	--font-secondary: "Gowun Dodum", sans-serif;
