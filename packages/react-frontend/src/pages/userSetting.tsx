@@ -360,6 +360,9 @@ export default function UserSetting() {
 			draft.settings.colorBlindMode
 		);
 	}, [draft.settings.colorBlindMode]);
+	useEffect(() => {
+		document.body.setAttribute("data-text-size", draft.settings.textSize);
+	}, [draft.settings.textSize]);
 
 	/**
 	 *

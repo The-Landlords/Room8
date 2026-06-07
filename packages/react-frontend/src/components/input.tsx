@@ -214,11 +214,11 @@ export function InputField<T extends { settings: Record<string, any> }>({
 									className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
 										state.draft.settings[f.field] ===
 										f.onName
-											? "bg-yellow-400 justify-end" // light mode (right)
-											: "bg-gray-800 justify-start" // dark mode (left)
+											? "bg-accent justify-end" // light mode (right)
+											: "bg-text justify-start" // dark mode (left)
 									}`}
 								>
-									<span className="w-5 h-5 bg-white rounded-full shadow-md mx-1" />
+									<span className="w-5 h-5 bg-accent rounded-full shadow-md mx-1" />
 								</button>
 							);
 						}
