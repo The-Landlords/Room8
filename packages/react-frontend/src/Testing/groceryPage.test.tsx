@@ -378,3 +378,196 @@ test("clicking remove sends a DELETE request", async () => {
 
 	expect(await screen.findByText("No Groceries")).toBeInTheDocument();
 });
+
+test("renders grocery without a price", async () => {
+	mockFetchWithGroceries([
+		{
+			_id: "grocery-1",
+			title: "Bananas",
+			quantity: 6,
+			homeId: "home-1",
+			status: "PENDING",
+		},
+	]);
+
+	renderGroceryPageWithHistory();
+
+	expect(await screen.findByText("Bananas")).toBeInTheDocument();
+	expect(screen.getByText("Qty: 6")).toBeInTheDocument();
+	expect(screen.queryByText(/\$0\.00/)).not.toBeInTheDocument();
+});
+
+test("shows empty groceries when grocery fetch fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input) => {
+		const url = String(input);
+
+		if (url === `${API_BASE}/homes/code/testhome`) {
+			return {
+				ok: true,
+				json: async () => ({
+					_id: "home-1",
+					homeName: "Test Home",
+				}),
+				text: async () => "",
+			} as Response;
+		}
+
+		return {
+			ok: false,
+			json: async () => ({}),
+			text: async () => "No groceries",
+		} as Response;
+	}) as unknown as typeof fetch;
+
+	renderGroceryPageWithHistory();
+
+	expect(await screen.findByText("No Groceries")).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("keeps grocery list empty when add grocery request fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/homes/code/testhome`) {
+			return {
+				ok: true,
+				json: async () => ({
+					_id: "home-1",
+					homeName: "Test Home",
+				}),
+				text: async () => "",
+			} as Response;
+		}
+
+		if (url === `${API_BASE}/testhome/grocery` && method === "GET") {
+			return {
+				ok: true,
+				json: async () => [],
+				text: async () => "",
+			} as Response;
+		}
+
+		if (url === `${API_BASE}/testhome/grocery` && method === "POST") {
+			return {
+				ok: false,
+				json: async () => ({}),
+				text: async () => "Add failed",
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderGroceryPageWithHistory();
+
+	await screen.findByText("No Groceries");
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+	await user.type(
+		screen.getByPlaceholderText("enter grocery item"),
+		"Apples"
+	);
+	await user.clear(screen.getByPlaceholderText("Quantity"));
+	await user.type(screen.getByPlaceholderText("Quantity"), "3");
+	await user.click(screen.getByRole("button", { name: "Submit" }));
+
+	await waitFor(() =>
+		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error))
+	);
+
+	expect(screen.getByText("No Groceries")).toBeInTheDocument();
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("keeps grocery when delete request fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn(async (input, init) => {
+		const url = String(input);
+		const method = init?.method ?? "GET";
+
+		if (url === `${API_BASE}/homes/code/testhome`) {
+			return {
+				ok: true,
+				json: async () => ({
+					_id: "home-1",
+					homeName: "Test Home",
+				}),
+				text: async () => "",
+			} as Response;
+		}
+
+		if (url === `${API_BASE}/testhome/grocery` && method === "GET") {
+			return {
+				ok: true,
+				json: async () => [
+					{
+						_id: "grocery-1",
+						title: "Milk",
+						quantity: 2,
+						price: 4,
+						homeId: "home-1",
+						status: "PENDING",
+					},
+				],
+				text: async () => "",
+			} as Response;
+		}
+
+		if (
+			url === `${API_BASE}/testhome/grocery/grocery-1` &&
+			method === "DELETE"
+		) {
+			return {
+				ok: false,
+				json: async () => ({}),
+				text: async () => "Delete failed",
+			} as Response;
+		}
+
+		throw new Error(`Unhandled fetch: ${method} ${url}`);
+	}) as unknown as typeof fetch;
+
+	renderGroceryPageWithHistory();
+
+	expect(await screen.findByText("Milk")).toBeInTheDocument();
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "-" }));
+
+	const trashButton = screen.getAllByRole("button").find((button) => {
+		return button.querySelector("svg[data-icon='trash-can']");
+	});
+
+	if (!trashButton) {
+		throw new Error("Trash button was not found");
+	}
+
+	await user.click(trashButton);
+
+	await waitFor(() =>
+		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error))
+	);
+
+	expect(screen.getByText("Milk")).toBeInTheDocument();
+
+	consoleErrorSpy.mockRestore();
+});

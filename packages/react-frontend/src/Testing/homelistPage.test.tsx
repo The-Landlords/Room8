@@ -11,6 +11,7 @@ type Home = {
 	homeName: string;
 	address?: string;
 	homeCode?: string;
+	relationship?: string;
 };
 
 function renderHomeList() {
@@ -103,4 +104,63 @@ test("clicking remove opens the real remove home overlay", async () => {
 	await waitFor(() => {
 		expect(document.querySelector(".overlay-backdrop")).toBeInTheDocument();
 	});
+});
+
+test("shows empty home state when homes fetch fails", async () => {
+	const consoleErrorSpy = vi
+		.spyOn(console, "error")
+		.mockImplementation(() => {});
+
+	globalThis.fetch = vi.fn().mockResolvedValueOnce({
+		ok: false,
+		json: async () => ({}),
+	}) as unknown as typeof fetch;
+
+	renderHomeList();
+
+	expect(await screen.findByText("No Home Spaces")).toBeInTheDocument();
+	expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+
+	consoleErrorSpy.mockRestore();
+});
+
+test("renders guest and resident home actions", async () => {
+	mockFetchWithHomes([
+		{
+			_id: "home-guest",
+			homeName: "Guest Apartment",
+			address: "123 Main St",
+			homeCode: "GUEST1",
+			relationship: "GUEST",
+		},
+		{
+			_id: "home-resident",
+			homeName: "Resident Apartment",
+			address: "456 Main St",
+			homeCode: "RES1",
+			relationship: "RESIDENT",
+		},
+	]);
+
+	renderHomeList();
+
+	expect(await screen.findByText("Guest Apartment")).toBeInTheDocument();
+	expect(screen.getByText("Resident Apartment")).toBeInTheDocument();
+	expect(screen.getAllByRole("link")).toHaveLength(9);
+});
+
+test("clicking add home option opens the real add home overlay", async () => {
+	renderHomeList();
+
+	await screen.findByText("No Home Spaces");
+
+	const user = userEvent.setup();
+
+	await user.click(screen.getByRole("button", { name: "+" }));
+	await user.click(screen.getByRole("button", { name: /add home/i }));
+
+	expect(
+		screen.getByRole("heading", { name: /add home/i })
+	).toBeInTheDocument();
+	expect(screen.getByPlaceholderText(/home id/i)).toBeInTheDocument();
 });

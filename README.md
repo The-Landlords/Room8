@@ -14,6 +14,8 @@ Room8 is a housing app designed to help roommates organize chores, events, groce
 
 [![Cypress e2e Testing](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/CI.yml?style=for-the-badge&label=Cypress-e2e-Testing&logo=github)](https://github.com/The-Landlords/Room8/actions/workflows/cypress.yml)
 
+[![Coverage Reports](https://img.shields.io/github/actions/workflow/status/The-Landlords/Room8/CI.yml?style=for-the-badge&label=Coverage+Reports&logo=vitest)](https://the-landlords.github.io/Room8/)
+
 You may see a live demo here:
 
 **https://white-pond-00a466e1e.7.azurestaticapps.net/**
@@ -58,14 +60,25 @@ However, run both in union by
 npm run dev
 ```
 
-Tests can be run by the following:
+Tests and additional scripts can be run as follows
 
 ```
-npm run test
-npm run test:backend
-npm run test:frontend
-npm run coverage
+npm run test # all tests
+npm run tb # backend tests with mock
+npm run tf # frontend tests with v8
+npm run cy:e2e # e2e tests using cucumber and cypress
+npm run coverage # entire coverage graph
+npm run coverage:backend # backend coverage graph
+npm run coverage:frontend # frontend coverage graph
+npm run swagger # generates swagger file and opens the swagger api tab
+
 ```
+
+CI publishes the latest coverage reports from `main` through GitHub Pages:
+
+- [Combined coverage landing page](https://the-landlords.github.io/Room8/)
+- [Frontend coverage report](https://the-landlords.github.io/Room8/frontend/)
+- [Backend coverage report](https://the-landlords.github.io/Room8/backend/)
 
 #### Formatting With ESLint and Prettier
 
@@ -80,6 +93,13 @@ pre-commit install
 as well as installed eslint and prettier
 
 We have the following formatting syntax applied via prettier in addition to defaults: - `"tabWidth": 4,` - `"useTabs": true`
+
+```
+npm run lint:check # alert of any possible issues from linter.
+npm run lint:fix # fix any possible issues from lint. not all are found by lint, see CI/CD logs
+npm run format # apply format fixes using prettier
+npm run format:check # alert but do not write format issues
+```
 
 ### Backend Formatting
 
@@ -105,9 +125,9 @@ _This table is unfinished as of 10 Mar_
 
 As of `12 May 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage with updated with Mockinggoose. The front end pages have less coverage, but all pass with 70% or higher!
 | File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
-|--------------------------------|---------|----------|---------|---------|-----------------------------------------------|
-| All files | 86.62 | 73.46 | 80.66 | 89.96 | |
-| express_backend/models | 100 | 100 | 100 | 100 | |
+|---|---:|---:|---:|---:|---|
+| All files | 100 | 100 | 100 | 100 | |
+| models | 100 | 100 | 100 | 100 | |
 | Chore-Services.ts | 100 | 100 | 100 | 100 | |
 | Chore.ts | 100 | 100 | 100 | 100 | |
 | Event-Services.ts | 100 | 100 | 100 | 100 | |
@@ -120,27 +140,51 @@ As of `12 May 2026`, all services have been tested _locally_ with mongodb local 
 | Rules-Services.ts | 100 | 100 | 100 | 100 | |
 | User-Services.ts | 100 | 100 | 100 | 100 | |
 | User.ts | 100 | 100 | 100 | 100 | |
-| react-frontend/src | 100 | 100 | 100 | 100 | |
-| config.jest.ts | 100 | 100 | 100 | 100 | |
-| react-frontend/src/components | 80.95 | 66.66 | 66.66 | 84.21 | |
-| addOverlay.tsx | 80 | 50 | 75 | 85.71 | 37-38 |
-| overlay.tsx | 83.33 | 100 | 50 | 80 | 20 |
-| react-frontend/src/pages | 81.63 | 69.51 | 75.47 | 86.15 | |
-| calendarPage.tsx | 80.43 | 84.61 | 68.29 | 82.14 | 92-93,106,112,150,159-160,172-207,236,249-251 |
-| chorePage.tsx | 73.46 | 50 | 78.57 | 82.92 | 20,44,65,80-81,116-117 |
-| homelistPage.tsx | 81.53 | 87.5 | 72.41 | 83.05 | 56-57,78,90,101,116-117,130,150-153 |
-| rulesPage.tsx | 87.67 | 65.51 | 94.11 | 93.84 | 69,90,149,160 |
-| signInPage.tsx | 100 | 100 | 100 | 100 | |
-| signUpPage.tsx | 100 | 100 | 100 | 100 | |
-| userSetting.tsx | 70.27 | 57.14 | 67.44 | 76.36 | 109,115-116,233-234,341,447-499,551-573 |
-
+| utils | 100 | 100 | 100 | 100 | |
+| encryption.ts | 100 | 100 | 100 | 100 | |
 **Test Summary**
 
-- Test Suites: 19 passed, 19 total
-- Tests: 176 passed, 176 total
-- Snapshots: 0 total
-- Time: 11.816 s (estimated 435 s)
-- Projects: 2
+| Metric      |                   Result |
+| ----------- | -----------------------: |
+| Test Suites |      13 passed, 13 total |
+| Tests       |    176 passed, 176 total |
+| Snapshots   |                  0 total |
+| Time        | 11.975 s, estimated 12 s |
+
+Frontend report from `v8`
+| File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
+|---|---:|---:|---:|---:|---|
+| All files | 86.59 | 90.46 | 81.43 | 88.21 | |
+| src | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;config.ts | 100 | 100 | 100 | 100 | |
+| src/components | 91.94 | 91.89 | 89.65 | 92.38 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;DeleteVotePanel.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;EditEventOverlay.tsx | 100 | 95 | 100 | 100 | 31 |
+| &nbsp;&nbsp;&nbsp;&nbsp;RuleCard.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;VotePanel.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;addEventOverlay.tsx | 96.15 | 80 | 100 | 96.15 | 55 |
+| &nbsp;&nbsp;&nbsp;&nbsp;addHomeOverlay.tsx | 76.19 | 80 | 75 | 76.19 | 30-31,37,43,50 |
+| &nbsp;&nbsp;&nbsp;&nbsp;addOverlay.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;baseList.tsx | 83.33 | 100 | 80 | 83.33 | 97 |
+| &nbsp;&nbsp;&nbsp;&nbsp;createHomeOverlay.tsx | 86.48 | 84.21 | 83.33 | 87.85 | 84-85,99,106,112-116,139-140,144-146,172,246 |
+| &nbsp;&nbsp;&nbsp;&nbsp;eventList.tsx | 75 | 100 | 66.66 | 75 | 54 |
+| &nbsp;&nbsp;&nbsp;&nbsp;header.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;homeAddOverlay.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;homeList.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;input.tsx | 92.3 | 91.66 | 86.66 | 95.23 | 118 |
+| &nbsp;&nbsp;&nbsp;&nbsp;overlay.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;removeEventOverlay.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;removeHomeOverlay.tsx | 93.33 | 100 | 75 | 93.33 | 60 |
+| &nbsp;&nbsp;&nbsp;&nbsp;rulesList.tsx | 88.88 | 85.71 | 83.33 | 87.5 | 52 |
+| src/pages | 82.02 | 88.94 | 75 | 84.57 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;calendarPage.tsx | 59.25 | 80.76 | 46.66 | 63.01 | 38-50,61-70,97-98,111,117,154-172,213,245-248,263-265 |
+| &nbsp;&nbsp;&nbsp;&nbsp;chorePage.tsx | 92.85 | 80 | 100 | 100 | 27,52,75 |
+| &nbsp;&nbsp;&nbsp;&nbsp;groceryPage.tsx | 91.37 | 82.75 | 100 | 96.22 | 43,50 |
+| &nbsp;&nbsp;&nbsp;&nbsp;homelistPage.tsx | 64.7 | 87.5 | 55.55 | 66.66 | 30-46,96,107-132 |
+| &nbsp;&nbsp;&nbsp;&nbsp;rulesPage.tsx | 86.9 | 81.08 | 95 | 86.25 | 51-63,72,157,178-179,241 |
+| &nbsp;&nbsp;&nbsp;&nbsp;signInPage.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;signUpPage.tsx | 100 | 100 | 100 | 100 | |
+| &nbsp;&nbsp;&nbsp;&nbsp;userSetting.tsx | 97.29 | 100 | 100 | 97.22 | 413 |
 
 ### API TESTING
 
@@ -219,3 +263,4 @@ Future plans may include
 
 - globalization to all public spaces, rather than a specific niche of a household or apartment
 - text message feature: ability to send reminders, statuses, and other items to users based on household updates
+- colorblindness modes, light vs dark modes, text size alerations
