@@ -132,15 +132,15 @@ jobs:
                   path: coverage-site
 
             - uses: actions/configure-pages@v5
-              if: github.event_name == 'push' && (github.ref == 'refs/heads/main')
+              if: github.event_name == 'push'
 
             - uses: actions/upload-pages-artifact@v3
-              if: github.event_name == 'push' && (github.ref == 'refs/heads/main')
+              if: github.event_name == 'push'
               with:
                   path: coverage-site
 
     deploy-coverage:
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main')
+        if: github.event_name == 'push'
         needs: build
         runs-on: ubuntu-latest
 
