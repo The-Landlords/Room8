@@ -73,6 +73,16 @@ html[data-text-size="large"] {
 	font-size: 20px;
 }
 
+body[data-text-size="small"] {
+	font-size: 12px;
+}
+body[data-text-size="medium"] {
+	font-size: 16px;
+}
+body[data-text-size="large"] {
+	font-size: 20px;
+}
+
 @theme {
 	--color-text: var(--theme-text);
 	--color-primary: var(--theme-primary);
