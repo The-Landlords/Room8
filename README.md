@@ -20,6 +20,24 @@ You may see a live demo here:
 
 **https://white-pond-00a466e1e.7.azurestaticapps.net/**
 
+#### Other project artifacts
+
+Links to project artifacts can be found [here](https://drive.google.com/drive/u/0/folders/1Y94Pnr4FHKwKu4UesIl0lzSkJXwovnW1), including past slides, tech spec, working agreement, and sheets for estimates.
+
+Our project board can be found [here](https://github.com/orgs/The-Landlords/projects/1).
+
+UML Diagrams can be found here:
+
+[Room8 Tech Spec](https://docs.google.com/document/d/1QrysaAUJk3lrZG5peBCVGyf7awerFQEnX9qCmPqJOE0/edit?tab=t.0) (updated 11 March 2026)
+
+[Room8 Figma Development](https://www.figma.com/design/MaH0PCv7Bb1NWshXdRuGUx/Room8-Prototype-V1?node-id=0-1&p=f&t=HCwzF1qebVIPRdJe-0)
+
+[Room8 Final Presentation & Retrospective][https://docs.google.com/presentation/d/1mRnEUt_903Lb3wg_i7ejsHYtVlK3obC2/edit?slide=id.p1#slide=id.p1]
+
+- [Login Sequence Diagram](https://app.diagrams.net/?libs=general;uml#G1IO0Z067K5lZUWQO86LF4x5FJ2QWUOf_z%23%7B%22pageId%22%3A%2213e1069c-82ec-6db2-03f1-153e76fe0fe0%22%7D)
+- [Standard UML Diagram](https://app.diagrams.net/#G1iUXWNrmekFVPFRKkXIQ6NUoDRErm5pb4#%7B%22pageId%22%3A%22CYbapvT21Snnj9w-jAMA%22%7D)
+- [Use Case Diagram](https://app.diagrams.net/#G1kN6sUKFojofFbvJqVfi-DkvuanEyP3zy%23%7B%22pageId%22%3A%22aO7viMubsWdG2gBV-KE4%22%7D)
+
 ### Installation
 
 Clone the repo, ensure node is installed, and run the following:

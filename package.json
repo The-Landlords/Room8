@@ -14,6 +14,8 @@
 		"coverage": "npm run coverage:backend && npm run coverage:frontend",
 		"coverage:backend": "jest --selectProjects backend --runInBand --coverage",
 		"coverage:frontend": "vitest run packages/react-frontend/src/Testing --environment jsdom --coverage",
+		"cb": "npm run coverage:backend",
+		"cf": "npm run coverage:frontend",
 		"frontend": "npm -w packages/react-frontend run dev",
 		"backend": "npm -w packages/express_backend run start",
 		"build": "npm -w packages/react-frontend run build && npm -w packages/express_backend run build",

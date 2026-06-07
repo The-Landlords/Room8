@@ -40,9 +40,24 @@ jobs:
             - name: Generate frontend coverage
               run: npm run coverage:frontend -- --coverage.reportsDirectory=coverage/frontend
 
-            - name: Create coverage landing page
+            - name: Prepare coverage site
               run: |
-                  cat > coverage/index.html <<'EOF'
+                  mkdir -p coverage-site
+                  touch coverage-site/.nojekyll
+
+                  cp -R coverage/frontend coverage-site/frontend
+
+                  if [ -f coverage/backend/index.html ]; then
+                      cp -R coverage/backend coverage-site/backend
+                  elif [ -f coverage/backend/lcov-report/index.html ]; then
+                      cp -R coverage/backend/lcov-report coverage-site/backend
+                  else
+                      echo "Backend coverage HTML report was not found"
+                      find coverage/backend -maxdepth 3 -type f | sort
+                      exit 1
+                  fi
+
+                  cat > coverage-site/index.html <<'EOF'
                   <!doctype html>
                   <html lang="en">
                       <head>
@@ -114,12 +129,15 @@ jobs:
             - uses: actions/upload-artifact@v4
               with:
                   name: coverage-reports
-                  path: coverage
+                  path: coverage-site
+
+            - uses: actions/configure-pages@v5
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
             - uses: actions/upload-pages-artifact@v3
               if: github.event_name == 'push' && github.ref == 'refs/heads/main'
               with:
-                  path: coverage
+                  path: coverage-site
 
     deploy-coverage:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
