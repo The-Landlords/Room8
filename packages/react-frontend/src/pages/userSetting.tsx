@@ -349,6 +349,18 @@ export default function UserSetting() {
 			});
 	}, []);
 
+	/* Updates the html value when 'theme' changes */
+	useEffect(() => {
+		document.body.setAttribute("data-theme", draft.settings.theme);
+	}, [draft.settings.theme]);
+	/* Updates the html value when 'colorblind' changes */
+	useEffect(() => {
+		document.body.setAttribute(
+			"data-colorblind",
+			draft.settings.colorBlindMode
+		);
+	}, [draft.settings.colorBlindMode]);
+
 	/**
 	 *
 	 * @param s a given string with values with commas inside
@@ -501,7 +513,7 @@ export default function UserSetting() {
 								/>
 								{draft.phone.length > 0 &&
 									!phoneRegex.test(draft.phone) && (
-										<p className="text-sm text-red-500">
+										<p className="text-sm text-accent">
 											Use E.164 format (e.g. +14155552671)
 										</p>
 									)}
