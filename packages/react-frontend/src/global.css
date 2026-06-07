@@ -5,12 +5,75 @@
 
 body {
 	background-color: #f4fbff;
+	--theme-text: #ffffff;
+	--theme-primary: #96c3e3;
+	--theme-secondary: #def0f9;
+	--theme-accent: #f7ffe3;
 }
+/* These settings are the same as default */
+body[data-theme="light"][data-colorblind="off"] {
+	background-color: #f4fbff;
+	--theme-text: #ffffff;
+	--theme-primary: #96c3e3;
+	--theme-secondary: #def0f9;
+	--theme-accent: #f7ffe3;
+}
+body[data-theme="light"][data-colorblind="protanopia"] {
+	background-color: #fafaff;
+	--theme-text: #ffffff;
+	--theme-primary: #bfbfe3;
+	--theme-secondary: #eeeef9;
+	--theme-accent: #fefee3;
+}
+body[data-theme="light"][data-colorblind="deuteranopia"] {
+	background-color: #f9f9ff;
+	--theme-text: #ffffff;
+	--theme-primary: #b7b7e3;
+	--theme-secondary: #ebebf9;
+	--theme-accent: #fdfde3;
+}
+body[data-theme="light"][data-colorblind="tritanopia"] {
+	background-color: #f3fcfb;
+	--theme-text: #ffffff;
+	--theme-primary: #8ec8c4;
+	--theme-secondary: #dcf2f0;
+	--theme-accent: #fbfbfb;
+}
+
+body[data-theme="dark"][data-colorblind="off"] {
+	background-color: #1f2937;
+	--theme-text: #f9fafb;
+	--theme-primary: #6bb5e3;
+	--theme-secondary: #3e6a8a;
+	--theme-accent: #84a35c;
+}
+body[data-theme="dark"][data-colorblind="protanopia"] {
+	background-color: #282837;
+	--theme-text: #fafafb;
+	--theme-primary: #afafe3;
+	--theme-secondary: #66668a;
+	--theme-accent: #a0a05c;
+}
+body[data-theme="dark"][data-colorblind="deuteranopia"] {
+	background-color: #262637;
+	--theme-text: #fafafb;
+	--theme-primary: #a4a4e4;
+	--theme-secondary: #60608b;
+	--theme-accent: #9b9b5d;
+}
+body[data-theme="dark"][data-colorblind="tritanopia"] {
+	background-color: #1b2b2a;
+	--theme-text: #f9fafa;
+	--theme-primary: #58bdb7;
+	--theme-secondary: #31706c;
+	--theme-accent: #8d9c9a;
+}
+
 @theme {
-	--color-text: #ffffff;
-	--color-primary: #96c3e3;
-	--color-secondary: #def0f9;
-	--color-accent: #f7ffe3;
+	--color-text: (var: --theme-text);
+	--color-primary: (var: --theme-primary);
+	--color-secondary: (var: --theme-secondary);
+	--color-accent: (var: --theme-accent);
 	--font-primary: "Inter", sans-serif;
 	--font-title: "Sniglet", cursive;
 	--font-secondary: "Gowun Dodum", sans-serif;
@@ -18,10 +81,10 @@ body {
 
 @layer components {
 	.header {
-		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
+		@apply font-primary text-shadow-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-primary text-2xl pt-2;
+		@apply font-primary text-shadow-primary text-2xl pt-2;
 	}
 	.header-wrapper {
 		@apply relative flex items-center justify-center px-6 pt-8 w-full;
@@ -62,7 +125,7 @@ body {
 		@apply bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
 	}
 	.overlay-backdrop {
-		@apply fixed z-50 inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center;
+		@apply fixed z-50 inset-0 bg-secondary/50 backdrop-blur-sm flex items-center justify-center;
 	}
 	.overlay-content {
 		@apply bg-secondary rounded-lg shadow-lg p-6 max-w-md w-full;
@@ -78,7 +141,7 @@ body {
 		@apply bg-transparent text-primary border-primary;
 	}
 	.settings-input-field {
-		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-white p-3 text-primary;
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-secondary p-3 text-primary;
 		@apply flex items-center flex-col;
 		@apply transition-colors duration-200;
 	}
@@ -97,7 +160,6 @@ body {
 	}
 	.settings-background {
 		@apply min-h-screen flex flex-col;
-		background-color: #efe7df;
 	}
 
 	/* Highlighted Title of input field */
@@ -114,7 +176,7 @@ body {
 		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
 	}
 	.bubble-contents {
-		@apply gap-5 flex flex-col gap-4 items-center w-full;
+		@apply flex flex-col gap-4 items-center w-full;
 	}
 	/* Heading text used inside bubbles */
 	.bubble-header {
@@ -126,7 +188,7 @@ body {
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-white self-center p-3 text-primary justify-between;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-secondary self-center p-3 text-primary justify-between;
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
