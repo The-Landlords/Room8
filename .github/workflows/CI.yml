@@ -132,15 +132,15 @@ jobs:
                   path: coverage-site
 
             - uses: actions/configure-pages@v5
-              if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/frontend-coverage-readme')
+              if: github.event_name == 'push' && (github.ref == 'refs/heads/main')
 
             - uses: actions/upload-pages-artifact@v3
-              if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/frontend-coverage-readme')
+              if: github.event_name == 'push' && (github.ref == 'refs/heads/main')
               with:
                   path: coverage-site
 
     deploy-coverage:
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/frontend-coverage-readme')
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main')
         needs: build
         runs-on: ubuntu-latest
 
