@@ -3,10 +3,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Sniglet:wght@400;700&display=swap");
 @import "tailwindcss";
 
-body {
+:root {
 	/* Default values */
 	--theme-background: #f4fbff;
-	--theme-text: #ffffff;
+	--theme-text: #000000;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
@@ -14,57 +14,57 @@ body {
 	background-color: var(--theme-background);
 }
 /* These settings are the same as default */
-body[data-theme="light"][data-colorblind="off"] {
+html[data-theme="light"][data-colorblind="off"] {
 	--theme-background: #f4fbff;
-	--theme-text: #ffffff;
+	--theme-text: #000000;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
 }
-body[data-theme="light"][data-colorblind="protanopia"] {
+html[data-theme="light"][data-colorblind="protanopia"] {
 	--theme-background: #fafaff;
-	--theme-text: #ffffff;
+	--theme-text: #000000;
 	--theme-primary: #bfbfe3;
 	--theme-secondary: #eeeef9;
 	--theme-accent: #fefee3;
 }
-body[data-theme="light"][data-colorblind="deuteranopia"] {
+html[data-theme="light"][data-colorblind="deuteranopia"] {
 	--theme-background: #f9f9ff;
-	--theme-text: #ffffff;
+	--theme-text: #000000;
 	--theme-primary: #b7b7e3;
 	--theme-secondary: #ebebf9;
 	--theme-accent: #fdfde3;
 }
-body[data-theme="light"][data-colorblind="tritanopia"] {
+html[data-theme="light"][data-colorblind="tritanopia"] {
 	--theme-background: #f3fcfb;
-	--theme-text: #ffffff;
+	--theme-text: #000000;
 	--theme-primary: #8ec8c4;
 	--theme-secondary: #dcf2f0;
 	--theme-accent: #fbfbfb;
 }
 
-body[data-theme="dark"][data-colorblind="off"] {
+html[data-theme="dark"][data-colorblind="off"] {
 	--theme-background: #1f2937;
 	--theme-text: #f9fafb;
 	--theme-primary: #6bb5e3;
 	--theme-secondary: #3e6a8a;
 	--theme-accent: #84a35c;
 }
-body[data-theme="dark"][data-colorblind="protanopia"] {
+html[data-theme="dark"][data-colorblind="protanopia"] {
 	--theme-background: #282837;
 	--theme-text: #fafafb;
 	--theme-primary: #afafe3;
 	--theme-secondary: #66668a;
 	--theme-accent: #a0a05c;
 }
-body[data-theme="dark"][data-colorblind="deuteranopia"] {
+html[data-theme="dark"][data-colorblind="deuteranopia"] {
 	--theme-background: #262637;
 	--theme-text: #fafafb;
 	--theme-primary: #a4a4e4;
 	--theme-secondary: #60608b;
 	--theme-accent: #9b9b5d;
 }
-body[data-theme="dark"][data-colorblind="tritanopia"] {
+html[data-theme="dark"][data-colorblind="tritanopia"] {
 	--theme-background: #1b2b2a;
 	--theme-text: #f9fafa;
 	--theme-primary: #58bdb7;
@@ -72,17 +72,18 @@ body[data-theme="dark"][data-colorblind="tritanopia"] {
 	--theme-accent: #8d9c9a;
 }
 
-body[data-text-size="small"] {
+html[data-text-size="small"] {
 	font-size: 12px;
 }
-body[data-text-size="medium"] {
+html[data-text-size="medium"] {
 	font-size: 16px;
 }
-body[data-text-size="large"] {
+html[data-text-size="large"] {
 	font-size: 20px;
 }
 
 @theme {
+	--color-background: var(--theme-background);
 	--color-text: var(--theme-text);
 	--color-primary: var(--theme-primary);
 	--color-secondary: var(--theme-secondary);
@@ -94,10 +95,10 @@ body[data-text-size="large"] {
 
 @layer components {
 	.header {
-		@apply font-primary text-shadow-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
+		@apply font-primary text-shadow-text text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-shadow-primary text-2xl pt-2;
+		@apply font-primary text-shadow-text text-2xl pt-2;
 	}
 	.header-wrapper {
 		@apply relative flex items-center justify-center px-6 pt-8 w-full;
@@ -144,17 +145,17 @@ body[data-text-size="large"] {
 		@apply bg-secondary rounded-lg shadow-lg p-6 max-w-md w-full;
 	}
 	.button {
-		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
+		@apply bg-primary/30 text-primary font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
 	}
 	.button-selected {
 		@apply bg-accent text-primary border-2 border-primary;
 	}
 	/* Keep the typed input transparent so the parent background shows */
 	.settings-input-field:focus-within .underlined-input {
-		@apply bg-transparent text-primary border-primary;
+		@apply bg-transparent text-text border-text;
 	}
 	.settings-input-field {
-		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-secondary p-3 text-primary;
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-secondary p-3 text-text;
 		@apply flex items-center flex-col;
 		@apply transition-colors duration-200;
 	}
@@ -164,7 +165,7 @@ body[data-text-size="large"] {
 
 	/* When the user clicks/types inside a settings input, transition the wrapper */
 	.settings-input-field:focus-within {
-		@apply bg-accent text-primary border-primary ring-2 ring-primary/50;
+		@apply bg-accent text-text border-primary ring-2 ring-primary/50;
 	}
 
 	.underlined-input {
@@ -186,7 +187,7 @@ body[data-text-size="large"] {
 	}
 	/* Bubble background (on most text blocks) */
 	.bubble {
-		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
+		@apply bg-secondary flex flex-col gap-2 border-text border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
 	}
 	.bubble-contents {
 		@apply flex flex-col gap-4 items-center w-full;
@@ -197,15 +198,15 @@ body[data-text-size="large"] {
 	}
 
 	.header-thirdary {
-		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
+		@apply font-primary text-primary text-xl font-medium p-2 max-w-100;
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-secondary self-center p-3 text-primary justify-between;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-secondary self-center p-3 text-text justify-between;
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
-		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
+		@apply focus:bg-accent focus:text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }
 

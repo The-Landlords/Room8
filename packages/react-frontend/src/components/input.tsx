@@ -150,7 +150,7 @@ export function InputField<T extends { settings: Record<string, any> }>({
 											},
 										}))
 									}
-									className="bg-transparent border-b border-text outline-none"
+									className="bg-secondary border-b border-text outline-none"
 								>
 									{f.options.map((opt) => (
 										<option
@@ -214,8 +214,8 @@ export function InputField<T extends { settings: Record<string, any> }>({
 									className={`w-14 h-7 flex items-center rounded-full transition-colors duration-300 ${
 										state.draft.settings[f.field] ===
 										f.onName
-											? "bg-accent justify-end" // light mode (right)
-											: "bg-text justify-start" // dark mode (left)
+											? "bg-primary justify-end" // light mode (right)
+											: "bg-primary justify-start" // dark mode (left)
 									}`}
 								>
 									<span className="w-5 h-5 bg-accent rounded-full shadow-md mx-1" />
