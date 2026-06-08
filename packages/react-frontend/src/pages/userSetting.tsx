@@ -351,17 +351,23 @@ export default function UserSetting() {
 
 	/* Updates the html value when 'theme' changes */
 	useEffect(() => {
-		document.body.setAttribute("data-theme", draft.settings.theme);
+		document.documentElement.setAttribute(
+			"data-theme",
+			draft.settings.theme
+		);
 	}, [draft.settings.theme]);
 	/* Updates the html value when 'colorblind' changes */
 	useEffect(() => {
-		document.body.setAttribute(
+		document.documentElement.setAttribute(
 			"data-colorblind",
 			draft.settings.colorBlindMode
 		);
 	}, [draft.settings.colorBlindMode]);
 	useEffect(() => {
-		document.body.setAttribute("data-text-size", draft.settings.textSize);
+		document.documentElement.setAttribute(
+			"data-text-size",
+			draft.settings.textSize
+		);
 	}, [draft.settings.textSize]);
 
 	/**
@@ -444,7 +450,7 @@ export default function UserSetting() {
 						← Back
 					</button>
 				</div>
-				<h1 className="header text-center px-14 ">
+				<h1 className="header text-text text-center px-14 ">
 					Welcome {user?.username ?? "User"}
 				</h1>
 				<button
