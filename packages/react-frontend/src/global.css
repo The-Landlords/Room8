@@ -45,28 +45,28 @@ html[data-theme="light"][data-colorblind="tritanopia"] {
 
 html[data-theme="dark"][data-colorblind="off"] {
 	--theme-background: #1f2937;
-	--theme-text: #f9fafb;
+	--theme-text: #000000;
 	--theme-primary: #6bb5e3;
 	--theme-secondary: #3e6a8a;
 	--theme-accent: #84a35c;
 }
 html[data-theme="dark"][data-colorblind="protanopia"] {
 	--theme-background: #282837;
-	--theme-text: #fafafb;
+	--theme-text: #000000;
 	--theme-primary: #afafe3;
 	--theme-secondary: #66668a;
 	--theme-accent: #a0a05c;
 }
 html[data-theme="dark"][data-colorblind="deuteranopia"] {
 	--theme-background: #262637;
-	--theme-text: #fafafb;
+	--theme-text: #000000;
 	--theme-primary: #a4a4e4;
 	--theme-secondary: #60608b;
 	--theme-accent: #9b9b5d;
 }
 html[data-theme="dark"][data-colorblind="tritanopia"] {
 	--theme-background: #1b2b2a;
-	--theme-text: #f9fafa;
+	--theme-text: #000000;
 	--theme-primary: #58bdb7;
 	--theme-secondary: #31706c;
 	--theme-accent: #8d9c9a;
