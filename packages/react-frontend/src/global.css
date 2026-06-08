@@ -73,16 +73,6 @@ html[data-text-size="large"] {
 	font-size: 20px;
 }
 
-body[data-text-size="small"] {
-	font-size: 12px;
-}
-body[data-text-size="medium"] {
-	font-size: 16px;
-}
-body[data-text-size="large"] {
-	font-size: 20px;
-}
-
 @theme {
 	--color-text: var(--theme-text);
 	--color-primary: var(--theme-primary);
@@ -152,7 +142,7 @@ body[data-text-size="large"] {
 		@apply bg-secondary rounded-lg shadow-lg p-6 max-w-md w-full;
 	}
 	.button {
-		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
+		@apply bg-primary/30 text-primary font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
 	}
 	.button-selected {
 		@apply bg-accent text-primary border-2 border-primary;
@@ -194,7 +184,7 @@ body[data-text-size="large"] {
 	}
 	/* Bubble background (on most text blocks) */
 	.bubble {
-		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
+		@apply bg-secondary flex flex-col gap-2 border-text border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
 	}
 	.bubble-contents {
 		@apply flex flex-col gap-4 items-center w-full;
@@ -213,7 +203,7 @@ body[data-text-size="large"] {
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
-		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
+		@apply focus:bg-accent focus:text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }
 
