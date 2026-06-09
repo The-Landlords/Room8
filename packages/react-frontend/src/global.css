@@ -5,68 +5,59 @@
 
 :root {
 	/* Default values */
-	--theme-background: #f4fbff;
-	--theme-text: #ffffff;
+	--theme-text: #f4fbff;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
 	font-size: 16px;
-	background-color: var(--theme-background);
+	background-color: var(--theme-text);
 }
 /* These settings are the same as default */
 html[data-theme="light"][data-colorblind="off"] {
-	--theme-background: #f4fbff;
-	--theme-text: #ffffff;
+	--theme-text: #f4fbff;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
 }
 html[data-theme="light"][data-colorblind="protanopia"] {
-	--theme-background: #fafaff;
-	--theme-text: #ffffff;
+	--theme-text: #fafaff;
 	--theme-primary: #bfbfe3;
 	--theme-secondary: #eeeef9;
 	--theme-accent: #fefee3;
 }
 html[data-theme="light"][data-colorblind="deuteranopia"] {
-	--theme-background: #f9f9ff;
-	--theme-text: #ffffff;
+	--theme-text: #f9f9ff;
 	--theme-primary: #b7b7e3;
 	--theme-secondary: #ebebf9;
 	--theme-accent: #fdfde3;
 }
 html[data-theme="light"][data-colorblind="tritanopia"] {
-	--theme-background: #f3fcfb;
-	--theme-text: #ffffff;
+	--theme-text: #f3fcfb;
 	--theme-primary: #8ec8c4;
 	--theme-secondary: #dcf2f0;
 	--theme-accent: #fbfbfb;
 }
 
 html[data-theme="dark"][data-colorblind="off"] {
-	--theme-background: #10161e;
-	--theme-text: #000000;
+	--theme-text: #10161e;
 	--theme-primary: #5a9bc4;
 	--theme-secondary: #284457;
 	--theme-accent: #504d25;
 }
 html[data-theme="dark"][data-colorblind="protanopia"] {
-	--theme-background: #15151e;
-	--theme-text: #000000;
+	--theme-text: #15151e;
 	--theme-primary: #9595c4;
 	--theme-secondary: #424257;
 	--theme-accent: #4d4d25;
 }
 html[data-theme="dark"][data-colorblind="deuteranopia"] {
-	--theme-background: #14141e;
-	--theme-text: #000000;
+	--theme-text: #14141e;
 	--theme-primary: #8c8cc5;
 	--theme-secondary: #3d3d57;
 	--theme-accent: #4e4e25;
 }
 html[data-theme="dark"][data-colorblind="tritanopia"] {
-	--theme-background: #0e1717;
-	--theme-text: #000000;
+	--theme-text: #0e1717;
 	--theme-primary: #49a29d;
 	--theme-secondary: #214745;
 	--theme-accent: #54494a;
@@ -83,7 +74,6 @@ html[data-text-size="large"] {
 }
 
 @theme {
-	--color-background: var(--theme-background);
 	--color-text: var(--theme-text);
 	--color-primary: var(--theme-primary);
 	--color-secondary: var(--theme-secondary);
@@ -105,7 +95,7 @@ html[data-text-size="large"] {
 	}
 	.header-title {
 		@apply font-title text-primary text-6xl font-bold;
-		-webkit-text-stroke: 8px var(--color-primary);
+		-webkit-text-stroke: 8px var(--color-text);
 		paint-order: stroke fill;
 	}
 	.dashboard-card {
@@ -136,7 +126,14 @@ html[data-text-size="large"] {
 		animation: floatUp 0.5s ease-out forwards;
 	}
 	.background-house {
-		@apply bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
+		@apply relative min-h-screen flex flex-col;
+	}
+	.background-house::before {
+		content: "";
+		@apply absolute inset-0 z-1 opacity-15 bg-[url('/assets/Room8-background.png')] bg-cover;
+	}
+	.background-house > * {
+		@apply relative z-10;
 	}
 	.overlay-backdrop {
 		@apply fixed z-50 inset-0 bg-secondary/50 backdrop-blur-sm flex items-center justify-center;
@@ -155,7 +152,7 @@ html[data-text-size="large"] {
 		@apply bg-transparent text-primary/70 border-primary;
 	}
 	.settings-input-field {
-		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-background p-3 text-primary;
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-text p-3 text-primary;
 		@apply flex items-center flex-col;
 		@apply transition-colors duration-200;
 	}
@@ -202,7 +199,7 @@ html[data-text-size="large"] {
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-background self-center p-3 text-primary justify-between;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-text self-center p-3 text-primary justify-between;
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
