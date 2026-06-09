@@ -56,6 +56,13 @@ relationRouter.post(
 				.toUpperCase()
 				.trim();
 
+			if (
+				!relationship ||
+				!["RESIDENT", "GUEST"].includes(relationship)
+			) {
+				return res.status(400).json({ error: "Invalid relationship" });
+			}
+
 			const h = await getHomeByCode(homecode);
 
 			if (!h) {
@@ -85,8 +92,37 @@ relationRouter.post(
 					.json({ error: "Connection already exists" });
 			}
 
-			h.userIds.push({ userId: u._id, relationship: relationship });
-			u.homeIds.push({ homeId: h._id, relationship: relationship });
+			const updatedHome = await updateHome(h._id, {
+				userIds: [
+					...h.userIds,
+					{
+						userId: u._id,
+						relationship,
+					},
+				],
+			});
+
+			if (!updatedHome) {
+				return res
+					.status(404)
+					.json({ error: "Home not found for update" });
+			}
+
+			const updatedUser = await updateUserById(u._id, {
+				homeIds: [
+					...u.homeIds,
+					{
+						homeId: h._id,
+						relationship,
+					},
+				],
+			});
+
+			if (!updatedUser) {
+				return res
+					.status(404)
+					.json({ error: "User not found for update" });
+			}
 
 			if (relationship === "GUEST") {
 				const existing = await getGuestAscensionByGuest(u._id, h._id);
@@ -101,11 +137,8 @@ relationRouter.post(
 				}
 			}
 
-			await h.save();
-			await u.save();
-
 			console.log("added relation");
-			res.status(200).json(h);
+			res.status(200).json(updatedHome);
 		} catch (err) {
 			console.error(err);
 			res.status(500).json({ error: "Failed to create relationship" });
