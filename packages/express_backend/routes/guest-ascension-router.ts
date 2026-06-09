@@ -252,7 +252,7 @@ guestAscensionRouter.post(
 					String(ascension.guestId)
 				);
 
-				const homeTarget = home.userIds.find((u) =>
+				const homeTarget = home.userIds.find((u: any) =>
 					u.userId.equals(guestId)
 				);
 

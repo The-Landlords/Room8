@@ -228,7 +228,7 @@ relationRouter.patch(
 
 			const willDeleteHome =
 				h.userIds.length === 1 &&
-				h.userIds.some((user) => user.userId.equals(u._id));
+				h.userIds.some((user: any) => user.userId.equals(u._id));
 
 			// we want to prevent users from accidentally deleting a home by leaving it, so we require them to confirm if they are the last resident and will delete the home by leaving
 			// this warning happens before the database is updated.
@@ -240,7 +240,7 @@ relationRouter.patch(
 			}
 
 			const removeOneUser = h.userIds.filter(
-				(user) => !user.userId.equals(u._id)
+				(user: any) => !user.userId.equals(u._id)
 			);
 			const removeOneHome = u.homeIds.filter(
 				(home) => !home.homeId.equals(h._id)
@@ -337,7 +337,7 @@ relationRouter.patch(
 			}
 
 			const updatedHome = await updateHome(h._id, {
-				userIds: h.userIds.map((user) =>
+				userIds: h.userIds.map((user: any) =>
 					user.userId.equals(u._id)
 						? { userId: user.userId, relationship: newRelation }
 						: user
