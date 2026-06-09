@@ -95,16 +95,16 @@ html[data-text-size="large"] {
 
 @layer components {
 	.header {
-		@apply font-primary text-shadow-text text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
+		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-shadow-text text-2xl pt-2;
+		@apply font-primary text-primary text-2xl pt-2;
 	}
 	.header-wrapper {
 		@apply relative flex items-center justify-center px-6 pt-8 w-full;
 	}
 	.header-title {
-		@apply font-title text-text text-6xl font-bold;
+		@apply font-title text-primary text-6xl font-bold;
 		-webkit-text-stroke: 8px var(--color-primary);
 		paint-order: stroke fill;
 	}
