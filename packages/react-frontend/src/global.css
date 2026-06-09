@@ -6,7 +6,7 @@
 :root {
 	/* Default values */
 	--theme-background: #f4fbff;
-	--theme-text: #000000;
+	--theme-text: #ffffff;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
@@ -16,28 +16,28 @@
 /* These settings are the same as default */
 html[data-theme="light"][data-colorblind="off"] {
 	--theme-background: #f4fbff;
-	--theme-text: #000000;
+	--theme-text: #ffffff;
 	--theme-primary: #96c3e3;
 	--theme-secondary: #def0f9;
 	--theme-accent: #f7ffe3;
 }
 html[data-theme="light"][data-colorblind="protanopia"] {
 	--theme-background: #fafaff;
-	--theme-text: #000000;
+	--theme-text: #ffffff;
 	--theme-primary: #bfbfe3;
 	--theme-secondary: #eeeef9;
 	--theme-accent: #fefee3;
 }
 html[data-theme="light"][data-colorblind="deuteranopia"] {
 	--theme-background: #f9f9ff;
-	--theme-text: #000000;
+	--theme-text: #ffffff;
 	--theme-primary: #b7b7e3;
 	--theme-secondary: #ebebf9;
 	--theme-accent: #fdfde3;
 }
 html[data-theme="light"][data-colorblind="tritanopia"] {
 	--theme-background: #f3fcfb;
-	--theme-text: #000000;
+	--theme-text: #ffffff;
 	--theme-primary: #8ec8c4;
 	--theme-secondary: #dcf2f0;
 	--theme-accent: #fbfbfb;
@@ -145,17 +145,17 @@ html[data-text-size="large"] {
 		@apply bg-secondary rounded-lg shadow-lg p-6 max-w-md w-full;
 	}
 	.button {
-		@apply bg-primary/30 text-primary font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
+		@apply bg-primary/70 text-text font-secondary text-lg py-2 px-4 rounded-3xl shadow-sm hover:bg-accent/90 hover:text-primary transition-colors duration-150;
 	}
 	.button-selected {
 		@apply bg-accent text-primary border-2 border-primary;
 	}
 	/* Keep the typed input transparent so the parent background shows */
 	.settings-input-field:focus-within .underlined-input {
-		@apply bg-transparent text-text border-text;
+		@apply bg-transparent text-primary/70 border-primary;
 	}
 	.settings-input-field {
-		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-secondary p-3 text-text;
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-background p-3 text-primary;
 		@apply flex items-center flex-col;
 		@apply transition-colors duration-200;
 	}
@@ -165,11 +165,11 @@ html[data-text-size="large"] {
 
 	/* When the user clicks/types inside a settings input, transition the wrapper */
 	.settings-input-field:focus-within {
-		@apply bg-accent text-text border-primary ring-2 ring-primary/50;
+		@apply bg-accent text-primary/70 border-primary ring-2 ring-primary/50;
 	}
 
 	.underlined-input {
-		@apply w-full max-w-xs bg-transparent border-b border-primary outline-none text-primary;
+		@apply w-full max-w-xs bg-transparent border-b border-primary outline-none text-primary/50;
 		@apply transition-colors duration-200;
 	}
 	.settings-background {
@@ -187,7 +187,7 @@ html[data-text-size="large"] {
 	}
 	/* Bubble background (on most text blocks) */
 	.bubble {
-		@apply bg-secondary flex flex-col gap-2 border-text border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
+		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
 	}
 	.bubble-contents {
 		@apply flex flex-col gap-4 items-center w-full;
@@ -202,11 +202,11 @@ html[data-text-size="large"] {
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-secondary self-center p-3 text-text justify-between;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-secondary self-center p-3 text-primary justify-between;
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
-		@apply focus:bg-accent focus:text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
+		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 }
 
