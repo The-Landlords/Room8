@@ -102,7 +102,7 @@ export default function SignInPage() {
 					</p>
 
 					{error && (
-						<p className="text-red-500 text-sm text-center mt-2">
+						<p className="text-accent text-sm text-center mt-2">
 							{error}
 						</p>
 					)}
