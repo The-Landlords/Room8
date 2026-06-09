@@ -94,15 +94,15 @@ export default function SignInPage() {
 						Sign In
 					</button>
 
-					<p className="text-sm text-primary font-secondary text-center mt-2">
+					<p className="text-sm text-primary/70 font-secondary text-center mt-2">
 						Don&apos;t have an account?{" "}
-						<Link to="/signup" className="text-blue-500">
+						<Link to="/signup" className="text-primary">
 							Sign Up
 						</Link>
 					</p>
 
 					{error && (
-						<p className="text-red-500 text-sm text-center mt-2">
+						<p className="text-accent text-sm text-center mt-2">
 							{error}
 						</p>
 					)}
