@@ -150,7 +150,7 @@ export function InputField<T extends { settings: Record<string, any> }>({
 											},
 										}))
 									}
-									className="bg-secondary border-b border-text outline-none"
+									className="bg-secondary border-b border-primary outline-none"
 								>
 									{f.options.map((opt) => (
 										<option

@@ -450,7 +450,7 @@ export default function UserSetting() {
 						← Back
 					</button>
 				</div>
-				<h1 className="header text-text text-center px-14 ">
+				<h1 className="header text-primary text-center px-14 ">
 					Welcome {user?.username ?? "User"}
 				</h1>
 				<button
