@@ -201,13 +201,13 @@ relationRouter.patch(
 		try {
 			console.log("Deleting relation!");
 
-			const homecode = req.params.homeCode;
+			const homeCode = req.params.homeCode;
 
-			if (typeof homecode !== "string") {
-				return res.status(400).json({ error: "Invalid home name" });
+			if (typeof homeCode !== "string" || homeCode.trim() === "") {
+				return res.status(400).json({ error: "Invalid home code" });
 			}
 
-			const h = await getHomeByCode(homecode);
+			const h = await getHomeByCode(homeCode);
 
 			if (!h) {
 				return res.status(404).json({ error: "Home not found" });
@@ -226,9 +226,17 @@ relationRouter.patch(
 				return res.status(404).json({ error: "User not found" });
 			}
 
-			const willDeleteHome =
-				h.userIds.length === 1 &&
-				h.userIds.some((user: any) => user.userId.equals(u._id));
+			const userIsInHome = h.userIds.some((user: any) =>
+				user.userId.equals(u._id)
+			);
+
+			if (!userIsInHome) {
+				return res
+					.status(404)
+					.json({ error: "Relationship not found" });
+			}
+
+			const willDeleteHome = h.userIds.length === 1 && userIsInHome;
 
 			// we want to prevent users from accidentally deleting a home by leaving it, so we require them to confirm if they are the last resident and will delete the home by leaving
 			// this warning happens before the database is updated.
@@ -255,8 +263,6 @@ relationRouter.patch(
 					.json({ error: "Home not found for update" });
 			}
 
-			await h.save();
-
 			const updatedUser = await updateUserById(u._id, {
 				homeIds: removeOneHome,
 			});
@@ -265,8 +271,6 @@ relationRouter.patch(
 					.status(404)
 					.json({ error: "User not found for update" });
 			}
-
-			await u.save();
 
 			// ADD: here is where we shuld check whether a home is empty
 			// TODO: Add a message saying "You are the last resident. Leaving this home will delete it. Are you sure you want to leave?" and only delete if they confirm
@@ -290,11 +294,17 @@ relationRouter.patch(
 					message: "Left home and deleted it",
 				});
 			} else {
-				return res.status(200).json(h);
+				return res.status(200).json({
+					leftHome: true,
+					deletedHome: false,
+					home: updatedHome,
+				});
 			}
 		} catch (err) {
-			console.error(err);
-			res.status(500).json({ error: "Failed to remove relationship" });
+			console.error("Failed to remove relationship:", err);
+			return res
+				.status(500)
+				.json({ error: "Failed to remove relationship" });
 		}
 	}
 );

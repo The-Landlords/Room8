@@ -219,4 +219,3 @@ Future plans may include
 - expand functionality of chores, events, grocery pages.
 - text message feature: ability to send reminders, statuses, and other items to users based on household updates
 - phone sizing adjustments
-
