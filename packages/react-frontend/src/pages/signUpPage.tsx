@@ -32,7 +32,7 @@ export default function SignUpPage() {
 
 		if (!passwordIsValid) {
 			setError(
-				"Password must be at least 8 characters and include uppercase, lowercase, number, and symbol characters."
+				"Password must be at least 8 characters, include uppercase, lowercase, number, and symbol characters, and not be a common password."
 			);
 			return;
 		}
@@ -101,17 +101,17 @@ export default function SignUpPage() {
 					/>
 
 					{/* password */}
-					<div className="flex items-center gap-2 w-full">
+					<div className="relative w-full">
 						<input
 							type={showPassword ? "text" : "password"}
 							placeholder="Password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							className="input-field self-center flex-1 min-w-0"
+							className="input-field self-center w-full pr-20"
 						/>
 						<button
 							type="button"
-							className="text-sm whitespace-nowrap"
+							className="absolute right-4 top-1/2 -translate-y-1/2 text-sm whitespace-nowrap"
 							onClick={() =>
 								setShowPassword((current) => !current)
 							}
@@ -125,8 +125,9 @@ export default function SignUpPage() {
 
 					<div className="text-sm text-left mt-1 w-full">
 						<p>
-							Password must be at least 8 characters and include
-							uppercase, lowercase, number, and symbol characters.
+							Password must be at least 8 characters, include
+							uppercase, lowercase, number, and symbol characters,
+							and not be common.
 						</p>
 
 						<ul className="mt-2 space-y-1">
@@ -149,6 +150,10 @@ export default function SignUpPage() {
 							<li>
 								{passwordChecks.hasSymbol ? "✓" : "○"} One
 								symbol
+							</li>
+							<li>
+								{passwordChecks.isNotCommon ? "✓" : "○"} Not a
+								common password
 							</li>
 						</ul>
 
@@ -179,11 +184,7 @@ export default function SignUpPage() {
 					/>
 
 					{/* sign in */}
-					<button
-						type="submit"
-						className="button mt-2 disabled:opacity-50"
-						disabled={!passwordIsValid}
-					>
+					<button type="submit" className="button mt-2">
 						Sign Up
 					</button>
 

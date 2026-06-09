@@ -15,12 +15,21 @@ import {
 
 import mongoose from "mongoose";
 import { requireAuth } from "./userSessionAuth.js";
+import {
+	isValidPassword,
+	PASSWORD_REQUIREMENTS_MESSAGE,
+} from "../utils/passwordValidation.js";
 
 export const userRouter = express.Router();
 
 // CREATE
 userRouter.post("/users", async (req: Request, res: Response) => {
 	try {
+		if (!req.body.password || !isValidPassword(req.body.password)) {
+			res.status(400).json({ error: PASSWORD_REQUIREMENTS_MESSAGE });
+			return;
+		}
+
 		const user = await createUser(req.body);
 
 		req.session.userId = user._id.toString();
