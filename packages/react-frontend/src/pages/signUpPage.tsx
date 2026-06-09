@@ -1,6 +1,6 @@
 import { API_BASE } from "../config";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignInPage() {
 	const [username, setUsername] = useState("");
@@ -105,13 +105,11 @@ export default function SignInPage() {
 						Sign Up
 					</button>
 
-					<p className="text-sm text-center mt-2">
+					<p className="text-sm text-center mt-2 text-primary/70">
 						Have an existing account?{" "}
-						<a href="/" className="text-blue-500">
-							{" "}
-							{/* / is default login page */}
+						<Link to="/" className="text-primary">
 							Sign In
-						</a>
+						</Link>
 					</p>
 
 					{/* TODO: clear input fields button here */}

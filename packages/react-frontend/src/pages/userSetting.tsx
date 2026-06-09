@@ -349,6 +349,27 @@ export default function UserSetting() {
 			});
 	}, []);
 
+	/* Updates the html value when 'theme' changes */
+	useEffect(() => {
+		document.documentElement.setAttribute(
+			"data-theme",
+			draft.settings.theme
+		);
+	}, [draft.settings.theme]);
+	/* Updates the html value when 'colorblind' changes */
+	useEffect(() => {
+		document.documentElement.setAttribute(
+			"data-colorblind",
+			draft.settings.colorBlindMode
+		);
+	}, [draft.settings.colorBlindMode]);
+	useEffect(() => {
+		document.documentElement.setAttribute(
+			"data-text-size",
+			draft.settings.textSize
+		);
+	}, [draft.settings.textSize]);
+
 	/**
 	 *
 	 * @param s a given string with values with commas inside
@@ -429,7 +450,7 @@ export default function UserSetting() {
 						← Back
 					</button>
 				</div>
-				<h1 className="header text-center px-14 ">
+				<h1 className="header text-primary text-center px-14 ">
 					Welcome {user?.username ?? "User"}
 				</h1>
 				<button
@@ -501,7 +522,7 @@ export default function UserSetting() {
 								/>
 								{draft.phone.length > 0 &&
 									!phoneRegex.test(draft.phone) && (
-										<p className="text-sm text-red-500">
+										<p className="text-sm text-accent">
 											Use E.164 format (e.g. +14155552671)
 										</p>
 									)}

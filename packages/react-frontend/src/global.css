@@ -3,14 +3,81 @@
 @import url("https://fonts.googleapis.com/css2?family=Sniglet:wght@400;700&display=swap");
 @import "tailwindcss";
 
-body {
-	background-color: #f4fbff;
+:root {
+	/* Default values */
+	--theme-text: #f4fbff;
+	--theme-primary: #96c3e3;
+	--theme-secondary: #def0f9;
+	--theme-accent: #f7ffe3;
+	font-size: 16px;
+	background-color: var(--theme-text);
 }
+/* These settings are the same as default */
+html[data-theme="light"][data-colorblind="off"] {
+	--theme-text: #f4fbff;
+	--theme-primary: #96c3e3;
+	--theme-secondary: #def0f9;
+	--theme-accent: #f7ffe3;
+}
+html[data-theme="light"][data-colorblind="protanopia"] {
+	--theme-text: #fafaff;
+	--theme-primary: #bfbfe3;
+	--theme-secondary: #eeeef9;
+	--theme-accent: #fefee3;
+}
+html[data-theme="light"][data-colorblind="deuteranopia"] {
+	--theme-text: #f9f9ff;
+	--theme-primary: #b7b7e3;
+	--theme-secondary: #ebebf9;
+	--theme-accent: #fdfde3;
+}
+html[data-theme="light"][data-colorblind="tritanopia"] {
+	--theme-text: #f3fcfb;
+	--theme-primary: #8ec8c4;
+	--theme-secondary: #dcf2f0;
+	--theme-accent: #fbfbfb;
+}
+
+html[data-theme="dark"][data-colorblind="off"] {
+	--theme-text: #10161e;
+	--theme-primary: #5a9bc4;
+	--theme-secondary: #284457;
+	--theme-accent: #504d25;
+}
+html[data-theme="dark"][data-colorblind="protanopia"] {
+	--theme-text: #15151e;
+	--theme-primary: #9595c4;
+	--theme-secondary: #424257;
+	--theme-accent: #4d4d25;
+}
+html[data-theme="dark"][data-colorblind="deuteranopia"] {
+	--theme-text: #14141e;
+	--theme-primary: #8c8cc5;
+	--theme-secondary: #3d3d57;
+	--theme-accent: #4e4e25;
+}
+html[data-theme="dark"][data-colorblind="tritanopia"] {
+	--theme-text: #0e1717;
+	--theme-primary: #49a29d;
+	--theme-secondary: #214745;
+	--theme-accent: #54494a;
+}
+
+html[data-text-size="small"] {
+	font-size: 12px;
+}
+html[data-text-size="medium"] {
+	font-size: 16px;
+}
+html[data-text-size="large"] {
+	font-size: 20px;
+}
+
 @theme {
-	--color-text: #ffffff;
-	--color-primary: #96c3e3;
-	--color-secondary: #def0f9;
-	--color-accent: #f7ffe3;
+	--color-text: var(--theme-text);
+	--color-primary: var(--theme-primary);
+	--color-secondary: var(--theme-secondary);
+	--color-accent: var(--theme-accent);
 	--font-primary: "Inter", sans-serif;
 	--font-title: "Sniglet", cursive;
 	--font-secondary: "Gowun Dodum", sans-serif;
@@ -18,10 +85,10 @@ body {
 
 @layer components {
 	.header {
-		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
+		@apply font-primary text-shadow-accent text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-primary text-2xl pt-2;
+		@apply font-primary text-shadow-accent text-primary text-2xl pt-2;
 	}
 	.header-wrapper {
 		@apply relative flex items-center justify-center px-6 pt-8 w-full;
@@ -59,10 +126,17 @@ body {
 		animation: floatUp 0.5s ease-out forwards;
 	}
 	.background-house {
-		@apply bg-[url('/assets/RoomatesBackground.png')] bg-cover  min-h-screen flex flex-col;
+		@apply relative min-h-screen flex flex-col;
+	}
+	.background-house::before {
+		content: "";
+		@apply absolute inset-0 z-1 opacity-15 bg-[url('/assets/Room8-background.png')] bg-cover;
+	}
+	.background-house > * {
+		@apply relative z-10;
 	}
 	.overlay-backdrop {
-		@apply fixed z-50 inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center;
+		@apply fixed z-50 inset-0 bg-secondary/50 backdrop-blur-sm flex items-center justify-center;
 	}
 	.overlay-content {
 		@apply bg-secondary rounded-lg shadow-lg p-6 max-w-md w-full;
@@ -75,10 +149,10 @@ body {
 	}
 	/* Keep the typed input transparent so the parent background shows */
 	.settings-input-field:focus-within .underlined-input {
-		@apply bg-transparent text-primary border-primary;
+		@apply bg-transparent text-primary/70 border-primary;
 	}
 	.settings-input-field {
-		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-white p-3 text-primary;
+		@apply w-full max-w-[80%] self-center rounded-lg border-2 border-primary bg-text p-3 text-primary;
 		@apply flex items-center flex-col;
 		@apply transition-colors duration-200;
 	}
@@ -88,16 +162,15 @@ body {
 
 	/* When the user clicks/types inside a settings input, transition the wrapper */
 	.settings-input-field:focus-within {
-		@apply bg-accent text-primary border-primary ring-2 ring-primary/50;
+		@apply bg-accent text-primary/70 border-primary ring-2 ring-primary/50;
 	}
 
 	.underlined-input {
-		@apply w-full max-w-xs bg-transparent border-b border-primary outline-none text-primary;
+		@apply w-full max-w-xs bg-transparent border-b border-primary outline-none text-primary/50;
 		@apply transition-colors duration-200;
 	}
 	.settings-background {
 		@apply min-h-screen flex flex-col;
-		background-color: #efe7df;
 	}
 
 	/* Highlighted Title of input field */
@@ -114,7 +187,7 @@ body {
 		@apply bg-secondary flex flex-col gap-2 border-primary border-2 rounded-lg shadow-md p-6 min-w-[80%] min-h-[30%] relative;
 	}
 	.bubble-contents {
-		@apply gap-5 flex flex-col gap-4 items-center w-full;
+		@apply flex flex-col gap-4 items-center w-full;
 	}
 	/* Heading text used inside bubbles */
 	.bubble-header {
@@ -122,11 +195,11 @@ body {
 	}
 
 	.header-thirdary {
-		@apply font-primary text-text text-xl font-medium p-2 max-w-100;
+		@apply font-primary text-primary text-xl font-medium p-2 max-w-100;
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-white self-center p-3 text-primary justify-between;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-text self-center p-3 text-primary justify-between;
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
