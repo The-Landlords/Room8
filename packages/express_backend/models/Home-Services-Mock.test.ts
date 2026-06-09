@@ -89,6 +89,41 @@ test("Getting a home by ID", async () => {
 	expect(fetched?._id.toString()).toBe(home._id.toString());
 });
 
+test("Getting a home handles a plain object without toObject", async () => {
+	const plainHome = {
+		...encryptedHomeData,
+		_id: homeId,
+	};
+
+	const findByIdSpy = jest
+		.spyOn(Home, "findById")
+		.mockReturnValueOnce(Promise.resolve(plainHome) as any);
+
+	const fetched = await getHomeById(homeId);
+
+	expect(findByIdSpy).toHaveBeenCalledWith(homeId);
+	expect(fetched).toBeDefined();
+	expect(fetched?._id.toString()).toBe(homeId.toString());
+	expect(fetched?.address).toBe(homeData.address);
+	expect(decryptField).toHaveBeenCalledWith(encryptedHomeData.address);
+
+	findByIdSpy.mockRestore();
+});
+
+test("Getting a home by ID returns null when no home exists", async () => {
+	const findByIdSpy = jest
+		.spyOn(Home, "findById")
+		.mockReturnValueOnce(Promise.resolve(null) as any);
+
+	const fetched = await getHomeById(homeId);
+
+	expect(findByIdSpy).toHaveBeenCalledWith(homeId);
+	expect(fetched).toBeNull();
+	expect(decryptField).not.toHaveBeenCalled();
+
+	findByIdSpy.mockRestore();
+});
+
 test("Getting a home decrypts an encrypted address", async () => {
 	const home = new Home(encryptedHomeData);
 	mockingoose(Home).toReturn(home, "findOne");
@@ -113,6 +148,39 @@ test("Getting a home with no address returns an empty string", async () => {
 	expect(fetched).toBeDefined();
 	expect(fetched?.address).toBe("");
 	expect(decryptField).not.toHaveBeenCalled();
+});
+
+test("Getting a home with a non-encrypted address object returns it without decrypting", async () => {
+	const nonEncryptedAddress = {
+		encryptedData: "missing-iv-and-auth-tag",
+	};
+
+	const homeWithNonEncryptedAddress = {
+		...encryptedHomeData,
+		_id: homeId,
+		address: nonEncryptedAddress,
+	};
+
+	mockingoose(Home).toReturn(homeWithNonEncryptedAddress, "findOne");
+
+	const fetched = await getHomeById(homeId);
+
+	expect(fetched).toBeDefined();
+	expect(fetched?.address).toEqual(nonEncryptedAddress);
+	expect(decryptField).not.toHaveBeenCalled();
+});
+
+test("Getting a home returns an empty string when decryptField returns undefined", async () => {
+	(decryptField as jest.Mock).mockReturnValueOnce(undefined);
+
+	const home = new Home(encryptedHomeData);
+	mockingoose(Home).toReturn(home, "findOne");
+
+	const fetched = await getHomeById(home._id);
+
+	expect(fetched).toBeDefined();
+	expect(fetched?.address).toBe("");
+	expect(decryptField).toHaveBeenCalledWith(encryptedHomeData.address);
 });
 
 test("Getting a home by code", async () => {
