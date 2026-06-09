@@ -141,69 +141,6 @@ _This table is unfinished as of 10 Mar_
 
 ### Unit Testing For Schemas
 
-As of `12 May 2026`, all services have been tested _locally_ with mongodb local posting and passed with 100% coverage with updated with Mockinggoose. The front end pages have less coverage, but all pass with 70% or higher!
-| File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
-|---|---:|---:|---:|---:|---|
-| All files | 100 | 100 | 100 | 100 | |
-| models | 100 | 100 | 100 | 100 | |
-| Chore-Services.ts | 100 | 100 | 100 | 100 | |
-| Chore.ts | 100 | 100 | 100 | 100 | |
-| Event-Services.ts | 100 | 100 | 100 | 100 | |
-| Event.ts | 100 | 100 | 100 | 100 | |
-| Grocery-Services.ts | 100 | 100 | 100 | 100 | |
-| Grocery.ts | 100 | 100 | 100 | 100 | |
-| Home-Services.ts | 100 | 100 | 100 | 100 | |
-| Home.ts | 100 | 100 | 100 | 100 | |
-| Rule.ts | 100 | 100 | 100 | 100 | |
-| Rules-Services.ts | 100 | 100 | 100 | 100 | |
-| User-Services.ts | 100 | 100 | 100 | 100 | |
-| User.ts | 100 | 100 | 100 | 100 | |
-| utils | 100 | 100 | 100 | 100 | |
-| encryption.ts | 100 | 100 | 100 | 100 | |
-**Test Summary**
-
-| Metric      |                   Result |
-| ----------- | -----------------------: |
-| Test Suites |      13 passed, 13 total |
-| Tests       |    176 passed, 176 total |
-| Snapshots   |                  0 total |
-| Time        | 11.975 s, estimated 12 s |
-
-Frontend report from `v8`
-| File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
-|---|---:|---:|---:|---:|---|
-| All files | 86.59 | 90.46 | 81.43 | 88.21 | |
-| src | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;config.ts | 100 | 100 | 100 | 100 | |
-| src/components | 91.94 | 91.89 | 89.65 | 92.38 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;DeleteVotePanel.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;EditEventOverlay.tsx | 100 | 95 | 100 | 100 | 31 |
-| &nbsp;&nbsp;&nbsp;&nbsp;RuleCard.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;VotePanel.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;addEventOverlay.tsx | 96.15 | 80 | 100 | 96.15 | 55 |
-| &nbsp;&nbsp;&nbsp;&nbsp;addHomeOverlay.tsx | 76.19 | 80 | 75 | 76.19 | 30-31,37,43,50 |
-| &nbsp;&nbsp;&nbsp;&nbsp;addOverlay.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;baseList.tsx | 83.33 | 100 | 80 | 83.33 | 97 |
-| &nbsp;&nbsp;&nbsp;&nbsp;createHomeOverlay.tsx | 86.48 | 84.21 | 83.33 | 87.85 | 84-85,99,106,112-116,139-140,144-146,172,246 |
-| &nbsp;&nbsp;&nbsp;&nbsp;eventList.tsx | 75 | 100 | 66.66 | 75 | 54 |
-| &nbsp;&nbsp;&nbsp;&nbsp;header.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;homeAddOverlay.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;homeList.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;input.tsx | 92.3 | 91.66 | 86.66 | 95.23 | 118 |
-| &nbsp;&nbsp;&nbsp;&nbsp;overlay.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;removeEventOverlay.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;removeHomeOverlay.tsx | 93.33 | 100 | 75 | 93.33 | 60 |
-| &nbsp;&nbsp;&nbsp;&nbsp;rulesList.tsx | 88.88 | 85.71 | 83.33 | 87.5 | 52 |
-| src/pages | 82.02 | 88.94 | 75 | 84.57 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;calendarPage.tsx | 59.25 | 80.76 | 46.66 | 63.01 | 38-50,61-70,97-98,111,117,154-172,213,245-248,263-265 |
-| &nbsp;&nbsp;&nbsp;&nbsp;chorePage.tsx | 92.85 | 80 | 100 | 100 | 27,52,75 |
-| &nbsp;&nbsp;&nbsp;&nbsp;groceryPage.tsx | 91.37 | 82.75 | 100 | 96.22 | 43,50 |
-| &nbsp;&nbsp;&nbsp;&nbsp;homelistPage.tsx | 64.7 | 87.5 | 55.55 | 66.66 | 30-46,96,107-132 |
-| &nbsp;&nbsp;&nbsp;&nbsp;rulesPage.tsx | 86.9 | 81.08 | 95 | 86.25 | 51-63,72,157,178-179,241 |
-| &nbsp;&nbsp;&nbsp;&nbsp;signInPage.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;signUpPage.tsx | 100 | 100 | 100 | 100 | |
-| &nbsp;&nbsp;&nbsp;&nbsp;userSetting.tsx | 97.29 | 100 | 100 | 97.22 | 413 |
-
 ### API TESTING
 
 API testing via **[swagger](https://swagger.io/)** is available at [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
@@ -279,6 +216,7 @@ This project is planned to encompass a roommate housing and agreement app with t
 
 Future plans may include
 
-- globalization to all public spaces, rather than a specific niche of a household or apartment
+- expand functionality of chores, events, grocery pages.
 - text message feature: ability to send reminders, statuses, and other items to users based on household updates
-- colorblindness modes, light vs dark modes, text size alerations
+- phone sizing adjustments
+
