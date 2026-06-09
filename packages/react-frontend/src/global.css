@@ -95,7 +95,7 @@ html[data-text-size="large"] {
 	}
 	.header-title {
 		@apply font-title text-text text-6xl font-bold;
-		-webkit-text-stroke: 8px var(--color-text);
+		-webkit-text-stroke: 8px var(--color-primary);
 		paint-order: stroke fill;
 	}
 	.dashboard-card {
