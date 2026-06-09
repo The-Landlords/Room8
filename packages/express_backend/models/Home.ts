@@ -1,6 +1,24 @@
 // https://mongoosejs.com/docs/
 import mongoose from "mongoose";
 
+const EncryptedFieldSchema = new mongoose.Schema(
+	{
+		encryptedData: {
+			type: String,
+			required: true,
+		},
+		iv: {
+			type: String,
+			required: true,
+		},
+		authTag: {
+			type: String,
+			required: true,
+		},
+	},
+	{ _id: false }
+);
+
 export const HomeSchema = new mongoose.Schema(
 	{
 		homeCode: {
@@ -14,9 +32,8 @@ export const HomeSchema = new mongoose.Schema(
 			trim: true, // eliminates whitespaces
 		},
 		address: {
-			type: String,
+			type: EncryptedFieldSchema,
 			required: true,
-			trim: true, // eliminates whitespaces
 		},
 		// ADD? rent, bedrooms, square footage
 

@@ -1,14 +1,7 @@
-import mongoose from "mongoose";
-import {
-	expect,
-	test,
-	// describe,
-	beforeAll,
-	afterAll,
-	beforeEach,
-	afterEach,
-} from "@jest/globals";
+process.env.FIELD_ENCRYPTION_KEY =
+	"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
+import mongoose from "mongoose";
 import {
 	createHome,
 	getHomeById,
@@ -24,6 +17,8 @@ import {
 
 import { Home } from "./Home";
 import { config } from "dotenv";
+import { encryptField } from "../utils/encryption";
+import type { EncryptedField } from "../utils/encryption";
 config();
 const basicHomeData = {
 	homeName: "Test Home Service",
@@ -36,6 +31,15 @@ const basicHomeData = {
 		},
 	],
 };
+function isEncryptedField(value: any): value is EncryptedField {
+	return (
+		value &&
+		typeof value === "object" &&
+		typeof value.encryptedData === "string" &&
+		typeof value.iv === "string" &&
+		typeof value.authTag === "string"
+	);
+}
 // let homeId: mongoose.Types.ObjectId;
 // let homeCode: string;
 let h: any; // FIXME type this later
@@ -75,6 +79,10 @@ test("Creating a home", async () => {
 	expect(home.homeName).toBe(basicHomeData.homeName);
 	expect(home.homeCode).toBe(basicHomeData.homeCode);
 	expect(home.address).toBe(basicHomeData.address);
+	const rawHome = await Home.findById(homeId).lean();
+	expect(rawHome).toBeDefined();
+	expect(isEncryptedField(rawHome?.address)).toBe(true);
+	expect(rawHome?.address).not.toBe(basicHomeData.address);
 	expect(homeId).toBeDefined();
 	expect(home.userIds).toBeDefined();
 	expect(home.userIds).toHaveLength(1);
@@ -93,6 +101,27 @@ test("Fetching (getting) a home", async () => {
 	expect(fetched._id.toString()).toBe(h._id.toString());
 });
 
+test("Fetching a home decrypts an encrypted address", async () => {
+	const encryptedAddress = encryptField(basicHomeData.address);
+
+	const rawHome = await Home.create({
+		...basicHomeData,
+		homeCode: "encrypted-address-test",
+		address: encryptedAddress,
+		userIds: [
+			{
+				userId: new mongoose.Types.ObjectId(),
+				relationship: "RESIDENT",
+			},
+		],
+	} as any);
+
+	const fetched = await getHomeById(rawHome._id);
+
+	expect(fetched).toBeDefined();
+	expect(fetched?.address).toBe(basicHomeData.address);
+});
+
 test("Fetching (getting) a home by name", async () => {
 	const fetched = await getHomeByName(h.homeName);
 	if (!fetched) return;
@@ -109,11 +138,23 @@ test("Fetching (getting) a home by Code", async () => {
 test("Updating a home", async () => {
 	const updatedHomeData = {
 		homeName: "Test Home Service (UPDATED)",
+		address: "456 Another House, San Luis Obispo, CA 93401",
 	};
 	const updatedHome = await updateHome(h._id, updatedHomeData);
 	expect(updatedHome).toBeDefined();
 	expect(updatedHome?.homeName).toBe(updatedHomeData.homeName); // question mark is for optional chaining, in case updatedHome is null or undefined
-	expect(updatedHome?.address).toBe(basicHomeData.address);
+	expect(updatedHome?.address).toBe(updatedHomeData.address);
+
+	const rawHome = await Home.findById(h._id).lean();
+	expect(rawHome).toBeDefined();
+	expect(isEncryptedField(rawHome?.address)).toBe(true);
+	expect(rawHome?.address).not.toBe(updatedHomeData.address);
+});
+
+test("Updating a home with an empty address throws an error", async () => {
+	await expect(updateHome(h._id, { address: "" })).rejects.toThrow(
+		"Address is required"
+	);
 });
 
 test("Deleting a home", async () => {
