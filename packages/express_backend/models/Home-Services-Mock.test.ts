@@ -100,6 +100,21 @@ test("Getting a home decrypts an encrypted address", async () => {
 	expect(decryptField).toHaveBeenCalledWith(encryptedHomeData.address);
 });
 
+test("Getting a home with no address returns an empty string", async () => {
+	const homeWithoutAddress = new Home({
+		...encryptedHomeData,
+		address: undefined,
+	});
+
+	mockingoose(Home).toReturn(homeWithoutAddress, "findOne");
+
+	const fetched = await getHomeById(homeWithoutAddress._id);
+
+	expect(fetched).toBeDefined();
+	expect(fetched?.address).toBe("");
+	expect(decryptField).not.toHaveBeenCalled();
+});
+
 test("Getting a home by code", async () => {
 	const home = new Home(encryptedHomeData);
 	mockingoose(Home).toReturn(home, "findOne");
