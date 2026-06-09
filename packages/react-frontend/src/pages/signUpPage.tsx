@@ -1,12 +1,22 @@
 import { API_BASE } from "../config";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+	getPasswordChecks,
+	getPasswordStrength,
+	isValidPassword,
+} from "../utils/passwordStrength";
 
-export default function SignInPage() {
+export default function SignUpPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 	const [fullName, setFullName] = useState("");
 	const [error, setError] = useState("");
+
+	const passwordChecks = getPasswordChecks(password);
+	const passwordStrength = getPasswordStrength(password);
+	const passwordIsValid = isValidPassword(password);
 
 	const navigate = useNavigate();
 
@@ -17,6 +27,13 @@ export default function SignInPage() {
 		// check if fields are empty
 		if (!username || !password || !fullName) {
 			setError("Please fill in username, password, and full name");
+			return;
+		}
+
+		if (!passwordIsValid) {
+			setError(
+				"Password must be at least 8 characters and include uppercase, lowercase, number, and symbol characters."
+			);
 			return;
 		}
 		fetch(`${API_BASE}/users`, {
@@ -84,13 +101,74 @@ export default function SignInPage() {
 					/>
 
 					{/* password */}
-					<input
-						type="password"
-						placeholder="Password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className="input-field self-center w-full"
-					/>
+					<div className="flex items-center gap-2 w-full">
+						<input
+							type={showPassword ? "text" : "password"}
+							placeholder="Password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							className="input-field self-center flex-1 min-w-0"
+						/>
+						<button
+							type="button"
+							className="text-sm whitespace-nowrap"
+							onClick={() =>
+								setShowPassword((current) => !current)
+							}
+							aria-label={
+								showPassword ? "Hide password" : "Show password"
+							}
+						>
+							{showPassword ? "Hide" : "Show"}
+						</button>
+					</div>
+
+					<div className="text-sm text-left mt-1 w-full">
+						<p>
+							Password must be at least 8 characters and include
+							uppercase, lowercase, number, and symbol characters.
+						</p>
+
+						<ul className="mt-2 space-y-1">
+							<li>
+								{passwordChecks.hasLength ? "✓" : "○"} At least
+								8 characters
+							</li>
+							<li>
+								{passwordChecks.hasUpper ? "✓" : "○"} One
+								uppercase letter
+							</li>
+							<li>
+								{passwordChecks.hasLower ? "✓" : "○"} One
+								lowercase letter
+							</li>
+							<li>
+								{passwordChecks.hasNumber ? "✓" : "○"} One
+								number
+							</li>
+							<li>
+								{passwordChecks.hasSymbol ? "✓" : "○"} One
+								symbol
+							</li>
+						</ul>
+
+						<p className="mt-2">
+							Password strength: {passwordStrength}
+						</p>
+
+						<meter
+							className="w-full h-3"
+							min="0"
+							max="3"
+							value={
+								passwordStrength === "Weak"
+									? 1
+									: passwordStrength === "Medium"
+										? 2
+										: 3
+							}
+						/>
+					</div>
 					{/* full name */}
 					<input
 						type="text"
@@ -101,7 +179,11 @@ export default function SignInPage() {
 					/>
 
 					{/* sign in */}
-					<button type="submit" className="button mt-2">
+					<button
+						type="submit"
+						className="button mt-2 disabled:opacity-50"
+						disabled={!passwordIsValid}
+					>
 						Sign Up
 					</button>
 
