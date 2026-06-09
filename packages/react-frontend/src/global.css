@@ -44,32 +44,32 @@ html[data-theme="light"][data-colorblind="tritanopia"] {
 }
 
 html[data-theme="dark"][data-colorblind="off"] {
-	--theme-background: #1f2937;
+	--theme-background: #10161e;
 	--theme-text: #000000;
-	--theme-primary: #6bb5e3;
-	--theme-secondary: #3e6a8a;
-	--theme-accent: #84a35c;
+	--theme-primary: #5a9bc4;
+	--theme-secondary: #284457;
+	--theme-accent: #504d25;
 }
 html[data-theme="dark"][data-colorblind="protanopia"] {
-	--theme-background: #282837;
+	--theme-background: #15151e;
 	--theme-text: #000000;
-	--theme-primary: #afafe3;
-	--theme-secondary: #66668a;
-	--theme-accent: #a0a05c;
+	--theme-primary: #9595c4;
+	--theme-secondary: #424257;
+	--theme-accent: #4d4d25;
 }
 html[data-theme="dark"][data-colorblind="deuteranopia"] {
-	--theme-background: #262637;
+	--theme-background: #14141e;
 	--theme-text: #000000;
-	--theme-primary: #a4a4e4;
-	--theme-secondary: #60608b;
-	--theme-accent: #9b9b5d;
+	--theme-primary: #8c8cc5;
+	--theme-secondary: #3d3d57;
+	--theme-accent: #4e4e25;
 }
 html[data-theme="dark"][data-colorblind="tritanopia"] {
-	--theme-background: #1b2b2a;
+	--theme-background: #0e1717;
 	--theme-text: #000000;
-	--theme-primary: #58bdb7;
-	--theme-secondary: #31706c;
-	--theme-accent: #8d9c9a;
+	--theme-primary: #49a29d;
+	--theme-secondary: #214745;
+	--theme-accent: #54494a;
 }
 
 html[data-text-size="small"] {
@@ -95,10 +95,10 @@ html[data-text-size="large"] {
 
 @layer components {
 	.header {
-		@apply font-primary text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
+		@apply font-primary text-shadow-accent text-primary text-4xl font-bold text-center pt-10 pb-6 max-w-[80%];
 	}
 	.header-secondary {
-		@apply font-primary text-primary text-2xl pt-2;
+		@apply font-primary text-shadow-accent text-primary text-2xl pt-2;
 	}
 	.header-wrapper {
 		@apply relative flex items-center justify-center px-6 pt-8 w-full;
@@ -202,7 +202,7 @@ html[data-text-size="large"] {
 	}
 
 	.input-field {
-		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-secondary self-center p-3 text-primary justify-between;
+		@apply min-w-[10%] max-w-[80%] rounded-lg border-2 border-primary bg-background self-center p-3 text-primary justify-between;
 		@apply focus:bg-accent focus:text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors duration-150;
 	}
 	.input-field .underlined-input {
