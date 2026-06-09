@@ -1205,6 +1205,9 @@
 					"200": {
 						"description": "OK"
 					},
+					"400": {
+						"description": "Bad Request"
+					},
 					"401": {
 						"description": "Unauthorized"
 					},
@@ -1306,6 +1309,147 @@
 					},
 					"404": {
 						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/guest-ascension": {
+			"post": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"homeCode": {
+									"example": "any"
+								},
+								"guestId": {
+									"example": "any"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Created"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
+		"/guest-ascension/home/{homeCode}": {
+			"get": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "homeCode",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
+		"/guest-ascension/{ascensionId}/vote": {
+			"post": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "ascensionId",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"vote": {
+									"example": "any"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					}
+				}
+			}
+		},
+		"/guest-ascension/{ascensionId}": {
+			"delete": {
+				"description": "",
+				"parameters": [
+					{
+						"name": "ascensionId",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"500": {
+						"description": "Internal Server Error"
 					}
 				}
 			}
